@@ -1,0 +1,7 @@
+/.idea
+/uf/*
+!/uf/.gitkeep
+vendor
+docker/data
+cache
+.DS_Store

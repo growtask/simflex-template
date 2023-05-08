@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+
+  php:
+#    restart: always
+    build: docker/php
+    volumes:
+      - ./:/var/www/html
+      - /var/www:/var/www
+    ports:
+      - "480:80"
+
+  db:
+#    restart: always
+    build: docker/mysql
+    volumes:
+      - ./docker/data/mysql:/var/lib/mysql
+    ports:
+      - "33066:3306"
+    environment:
+      MYSQL_DATABASE: simplex
+      MYSQL_USER: simplex
+      MYSQL_PASSWORD: simplex
+      MYSQL_ROOT_PASSWORD: root
+      VIRTUAL_HOST: db

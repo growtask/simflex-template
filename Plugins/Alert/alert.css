@@ -1,0 +1,51 @@
+.plug-alert {
+  background: none repeat scroll 0 0 #EEEEEE;
+  border-radius: 3px 3px 3px 3px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 -1px 0 rgba(255, 255, 255, 0.2) inset;
+  font-family: Helvetica,Arial,"Times New Roman",Times,serif;
+  font-size: 12px;
+  font-style: normal;
+  margin: 12px 0 20px;
+  padding: 15px 10px 15px 55px;
+  position: relative;
+  width: auto;
+}
+
+.plug-alert-success {
+  background: url(img/ok.png) no-repeat scroll 8px 9px, linear-gradient(#CDEB8E, #A5C956);
+  border: 1px solid #87AE33;
+  color: #3F4B25;
+  text-shadow: 1px 1px 1px #D5EAA8;
+}
+
+.plug-alert-info {
+  -moz-border-bottom-colors: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  background: url(img/info.png) no-repeat 8px 8px, linear-gradient(#C7E3F9, #AECEE8);
+  border-color: #70A2C9 #5F9BC9;
+  border-image: none;
+  border-style: solid;
+  border-width: 1px;
+  color: #2E6093;
+  text-shadow: 1px 1px 1px #E2F6FA;
+}
+
+.plug-alert-warning, .plug-alert-error {
+  background: url(img/warning.png) no-repeat scroll 8px 8px, linear-gradient(#FFEDC1, #FCDE8D);
+  border: 1px solid #EA9936;
+  color: #FF4500;
+  text-shadow: 1px 1px 1px #FFEDC1;
+}
+
+.plug-alert .close {
+  display:none;
+  background: url(img/close.png) repeat scroll center 0 transparent;
+  cursor: pointer;
+  height: 14px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 14px;
+}

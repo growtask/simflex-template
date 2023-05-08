@@ -1,0 +1,8 @@
+*{outline:none}
+html{height:100%; overflow:auto; overflow-y:scroll}
+body{font-family:Arial; font-size:14px; line-height:1.4}
+img{border:0px}
+
+a{color:#DD0000}
+a.js{border-bottom:1px dotted;text-decoration: none !important}
+

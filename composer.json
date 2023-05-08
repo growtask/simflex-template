@@ -1,0 +1,41 @@
+{
+  "name": "glushkovds/simflex-template",
+  "description": "Simflex CMS",
+  "keywords": [
+    "php",
+    "simplex-admin",
+    "simplex-cms",
+    "simflex"
+  ],
+  "homepage": "https://github.com/glushkovds/simplex-cms",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Denis Glushkov",
+      "email": "amkarovec@gmail.com",
+      "homepage": "https://github.com/glushkovds"
+    },
+    {
+      "name": "pf",
+      "homepage": "https://rpgclub.me"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0",
+    "ext-gd": "*",
+    "glushkovds/simflex": "*",
+    "vlucas/phpdotenv": "^5.4",
+    "scssphp/scssphp": "^1.11",
+    "tubalmartin/cssmin": "^4.1"
+  },
+  "suggest": {
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": ""
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
