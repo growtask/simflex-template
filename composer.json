@@ -7,8 +7,8 @@
     "simplex-cms",
     "simflex"
   ],
-  "homepage": "https://github.com/glushkovds/simplex-cms",
-  "type": "library",
+  "homepage": "https://github.com/glushkovds/simflex-template",
+  "type": "project",
   "license": "MIT",
   "authors": [
     {
