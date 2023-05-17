@@ -4,6 +4,7 @@ namespace App\Layout;
 
 use Simflex\Core\Buffer;
 use Simflex\Core\Container;
+use Simflex\Core\DB;
 use Simflex\Core\Path;
 use Simflex\Extensions\Content\Model\ModelContent;
 
@@ -73,7 +74,7 @@ abstract class LayoutBase
 
     protected static function generateFields()
     {
-        $schema = self::getFieldSchema();
+        $schema = static::getFieldSchema();
         $fields = $schema['items'];
 
         // get current page.
@@ -90,9 +91,14 @@ abstract class LayoutBase
         // create new fields.
         // set correct order - by counter on that particular template.
         // set the default name from schema.
+
+        if (!isset(LayoutManager::$templateOrdering[$page->template_id])) {
+            LayoutManager::$templateOrdering[$page->template_id] = 0;
+        }
+
         foreach ($fields as $field) {
             DB::query(
-                'INSERT INTO content_template_param (template_id, param_pid, position, field_id, name, label, npp, params, default_value, group_name) VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, ?)',
+                'INSERT INTO content_template_param (template_id, param_pid, position, field_id, name, label, npp, params, default_value, group_name) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
                     $page->template_id,
                     'left', // TODO: allow to change from schema?
@@ -105,6 +111,10 @@ abstract class LayoutBase
                     $schema['group']
                 ]
             );
+
+            if (DB::error()) {
+                throw new \Exception(DB::error());
+            }
         }
     }
 

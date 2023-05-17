@@ -36,6 +36,12 @@
       "App\\": ""
     }
   },
+  "repositories": [
+    {
+      "url": "https://github.com/glushkovds/simflex.git",
+      "type": "git"
+    }
+  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

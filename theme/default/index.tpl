@@ -2,7 +2,7 @@
 <html lang="ru">
     <head>
         <?php
-        \App\Plugins\Jquery\Jquery::core();
+        //\App\Plugins\Jquery\Jquery::core();
         \Simflex\Core\Page::css('/theme/default/css/default.css');
         \Simflex\Core\Page::js('/theme/default/js/default.js');
         \Simflex\Core\Page::meta();

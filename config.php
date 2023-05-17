@@ -29,9 +29,9 @@ class Config extends \Simflex\Core\Config
     public static function load()
     {
         static::$db_host = env('DB_HOST', '127.0.0.1');
-        static::$db_user = env('DB_USER', 'simplex');
-        static::$db_pass = env('DB_PASS', 'simplex');
-        static::$db_name = env('DB_NAME', 'simplex');
+        static::$db_user = env('DB_USER', 'simflex');
+        static::$db_pass = env('DB_PASS', 'simflex');
+        static::$db_name = env('DB_NAME', 'simflex');
         static::$devMode = env("DEVELOPER", false);
     }
 
