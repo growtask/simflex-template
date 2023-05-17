@@ -14,6 +14,12 @@ class LayoutManager
     protected static $usedLayouts = [];
     protected static $usedStyles = [];
 
+    // if true, will update all acp fields
+    public static $shouldGenerateFields = false;
+
+    // internal use only, ordering template fields
+    public static $templateOrdering = [];
+
     public static function useLayout(string $class)
     {
         static::$usedLayouts[$class] = $class;
