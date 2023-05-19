@@ -10,6 +10,8 @@
 ini_set('display_errors', 1);
 ini_set('max_execution_time', 600);
 
+error_reporting(E_ALL & ~E_DEPRECATED);
+
 if (!isset($_SERVER['REQUEST_URI'])) {
     $_SERVER['REQUEST_URI'] = '/';
 }

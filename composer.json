@@ -27,7 +27,8 @@
     "glushkovds/simflex": "*",
     "vlucas/phpdotenv": "^5.4",
     "scssphp/scssphp": "^1.11",
-    "tubalmartin/cssmin": "^4.1"
+    "tubalmartin/cssmin": "^4.1",
+    "ext-readline": "*"
   },
   "suggest": {
   },

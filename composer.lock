@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c9a137117290bb75e98ec10a917f05c3",
+    "content-hash": "3a167679fd2cdf01dd54a137ad103f33",
     "packages": [
         {
             "name": "glushkovds/simflex",
@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/glushkovds/simflex.git",
-                "reference": "7a444a066a6896b88d51dc0d483f413cca9cf6a4"
+                "reference": "05fa0d8ac41b1b412062b67fda5d5023b36441a3"
             },
             "require": {
                 "ext-gd": "*",
@@ -48,7 +48,7 @@
                 "simplex-cms",
                 "simplex-core"
             ],
-            "time": "2023-05-17T10:54:34+00:00"
+            "time": "2023-05-19T13:26:05+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -665,7 +665,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.1.0",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "ext-readline": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
