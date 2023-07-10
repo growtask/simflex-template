@@ -10,8 +10,15 @@ use Simflex\Extensions\Content\Model\ModelContent;
 
 abstract class LayoutBase
 {
+    public const FIELD_STRING = 'string';
+    public const FIELD_TEXT = 'text';
+    public const FIELD_TABLE = 'table';
+    public const FIELD_IMAGE = 'image';
+    public const FIELD_FILE = 'file';
 
     public static $extraAssets = [];
+
+    protected static $inputData = [];
 
     public static function initAssets()
     {
@@ -34,7 +41,8 @@ abstract class LayoutBase
     public static function draw(array $data = [])
     {
         // generate fields if requested.
-        if (LayoutManager::$shouldGenerateFields) {
+        if (LayoutManager::$shouldGenerateFields && !$data['__no_gen']) {
+            self::$inputData = $data;
             self::generateFields();
         }
 
@@ -75,6 +83,14 @@ abstract class LayoutBase
     protected static function generateFields()
     {
         $schema = static::getFieldSchema();
+        if (self::$inputData['__group'] ?? false) {
+            $schema['group'] = self::$inputData['__group'];
+        }
+
+        if (self::$inputData['__prefix'] ?? false) {
+            $schema['prefix'] = self::$inputData['__prefix'];
+        }
+
         $fields = $schema['items'];
 
         // get current page.
@@ -106,9 +122,9 @@ abstract class LayoutBase
                     self::mangleName($schema, $field),
                     $field['name'],
                     LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
-                    serialize($field['params']),
-                    $field['default'],
-                    $schema['group']
+                    serialize(['main' => $field['params'] ?? []]),
+                    $field['default'] ?? '',
+                    $field['group'] ?? $schema['group']
                 ]
             );
 
