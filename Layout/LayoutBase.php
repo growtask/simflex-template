@@ -31,6 +31,7 @@ abstract class LayoutBase
         }
 
         if (is_file(static::layoutRootDir() . '/script.js')) {
+            LayoutManager::useScript(static::layoutRootHref() . '/script.js');
             Container::getPage()::js(static::layoutRootHref() . '/script.js');
         }
 
@@ -92,6 +93,9 @@ abstract class LayoutBase
         }
 
         $fields = $schema['items'];
+        if (!$fields) {
+            return;
+        }
 
         // get current page.
         $page = ModelContent::findOne(['path' => Container::getRequest()->getPath()]);

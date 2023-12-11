@@ -4,6 +4,7 @@ namespace App\Layout;
 
 use ScssPhp\ScssPhp\Compiler;
 use Simflex\Core\Container;
+use Simflex\Core\Profiler;
 use tubalmartin\CssMin\Minifier;
 
 class LayoutManager
@@ -13,6 +14,8 @@ class LayoutManager
      */
     protected static $usedLayouts = [];
     protected static $usedStyles = [];
+
+    public static $usedScripts = [];
 
     // if true, will update all acp fields
     public static $shouldGenerateFields = false;
@@ -30,12 +33,25 @@ class LayoutManager
         static::$usedStyles[] = $path;
     }
 
+    public static function useScript(string $path)
+    {
+        static::$usedScripts[] = $path;
+    }
+
     public static function init()
     {
+        // ???
+        if (SF_LOCATION == SF_LOCATION_ADMIN) {
+            return;
+        }
+
+        Profiler::traceStart(__CLASS__, __FUNCTION__);
         Container::getPage()::js('/Layout/assetsGlobal/script.js');
         foreach (static::$usedLayouts as $class) {
             $class::initAssets();
         }
+
+        static::$usedStyles = array_unique(static::$usedStyles);
 
         // compose cache path.
         if (!\Config::$devMode) {
@@ -46,7 +62,7 @@ class LayoutManager
 
             $cachePath = '/cache/css/' . md5($cachePath) . '.css';
         } else {
-            $cachePath = '/cache/css/style.css';
+            $cachePath = '/cache/css/style.'.md5(microtime()).'.css';
         }
 
         $imports = [SF_ROOT_PATH . '/Layout/assetsGlobal'];
@@ -99,5 +115,7 @@ class LayoutManager
 
         // use cached style.
         Container::getPage()::css($cachePath);
+        Profiler::traceEnd(__CLASS__, __FUNCTION__);
+        return $cachePath;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Simflex\Core\Container;
+
 class Init
 {
 
@@ -8,13 +10,42 @@ class Init
      */
     public static function _()
     {
+        // make sure session is closed after execution finishes.
+        register_shutdown_function(function () {
+            if (session_status() == PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
+        });
+
+        // top kek
+        $shit = explode('.', $_SERVER['REQUEST_URI']);
+        if (count($shit) > 1 && strlen(
+                $shit[count($shit) - 1]
+            ) < 5 && !isset($_REQUEST['filter']) && SF_LOCATION != SF_LOCATION_CLI) {
+            http_response_code(404);
+            exit;
+        }
+
+        if (SF_LOCATION == SF_LOCATION_SITE && $_SERVER['REQUEST_METHOD'] == 'GET') {
+            $qs = strpos($_SERVER['REQUEST_URI'], '?');
+            if ($qs !== false && $qs == strlen($_SERVER['REQUEST_URI']) - 1 && !$_GET) {
+                header('Location: ' . explode('?', $_SERVER['REQUEST_URI'])[0]);
+                exit;
+            }
+        }
+
         static::setTimezone();
         require_once SF_ROOT_PATH . '/vendor/autoload.php';
         static::loadEnv();
         require_once SF_ROOT_PATH . '/functions.php';
         static::setSessionParams();
         static::startDebug();
-        static::startSession();
+
+        // never start session for website, as it's using lazy load now
+        if (SF_LOCATION != SF_LOCATION_SITE) {
+            static::startSession();
+        }
+
         static::setCharset();
         static::loadConfig();
 
@@ -52,13 +83,17 @@ class Init
 
     protected static function setAuthHandler()
     {
-        \Simflex\Core\Container::setAuthHandler(function () {
+        $chain = [];
+        if (SF_LOCATION == SF_LOCATION_ADMIN) {
+            $chain[] = new \Simflex\Auth\Auth\SessionMiddleware();
+        }
+
+        $chain[] = new \Simflex\Auth\Auth\CookieMiddleware();
+        $chain[] = new \Simflex\Auth\Auth\BasicAuthMiddleware();
+
+        \Simflex\Core\Container::setAuthHandler(function () use ($chain) {
             \Simflex\Auth\Bootstrap::authByMiddlewareChain(
-                (new \Simflex\Auth\Auth\Chain([
-                    new \Simflex\Auth\Auth\SessionMiddleware(),
-                    new \Simflex\Auth\Auth\CookieMiddleware(),
-                    new \Simflex\Auth\Auth\BasicAuthMiddleware(),
-                ]))
+                (new \Simflex\Auth\Auth\Chain($chain))
             // You can change base user model for auth
 //            ->setUserModelClass(YourUser::class)
             );
@@ -89,6 +124,7 @@ class Init
 
     protected static function startDebug()
     {
+        \Simflex\Core\Profiler::start();
         $_ENV['start'] = ['time' => microtime(true), 'memory' => memory_get_usage()];
     }
 
