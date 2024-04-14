@@ -26,3 +26,4 @@ if (!empty($matches[1])) {
 }
 
 echo sanitizeOutput($html);
+\Simflex\Core\Profiler::output();
