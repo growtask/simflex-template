@@ -1,7 +1,5 @@
 <?php
 
-namespace App\Core;
-
 use App\Extensions\Catalog\Price\PriceManager;
 use App\Extensions\Catalog\Price\SaleProxy;
 use Config;

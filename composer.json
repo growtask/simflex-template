@@ -18,7 +18,7 @@
     },
     {
       "name": "pf",
-      "homepage": "https://rpgclub.me"
+      "homepage": "https://pff.su"
     }
   ],
   "require": {
@@ -28,7 +28,10 @@
     "vlucas/phpdotenv": "^5.4",
     "scssphp/scssphp": "^1.11",
     "tubalmartin/cssmin": "^4.1",
-    "ext-readline": "*"
+    "ext-readline": "*",
+    "growtask/simflex-file-manager": "dev-master",
+    "codeception/module-phpbrowser": "*",
+    "codeception/module-asserts": "*"
   },
   "suggest": {
   },
