@@ -1,39 +1,31 @@
 <?php
 
-class Config extends \Simflex\Core\Config
+namespace App;
+
+use App\Extensions\Content\Content;
+
+/**
+ * @property string timezone System-wide timezone
+ */
+class Config extends \Simflex\Core\ConfigBase
 {
-
-    public static $db_type = 'mysql';
-    public static $db_host; // Init from env. May put values statically
-    public static $db_user;
-    public static $db_pass;
-    public static $db_name;
-    public static $component_default = '\App\Extensions\Content\Content';
-    public static $theme = 'default';
-
-    public static $subdomainOneSession = false;
-    public static $devMode = false;
-
-    /**
-     * @see /core/sflog.class.php
-     */
-    public static $logLevel = 'debug';
-    public static $logPath = '/var/log';
-
-    /**
-     * @example if (extension_loaded('pdo')) static::$mysqlErrorMode = PDO::ERRMODE_EXCEPTION;
-     * @var int
-     */
-    public static $mysqlErrorMode = 0;
-
-    public static function load()
+    public function load(): void
     {
-        static::$db_host = env('DB_HOST', '127.0.0.1');
-        static::$db_user = env('DB_USER', 'simflex');
-        static::$db_pass = env('DB_PASS', 'simflex');
-        static::$db_name = env('DB_NAME', 'simflex');
-        static::$devMode = env("DEVELOPER", false);
-    }
+        $this->defaultComponent = Content::class;
 
-    public static $routesFile = SF_ROOT_PATH . '/routes.php';
+        $this->db['host'] = env('DB_HOST', '127.0.0.1');
+        $this->db['user'] = env('DB_USER', 'simflex');
+        $this->db['password'] = env('DB_PASS', 'simflex');
+        $this->db['name'] = env('DB_NAME', 'simflex');
+
+        $this->devMode = env('DEVELOPER', true);
+        $this->enableLogging = env('LOGGING', false);
+
+        $this->files['routes'] = SF_ROOT_PATH . '/provider/routes.php';
+        $this->files['events'] = SF_ROOT_PATH . '/provider/events.php';
+        $this->files['services'] = SF_ROOT_PATH . '/provider/services.php';
+        $this->files['commands'] = SF_ROOT_PATH . '/provider/commands.php';
+
+        $this->extra['timezone'] = env('TIMEZONE', 'Asia/Yekaterinburg');
+    }
 }

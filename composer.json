@@ -22,7 +22,7 @@
     }
   ],
   "require": {
-    "php": ">=7.1.0",
+    "php": ">=8.2.0",
     "ext-gd": "*",
     "glushkovds/simflex": "*",
     "vlucas/phpdotenv": "^5.4",
@@ -31,7 +31,8 @@
     "ext-readline": "*",
     "growtask/simflex-file-manager": "dev-master",
     "codeception/module-phpbrowser": "*",
-    "codeception/module-asserts": "*"
+    "codeception/module-asserts": "*",
+    "ext-pdo": "*"
   },
   "suggest": {
   },

@@ -5,6 +5,11 @@ AddDefaultCharset UTF-8
     Deny from all
 </Files>
 
+<Files .log>
+    Order allow,deny
+    Deny from all
+</Files>
+
 <IfModule mod_rewrite.c>
   RewriteEngine on
 
