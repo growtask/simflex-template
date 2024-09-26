@@ -24,7 +24,7 @@
   "require": {
     "php": ">=8.2.0",
     "ext-gd": "*",
-    "glushkovds/simflex": "*",
+    "glushkovds/simflex": "3.*",
     "vlucas/phpdotenv": "^5.4",
     "scssphp/scssphp": "^1.11",
     "tubalmartin/cssmin": "^4.1",
