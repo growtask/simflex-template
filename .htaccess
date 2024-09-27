@@ -1,17 +1,13 @@
 AddDefaultCharset UTF-8
 
-<Files .env>
-    Order allow,deny
-    Deny from all
-</Files>
-
-<Files .log>
-    Order allow,deny
-    Deny from all
-</Files>
-
 <IfModule mod_rewrite.c>
   RewriteEngine on
+
+  RewriteRule ^tests/ - [R=404,L]
+  RewriteRule ^uf/log/ - [R=404,L]
+  RewriteRule ^docker/ - [R=404,L]
+  RewriteRule ^database/ - [R=404,L]
+  RewriteRule ^(codeception.yml|composer.json|composer.lock|docker-compose.yml|docker-compose.test.yml|LICENSE|README.md|sf|codecept|test|.env|.gitignore)$ - [R=404,L]
 
   RewriteCond %{HTTP_HOST} ^api\.(.*) [NC]
   RewriteRule .*    api.php [L]
@@ -27,7 +23,7 @@ AddDefaultCharset UTF-8
 </IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|css|gif|jpg|jpeg|png|ico|swf)$">
+  <FilesMatch "\.(js|css|jpg|jpeg|png|ico|webp|svg|json)$">
     Header set Cache-Control "max-age=31536000"
   </FilesMatch>
   Header set Access-Control-Allow-Origin "*"

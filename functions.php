@@ -4,7 +4,11 @@
  * Loaded automatically from the bootstrap
  */
 
+use Composer\InstalledVersions;
+use Simflex\Core\Buffer;
+
 /**
+ * Get environment variable
  * @param string $name
  * @param mixed|null $defaultValue
  * @return mixed|null
@@ -14,69 +18,54 @@ function env(string $name, mixed $defaultValue = null): mixed
     return array_key_exists($name, $_ENV) ? $_ENV[$name] : $defaultValue;
 }
 
+/**
+ * Remove DOCUMENT_ROOT from the path
+ * @param string $path Path to process
+ * @return string Processed path
+ */
 function removeRoot(string $path): string
 {
-    return str_replace($_SERVER['DOCUMENT_ROOT'], '', $path);
+    return str_replace(SF_ROOT_PATH, '', $path);
 }
 
+/**
+ * Get asset path
+ * @param string $path Relative path to the asset
+ * @param bool $siteOnly If set to true, returns only site assets
+ * @return string Full path to the asset
+ */
 function asset(string $path, bool $siteOnly = false): string
 {
     if (!$siteOnly && SF_LOCATION == SF_LOCATION_ADMIN) {
         return removeRoot(SF_CORE_ROOT_PATH) . '/Admin/theme/new/' . $path;
     }
 
-    return '/theme/default/' . $path;
+    return '/assets/' . $path;
 }
 
+/**
+ * Get full URL
+ * @param string $path Path to the resource
+ * @param array $get GET parameters
+ * @return string Full URL
+ */
 function url(string $path, array $get = []): string
 {
     $q = http_build_query($get);
     return ('http' . ($_SERVER['HTTPS'] ? 's' : '')) . '://' . $_SERVER['HTTP_HOST'] . $path . ($q ? ('?' . $q) : '');
 }
 
-#[\JetBrains\PhpStorm\Deprecated]
-function debug($var)
-{
-    $onHttp = SF_LOCATION == SF_LOCATION_SITE || SF_LOCATION == SF_LOCATION_API;
-    if (is_array($var)) {
-        if ($onHttp) {
-            echo '<pre>';
-            print_r($var);
-            echo '</pre>';
-        } else {
-            print_r($var);
-        }
-    } else {
-        if ($onHttp) {
-            echo '<pre>';
-            var_dump($var);
-            echo '</pre>';
-        } else {
-            var_dump($var);
-        }
-    }
-    exit;
-}
-
 /**
- * Admin action logger
- * @param string $msg Message
- * @return void
+ * Get Simflex version
+ * @return string Simflex version
  */
-#[\JetBrains\PhpStorm\Deprecated]
-function actlog(string $msg): void
+function getSimflexVersion(): string
 {
-    \Simflex\Core\Log::info('[ {ip} ] {method} {uri} - {msg}', [
-        'ip' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'],
-        'method' => $_SERVER['REQUEST_METHOD'],
-        'uri' => $_SERVER['REQUEST_URI'],
-        'msg' => $msg
-    ]);
-}
+    return Buffer::getOrSet('version', function () {
+        if (!InstalledVersions::isInstalled('growtask/simflex')) {
+            return 'N/A';
+        }
 
-#[\JetBrains\PhpStorm\Deprecated]
-function imDev(): bool
-{
-    return false;
+        return InstalledVersions::getPrettyVersion('growtask/simflex');
+    });
 }
-

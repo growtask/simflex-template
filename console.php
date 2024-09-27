@@ -1,30 +1,37 @@
 <?php
 
+use App\Core\Simflex;
+use Simflex\Core\Console\Cli;
+use Simflex\Core\Console\CliRequest;
+use Simflex\Core\Container;
 use Simflex\Core\Log;
 
 require_once 'Core/Simflex.php';
 
-$sf = new \App\Core\Simflex();
+$sf = new Simflex();
 
 const SF_LOCATION = SF_LOCATION_CLI;
 $sf->init();
 
-if (!$_REQUEST) {
+/** @var CliRequest $request */
+$request = Container::getRequest();
+
+if (!$request->arg()) {
     Log::error('Usage: ./sf {help} provider/method [args]');
     exit;
 }
 
-$isHelp = strtolower($_REQUEST[0]) == 'help';
+$isHelp = strtolower($request->arg(0)) == 'help';
 
 // get command data
-$cmd = array_map(fn(string $part) => strtolower($part), explode('/', $_REQUEST[$isHelp ? 1 : 0]));
+$cmd = array_map(fn(string $part) => strtolower($part), explode('/', $request->arg($isHelp ? 1 : 0)));
 if (count($cmd) != 2) {
     Log::error('Usage: ./sf provider/method [args]');
     exit;
 }
 
 // create cli bootstrapper
-$cli = new \Simflex\Core\Console\CliBootstrap($cmd);
+$cli = new Cli($cmd);
 
 // check if provider exists
 if (!$cli->hasProvider()) {
@@ -57,4 +64,4 @@ if ($isHelp) {
 }
 
 // execute the command
-$cli->execute(array_slice($_REQUEST, 1));
+$cli->execute(array_slice($request->arg(), 1));

@@ -1,14 +1,23 @@
 <?php
 
+use App\Core\Simflex;
+use Simflex\Core\Console\CliRequest;
+use Simflex\Core\Container;
+use Simflex\Core\Cron\Cron;
+use Simflex\Core\Log;
+
 require_once 'Core/Simflex.php';
 
-$sf = new \App\Core\Simflex();
+$sf = new Simflex();
 const SF_LOCATION = SF_LOCATION_CLI;
 $sf->init();
 
+/** @var CliRequest $request */
+$request = Container::getRequest();
+
 try {
-    $cron = new \Simflex\Core\Cron\CronBootstrap($_REQUEST['cron_id'] ?? null);
+    $cron = new Cron($request->arg('cron_id'));
     $cron->execute();
 } catch (Exception $e) {
-    \Simflex\Core\Log::critical('Cron error: {error}', ['error' => $e->getMessage()]);
+    Log::critical('Cron error: {error}', ['error' => $e->getMessage()]);
 }

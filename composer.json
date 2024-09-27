@@ -24,15 +24,17 @@
   "require": {
     "php": ">=8.2.0",
     "ext-gd": "*",
-    "glushkovds/simflex": "3.*",
+    "growtask/simflex": "3.*",
     "vlucas/phpdotenv": "^5.4",
     "scssphp/scssphp": "^1.11",
     "tubalmartin/cssmin": "^4.1",
     "ext-readline": "*",
     "growtask/simflex-file-manager": "dev-master",
-    "codeception/module-phpbrowser": "*",
-    "codeception/module-asserts": "*",
     "ext-pdo": "*"
+  },
+  "require-dev": {
+    "codeception/module-phpbrowser": "*",
+    "codeception/module-asserts": "*"
   },
   "suggest": {
   },

@@ -13,6 +13,7 @@ use Simflex\Auth\Auth\SessionMiddleware;
 use Simflex\Auth\Bootstrap;
 use Simflex\Core\Container;
 use Simflex\Core\Events\Event;
+use Simflex\Core\Events\Events;
 use Simflex\Core\Log;
 use Simflex\Core\Logger\FileLogger;
 use Simflex\Core\Logger\StdLogger;
@@ -42,18 +43,24 @@ class Simflex
         // base init
         $this->initConfig();
         $this->initPhp();
+
+        // init CLI-specific stuff
+        if (SF_LOCATION == SF_LOCATION_CLI) {
+            $this->initPhpCli();
+        }
+
         $this->initServices();
         $this->initEvents();
         $this->initLogger();
 
-        Log::debug('Simflex Framework v' . SF_VERSION);
+        Log::debug('Simflex Framework v' . getSimflexVersion());
 
         // init core subsystems
         $this->initAuth();
         $this->initCore();
 
         $ev = Container::getEvents();
-        $ev->dispatch(new Event('pre_init', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PreInit, static::class));
 
         if (SF_LOCATION != SF_LOCATION_CLI) {
             Container::getCore()::init();
@@ -61,7 +68,7 @@ class Simflex
             LayoutManager::init();
         }
 
-        $ev->dispatch(new Event('post_init', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PostInit, static::class));
     }
 
     /**
@@ -77,12 +84,12 @@ class Simflex
         }
 
         $ev = Container::getEvents();
-        $ev->dispatch(new Event('pre_execute', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PreExecute, static::class));
 
         // execute app
         Container::getCore()::execute();
 
-        $ev->dispatch(new Event('post_execute', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PostExecute, static::class));
         return $asString ? ob_get_clean() : null;
     }
 
@@ -94,7 +101,7 @@ class Simflex
     public function prepareOutput(string $data): string
     {
         $ev = Container::getEvents();
-        $ev->dispatch(new Event('pre_prepare_output', static::class, SF_LOCATION, $data));
+        $ev->dispatch(new Event(Events::PrePrepareOutput, static::class, $data));
 
         // replace params
         $params = Container::getCore()::siteParam();
@@ -119,7 +126,7 @@ class Simflex
             ], $data);
         }
 
-        $ev->dispatch(new Event('post_prepare_output', static::class, SF_LOCATION, $data));
+        $ev->dispatch(new Event(Events::PostPrepareOutput, static::class, $data));
         return $data;
     }
 
@@ -130,7 +137,7 @@ class Simflex
     protected function initAuth(): void
     {
         $ev = Container::getEvents();
-        $ev->dispatch(new Event('pre_auth_init', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PreAuthInit, static::class));
 
         Container::setAuthHandler(function () {
             Bootstrap::authByMiddlewareChain(
@@ -142,7 +149,7 @@ class Simflex
             );
         });
 
-        $ev->dispatch(new Event('post_auth_init', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PostAuthInit, static::class));
     }
 
     /**
@@ -154,7 +161,7 @@ class Simflex
     protected function initCore(): void
     {
         $ev = Container::getEvents();
-        $ev->dispatch(new Event('pre_core_init', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PreCoreInit, static::class));
 
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
             Container::set('page', new \Simflex\Admin\Page());
@@ -164,7 +171,7 @@ class Simflex
             Container::set('core', \Simflex\Core\Core::class);
         }
 
-        $ev->dispatch(new Event('post_core_init', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PostCoreInit, static::class));
     }
 
     /**
@@ -190,37 +197,17 @@ class Simflex
     {
         date_default_timezone_set($this->cfg->timezone);
         ini_set('default_charset', 'UTF-8');
+    }
 
-        if (SF_LOCATION != SF_LOCATION_CLI) {
-            return;
-        }
-
-        // additional options for CLI
+    /**
+     * Initializes PHP CLI environment
+     * @return void
+     */
+    protected function initPhpCli(): void
+    {
         ini_set('display_errors', 1);
         ini_set('max_execution_time', 600);
         error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-
-        $_SERVER['REQUEST_URI'] = '/';
-        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-        $_SERVER['DOCUMENT_ROOT'] = SF_ROOT_PATH;
-        $_SERVER['HTTP_HOST'] = 'localhost';
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-
-        // parse commandline options
-        global $argv;
-        $_REQUEST = [];
-
-        $args = array_slice($argv, 1);
-        foreach ($args as $i => $arg) {
-            if (!str_starts_with($arg, '--')) {
-                $_REQUEST[$i] = $arg;
-            } else {
-                $data = explode('=', $arg);
-                $_REQUEST[trim($data[0], '-')] = $data[1];
-            }
-        }
-
-        $_GET = $_POST = $_REQUEST;
     }
 
     /**
@@ -230,15 +217,31 @@ class Simflex
     protected function initServices(): void
     {
         $services = include $this->cfg->files['services'];
-        foreach ($services['prod'] ?? [] as $service) {
-            Container::set($service::getServiceName(), new $service());
+        $toLoad = $services['all'] ?? [];
+
+        // load web-only services
+        if (in_array(SF_LOCATION, [SF_LOCATION_ADMIN, SF_LOCATION_SITE])) {
+            $toLoad = array_merge($toLoad, $services['web'] ?? []);
+        }
+
+        // load api-only services
+        if (SF_LOCATION == SF_LOCATION_API) {
+            $toLoad = array_merge($toLoad, $services['api'] ?? []);
+        }
+
+        // load cli-only services
+        if (SF_LOCATION == SF_LOCATION_CLI) {
+            $toLoad = array_merge($toLoad, $services['cli'] ?? []);
         }
 
         // load dev-only services
         if ($this->cfg->devMode) {
-            foreach ($services['dev'] ?? [] as $service) {
-                Container::set($service::getServiceName(), new $service());
-            }
+            $toLoad = array_merge($toLoad, $services['dev'] ?? []);
+        }
+
+        // load requested services
+        foreach ($toLoad as $service) {
+            Container::set($service::getServiceName(), new $service());
         }
     }
 
@@ -261,7 +264,7 @@ class Simflex
     protected function initLogger(): void
     {
         $ev = Container::getEvents();
-        $ev->dispatch(new Event('pre_init_logger', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PreLoggerInit, static::class));
 
         // logging is disabled
         if (!$this->cfg->devMode && !$this->cfg->enableLogging) {
@@ -283,6 +286,6 @@ class Simflex
         Log::addLogger(new FileLogger());
 
         // fire logging init event
-        $ev->dispatch(new Event('post_init_logger', static::class, SF_LOCATION));
+        $ev->dispatch(new Event(Events::PostLoggerInit, static::class));
     }
 }
