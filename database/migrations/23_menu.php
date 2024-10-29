@@ -2,7 +2,7 @@
 use Simflex\Core\DB;
 use \Simflex\Core\DB\Schema;
 
-return new class extends \Simflex\Core\DB\SeededMigration {
+return new class implements \Simflex\Core\DB\Migration {
     public function up(Schema $s)
     {
         $s->createTable('menu', function (Schema\Table $c) {
@@ -20,10 +20,5 @@ return new class extends \Simflex\Core\DB\SeededMigration {
     public function down(Schema $s)
     {
         $s->dropTable('menu');
-    }
-
-    public function seed()
-    {
-        DB::query("INSERT INTO menu (menu_id, menu_pid, component_id, active, hidden, npp, name, link) VALUES ('1', NULL, 1, '1', '0', '1', 'Главная', '/')");
     }
 };

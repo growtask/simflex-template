@@ -3,7 +3,7 @@ use Simflex\Admin\Migration\Struct;
 use Simflex\Core\DB;
 use \Simflex\Core\DB\Schema;
 
-return new class extends DB\SeededMigration {
+return new class implements \Simflex\Core\DB\Migration {
     public function up(Schema $s)
     {
         $s->createTable('content', function (Schema\Table $c) {
@@ -27,10 +27,5 @@ return new class extends DB\SeededMigration {
     public function down(Schema $s)
     {
         $s->dropTable('content');
-    }
-
-    public function seed()
-    {
-        DB::query("INSERT INTO content (content_id, pid, active, date, title, alias, path, short, text, params, file, photo, template_id, npp) VALUES ('17', NULL, '1', '2023-09-01', 'Главная', '/', '/', '', '<p>test</p>', '', '', '', '1', '10')");
     }
 };

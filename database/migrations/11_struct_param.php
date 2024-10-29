@@ -3,7 +3,7 @@ use Simflex\Admin\Migration\Struct;
 use Simflex\Core\DB;
 use \Simflex\Core\DB\Schema;
 
-return new class extends \Simflex\Core\DB\SeededMigration {
+return new class implements \Simflex\Core\DB\Migration {
     public function up(Schema $s)
     {
         $s->createTable('struct_param', function (Schema\Table $c) {
