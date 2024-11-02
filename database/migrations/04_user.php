@@ -17,6 +17,7 @@ return new class implements \Simflex\Core\DB\Migration {
             $c->string('email')->unique(true);
             $c->string('name');
             $c->string('code');
+            $c->boolean('in_mailing')->setDefault(1);
         });
     }
 

@@ -21,8 +21,4 @@ return new class implements \Simflex\Core\DB\Migration {
     {
         $s->dropTable('settings');
     }
-
-    public function seed()
-    {
-        }
 };

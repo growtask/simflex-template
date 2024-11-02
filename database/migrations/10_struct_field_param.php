@@ -21,9 +21,4 @@ return new class implements \Simflex\Core\DB\Migration {
     {
         $s->dropTable('struct_field_param');
     }
-
-    public function seed()
-    {
-
-    }
 };
