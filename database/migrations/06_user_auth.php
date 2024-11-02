@@ -11,7 +11,7 @@ return new class implements \Simflex\Core\DB\Migration {
             $c->string('token');
             $c->addColumn('time_create', 'timestamp')->setDefault('CURRENT_TIMESTAMP');
             $c->addColumn('time_last_login', 'timestamp')->index();
-            $c->addColumn('time_expires', 'timestamp');
+            $c->dateTime('time_expires');
             $c->string('useragent');
             $c->string('ip');
 

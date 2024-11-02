@@ -4,24 +4,15 @@ use Simflex\Admin\Fields\FieldAlias;
 use Simflex\Admin\Fields\FieldBool;
 use Simflex\Admin\Fields\FieldDate;
 use Simflex\Admin\Fields\FieldDateTime;
-use Simflex\Admin\Fields\FieldDouble;
 use Simflex\Admin\Fields\FieldEnum;
-use Simflex\Admin\Fields\FieldFile;
 use Simflex\Admin\Fields\FieldImage;
 use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldMultiKey;
 use Simflex\Admin\Fields\FieldNPP;
 use Simflex\Admin\Fields\FieldPassword;
-use Simflex\Admin\Fields\FieldPasswordVisible;
 use Simflex\Admin\Fields\FieldPath;
-use Simflex\Admin\Fields\FieldRelation;
 use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldTable;
-use Simflex\Admin\Fields\FieldTags;
 use Simflex\Admin\Fields\FieldText;
-use Simflex\Admin\Fields\FieldTime;
 use Simflex\Admin\Fields\FieldVirtual;
-use Simflex\Admin\Fields\FieldVirtualTable;
 use Simflex\Core\DB\Seeder;
 use Simflex\Core\Models\StructData;
 use Simflex\Core\Models\StructField;
@@ -2471,7 +2462,7 @@ return new class implements Seeder {
                 'group_name' => '',
             ],
             [
-                'param_pid' => 10,
+                'param_pid' => $paramVis->param_id,
                 'table_id' => $content->table_id,
                 'field_id' => $boolField->field_id,
                 'pos' => '',
@@ -3853,7 +3844,7 @@ return new class implements Seeder {
 
         StructParam::bulkInsert([
             [
-                'param_pid' => $paramMain,
+                'param_pid' => $paramMain->param_id,
                 'table_id' => $moduleParam->table_id,
                 'field_id' => $stringField->field_id,
                 'pos' => '',
