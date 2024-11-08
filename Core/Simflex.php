@@ -25,7 +25,7 @@ class Simflex
     public function __construct()
     {
         // bootstrap constants
-        require_once __DIR__ . '/../vendor/glushkovds/simflex/src/constants.php';
+        require_once __DIR__ . '/../vendor/growtask/simflex/src/constants.php';
         require_once __DIR__ . '/../constants.php';
 
         // bootstrap composer
