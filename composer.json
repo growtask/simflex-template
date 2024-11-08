@@ -1,5 +1,5 @@
 {
-  "name": "glushkovds/simflex-template",
+  "name": "growtask/simflex-template",
   "description": "Simflex CMS",
   "keywords": [
     "php",
@@ -7,7 +7,7 @@
     "simplex-cms",
     "simflex"
   ],
-  "homepage": "https://github.com/glushkovds/simflex-template",
+  "homepage": "https://github.com/growtask/simflex-template",
   "type": "project",
   "license": "MIT",
   "authors": [
@@ -38,6 +38,25 @@
   },
   "suggest": {
   },
+  "scripts": {
+    "post-package-install": [
+      "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
+    ],
+    "post-package-update": [
+      "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
+    ],
+    "post-install-cmd": [
+      "php console.php migrate/up",
+      "php console.php seeder/run"
+    ],
+    "post-update-cmd": [
+      "php console.php migrate/up",
+      "php console.php seeder/run"
+    ],
+    "post-create-project-cmd": [
+      "php console.php install/install"
+    ]
+  },
   "autoload": {
     "psr-4": {
       "App\\": ""
@@ -45,7 +64,7 @@
   },
   "repositories": [
     {
-      "url": "https://github.com/glushkovds/simflex.git",
+      "url": "https://github.com/growtask/simflex.git",
       "type": "git"
     }
   ],
