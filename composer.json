@@ -1,5 +1,5 @@
 {
-  "name": "glushkovds/simflex-template",
+  "name": "growtask/simflex-template",
   "description": "Simflex CMS",
   "keywords": [
     "php",
@@ -7,7 +7,7 @@
     "simplex-cms",
     "simflex"
   ],
-  "homepage": "https://github.com/glushkovds/simflex-template",
+  "homepage": "https://github.com/growtask/simflex-template",
   "type": "project",
   "license": "MIT",
   "authors": [
@@ -22,18 +22,41 @@
     }
   ],
   "require": {
-    "php": ">=7.1.0",
+    "php": ">=8.2.0",
     "ext-gd": "*",
-    "glushkovds/simflex": "*",
+    "growtask/simflex": "3.*",
     "vlucas/phpdotenv": "^5.4",
     "scssphp/scssphp": "^1.11",
     "tubalmartin/cssmin": "^4.1",
     "ext-readline": "*",
     "growtask/simflex-file-manager": "dev-master",
+    "ext-pdo": "*"
+  },
+  "require-dev": {
     "codeception/module-phpbrowser": "*",
-    "codeception/module-asserts": "*"
+    "codeception/module-asserts": "*",
+    "composer/composer": "*"
   },
   "suggest": {
+  },
+  "scripts": {
+    "post-package-install": [
+      "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
+    ],
+    "post-package-update": [
+      "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
+    ],
+    "post-install-cmd": [
+      "php console.php migrate/up",
+      "php console.php seeder/run"
+    ],
+    "post-update-cmd": [
+      "php console.php migrate/up",
+      "php console.php seeder/run"
+    ],
+    "post-create-project-cmd": [
+      "php console.php install/install"
+    ]
   },
   "autoload": {
     "psr-4": {
@@ -42,7 +65,7 @@
   },
   "repositories": [
     {
-      "url": "https://github.com/glushkovds/simflex.git",
+      "url": "https://github.com/growtask/simflex.git",
       "type": "git"
     }
   ],

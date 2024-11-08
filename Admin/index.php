@@ -1,10 +1,9 @@
 <?php
 
-require_once __DIR__ . '/../Core/Init.php';
+require_once __DIR__ . '/../Core/Simflex.php';
 
-Init::loadConstants();
-define('SF_LOCATION', SF_LOCATION_ADMIN);
+$sf = new \App\Core\Simflex();
 
-Init::_();
-
-\Simflex\Admin\Core::execute();
+const SF_LOCATION = SF_LOCATION_ADMIN;
+$sf->init();
+$sf->execute(false);

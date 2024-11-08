@@ -1,0 +1,2 @@
+#!/bin/sh
+./codecept run --steps

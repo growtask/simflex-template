@@ -1,109 +1,67 @@
 <?php
-/**
- * Usage:
- * ./sf extName/actionName param1 paramN - params will passed as method params
- * Or ./sf extName/actionName --param1=value --paramN=value - params will passed as GET params.
- *    Also if method accepts params in long writings such as --param1=value will be passed to method params by their names.
- *    Example: ./sd test/testme --value=2 --key=1 will launch class ConsoleTest from /ext/test/consoletest.class.php
- *             with method actionTestme($key, $value) this way: (new ConsoleTest())->actionTestme(1,2); // not 2,1
- */
-ini_set('display_errors', 1);
-ini_set('max_execution_time', 600);
 
-error_reporting(E_ALL & ~E_DEPRECATED);
+use App\Core\Simflex;
+use Simflex\Core\Console\Cli;
+use Simflex\Core\Console\CliRequest;
+use Simflex\Core\Container;
+use Simflex\Core\Log;
 
-if (!isset($_SERVER['REQUEST_URI'])) {
-    $_SERVER['REQUEST_URI'] = '/';
-}
-if (!isset($_SERVER['HTTP_HOST'])) {
-    $_SERVER['HTTP_HOST'] = 'www.' . basename(__FILE__);
-}
-if (!isset($_SERVER['REMOTE_ADDR'])) {
-    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-}
-if (empty($_SERVER['DOCUMENT_ROOT'])) {
-    $_SERVER['DOCUMENT_ROOT'] = __DIR__;
-}
+require_once 'Core/Simflex.php';
 
-require_once 'Core/Init.php';
+$sf = new Simflex();
 
-Init::loadConstants();
 const SF_LOCATION = SF_LOCATION_CLI;
+$sf->init();
 
-Init::_();
+/** @var CliRequest $request */
+$request = Container::getRequest();
 
-$sfArgv = cliParamsToGET();
-
-$job = explode('/', @$argv[1]);
-if (count($job) !== 2) {
-    echo "Error!! example usage: php console.php ext/action\nOR: ./sf ext/action\n";
+if (!$request->arg()) {
+    Log::error('Usage: ./sf {help} provider/method [args]');
     exit;
 }
 
-if (strtolower($job[0]) == 'migrate') {
-    $class = 'Simflex\Core\DB\Migrator';
-} else {
-    $class = 'App\Extensions\\' . ucfirst($job[0]) . '\Console' . ucfirst($job[0]);
+$isHelp = strtolower($request->arg(0)) == 'help';
+
+// get command data
+$cmd = array_map(fn(string $part) => strtolower($part), explode('/', $request->arg($isHelp ? 1 : 0)));
+if (count($cmd) != 2) {
+    Log::error('Usage: ./sf provider/method [args]');
+    exit;
 }
 
-$action = $job[1];
-if (!class_exists($class)) {
-    sfCliExit(1, "class $class not found");
-}
-if ($class instanceof \Simflex\Core\ConsoleBase) {
-    sfCliExit(1, "class $class is not console controller");
-}
-$handler = new $class();
-if (!method_exists($handler, $action)) {
-    sfCliExit(1, "method $action not found");
-}
-$paramValues = $sfArgv;
-$reflection = new ReflectionMethod($handler, $action);
-if ($actionParams = $reflection->getParameters()) {
-    if (count($paramValues) < count($actionParams)) {
-        foreach ($actionParams as $actionParam) {
-            $paramName = $actionParam->getName();
-            if (array_key_exists($paramName, $_GET)) {
-                $paramValues[$actionParam->getPosition()] = $_GET[$paramName];
-            } else {
-                try {
-                    $default = $actionParam->getDefaultValue();
-                    $paramValues[$actionParam->getPosition()] = $default;
-                } catch (\Throwable $ex) {}
-            }
-        }
-    }
-    if (count($paramValues) < $reflection->getNumberOfRequiredParameters()) {
-        sfCliExit(1, "not enough params");
-    }
-}
-$handler->$action(...$paramValues);
+// create cli bootstrapper
+$cli = new Cli($cmd);
 
-
-function cliParamsToGET(): array
-{
-    global $argc, $argv;
-    if ($argc == 1) {
-        return [];
-    }
-    $sfArgv = array_slice($argv, 2);
-    foreach ($sfArgv as $index => $arg) {
-        if (strpos($arg, '--') !== 0) {
-            continue;
-        }
-        $tmp = explode('=', trim($arg, '-'));
-        $key = $tmp[0];
-        $value = $tmp[1];
-        $_GET[$key] = $value;
-        unset($sfArgv[$index]);
-    }
-    return $sfArgv;
+// check if provider exists
+if (!$cli->hasProvider()) {
+    Log::error('Command provider {provider} not found. Available providers:', ['provider' => $cli->provider]);
+    $cli->printProviders();
+    exit;
 }
 
-function sfCliExit($code, $message = '')
-{
-    if ($message) {
-        echo "$message\n";
-    }
-    exit($code);
+// try loading the class
+if (!$cli->tryLoadClass()) {
+    Log::emergency('Provider {provider}\'s class does not exist', ['provider' => $cli->provider]);
+    exit;
 }
+
+// try loading method
+if (!$cli->tryLoadMethod()) {
+    Log::error(
+        'Method {method} not found in {provider}. Available methods:',
+        ['method' => $cli->command, 'provider' => $cli->provider]
+    );
+
+    $cli->printMethods();
+    exit;
+}
+
+// check if the user wants to get help
+if ($isHelp) {
+    $cli->printHelp();
+    exit;
+}
+
+// execute the command
+$cli->execute(array_slice($request->arg(), 1));

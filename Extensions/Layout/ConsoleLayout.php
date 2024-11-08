@@ -1,16 +1,20 @@
 <?php
+
 namespace App\Extensions\Layout;
 
-use App\Core\Console\Alert;
 use App\Extensions\Content\Content;
 use App\Layout\LayoutManager;
+use Simflex\Core\Console\Command;
+use Simflex\Core\Console\Help;
 use Simflex\Core\ConsoleBase;
 use Simflex\Core\Container;
 use Simflex\Core\Html\HtmlRequest;
+use Simflex\Core\Log;
 
 class ConsoleLayout extends ConsoleBase
 {
-    public function generate($path)
+    #[Command('Generate layout fields')]
+    public function generate(#[Help('Page path')] string $path): void
     {
         // set bogus data.
         $_SERVER['REQUEST_URI'] = $path;
@@ -23,7 +27,7 @@ class ConsoleLayout extends ConsoleBase
             $content = new Content();
             $content->execute();
         } catch (\Exception $ex) {
-            Alert::error($ex->getMessage());
+            Log::error($ex->getMessage());
         }
 
         LayoutManager::$shouldGenerateFields = false;
