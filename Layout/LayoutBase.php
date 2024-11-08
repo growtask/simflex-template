@@ -20,19 +20,20 @@ abstract class LayoutBase
 
     protected static $inputData = [];
 
-    public static function initAssets()
+    public static function initAssets(): void
     {
+        $page = Container::getPage();
         foreach (static::$extraAssets as $asset) {
             if (is_array($asset)) {
-                Container::getPage()::addAsset($asset['file'], $asset['idx'] ?? 100, $asset['type'] ?? null);
+                $page::addAsset($asset['file'], $asset['idx'] ?? 100, $asset['type'] ?? null);
                 continue;
             }
-            Container::getPage()::addAsset($asset);
+            $page::addAsset($asset);
         }
 
         if (is_file(static::layoutRootDir() . '/script.js')) {
             LayoutManager::useScript(static::layoutRootHref() . '/script.js');
-            Container::getPage()::js(static::layoutRootHref() . '/script.js');
+            $page::js(static::layoutRootHref() . '/script.js');
         }
 
         LayoutManager::useStyle(static::layoutRootDir() . '/style.css');

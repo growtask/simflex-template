@@ -1,4 +1,5 @@
 /.idea
+!/.idea/icon.svg
 /uf/*
 !/uf/.gitkeep
 vendor

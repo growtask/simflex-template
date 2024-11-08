@@ -3,46 +3,81 @@
 namespace App\Layout;
 
 use ScssPhp\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\Exception\SassException;
 use Simflex\Core\Container;
 use Simflex\Core\Profiler;
 use tubalmartin\CssMin\Minifier;
 
+/**
+ * Layout manager
+ */
 class LayoutManager
 {
     /**
-     * @var LayoutBase[]
+     * @var LayoutBase[] All used layouts
      */
-    protected static $usedLayouts = [];
-    protected static $usedStyles = [];
+    protected static array $usedLayouts = [];
 
-    public static $usedScripts = [];
+    /**
+     * @var array All used styles
+     */
+    protected static array $usedStyles = [];
 
-    // if true, will update all acp fields
-    public static $shouldGenerateFields = false;
+    /**
+     * @var array All used scripts
+     */
+    public static array $usedScripts = [];
 
-    // internal use only, ordering template fields
-    public static $templateOrdering = [];
+    /**
+     * @var bool If set to true, will dry run to update ACP fields
+     */
+    public static bool $shouldGenerateFields = false;
 
-    public static function useLayout(string $class)
+    /**
+     * @var array Used internally for template ordering
+     */
+    public static array $templateOrdering = [];
+
+    /**
+     * Use layout
+     * @param string $class Layout class
+     * @return void
+     */
+    public static function useLayout(string $class): void
     {
         static::$usedLayouts[$class] = $class;
     }
 
-    public static function useStyle(string $path)
+    /**
+     * Use style
+     * @param string $path Path to css/scss
+     * @return void
+     */
+    public static function useStyle(string $path): void
     {
         static::$usedStyles[] = $path;
     }
 
-    public static function useScript(string $path)
+    /**
+     * Use JS script
+     * @param string $path Path to js
+     * @return void
+     */
+    public static function useScript(string $path): void
     {
         static::$usedScripts[] = $path;
     }
 
-    public static function init()
+    /**
+     * Initializes layout system
+     * @return string Path to generated CSS file
+     * @throws SassException
+     */
+    public static function init(): string
     {
         // ???
         if (SF_LOCATION == SF_LOCATION_ADMIN) {
-            return;
+            return '';
         }
 
         Profiler::traceStart(__CLASS__, __FUNCTION__);
@@ -52,9 +87,10 @@ class LayoutManager
         }
 
         static::$usedStyles = array_unique(static::$usedStyles);
+        $config = Container::getConfig();
 
         // compose cache path.
-        if (!\Config::$devMode) {
+        if (!$config->devMode) {
             $cachePath = '';
             foreach (static::$usedStyles as $style) {
                 $cachePath .= md5($style);
@@ -69,9 +105,10 @@ class LayoutManager
 
         // check if cache file exists.
         $compiler = new Compiler();
-        if (\Config::$devMode || !is_file(SF_ROOT_PATH . $cachePath)) {
+        if ($config->devMode || !is_file(SF_ROOT_PATH . $cachePath)) {
             // force add root style implicitly.
-            $implicitPath = SF_ROOT_PATH . '/Layout/assetsGlobal/style.scss'; $implicit = '';
+            $implicitPath = SF_ROOT_PATH . '/Layout/assetsGlobal/style.scss';
+            $implicit = '';
             if (is_file($implicitPath)) {
                 $implicit = file_get_contents($implicitPath);
             }
@@ -104,7 +141,7 @@ class LayoutManager
             $styleString = $compileString . $styleString;
 
             // minify resulting css.
-            if (!\Config::$devMode) {
+            if (!$config->devMode) {
                 $min = new Minifier();
                 $styleString = $min->run($styleString);
             }
@@ -114,7 +151,7 @@ class LayoutManager
         }
 
         // use cached style.
-        Container::getPage()::css($cachePath . (\Config::$devMode ? ('?v=' . md5(microtime())) : ''));
+        Container::getPage()::css($cachePath . ($config->devMode ? ('?v=' . md5(microtime())) : ''));
         Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $cachePath;
     }
