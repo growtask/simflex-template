@@ -47,15 +47,11 @@
       "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
     ],
     "post-install-cmd": [
-      "php console.php migrate/up",
-      "php console.php seeder/run"
+      "php console.php install/install"
     ],
     "post-update-cmd": [
       "php console.php migrate/up",
       "php console.php seeder/run"
-    ],
-    "post-create-project-cmd": [
-      "php console.php install/install"
     ]
   },
   "autoload": {
