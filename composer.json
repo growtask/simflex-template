@@ -34,7 +34,8 @@
   },
   "require-dev": {
     "codeception/module-phpbrowser": "*",
-    "codeception/module-asserts": "*"
+    "codeception/module-asserts": "*",
+    "composer/composer": "*"
   },
   "suggest": {
   },
