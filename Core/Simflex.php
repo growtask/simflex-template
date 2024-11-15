@@ -216,7 +216,7 @@ class Simflex
      */
     protected function initServices(): void
     {
-        $services = include $this->cfg->files['services'];
+        $services = $this->cfg->getServices();
         $toLoad = $services['all'] ?? [];
 
         // load web-only services
@@ -251,7 +251,7 @@ class Simflex
      */
     protected function initEvents(): void
     {
-        $events = include $this->cfg->files['events'];
+        $events = $this->cfg->getEvents();
 
         $eventManager = Container::getEvents();
         $eventManager->subscribeAll($events);
