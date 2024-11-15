@@ -64,8 +64,8 @@ class Config extends \Simflex\Core\ConfigBase
 
     protected function loadFiles(): void
     {
-        if (is_file(SF_ROOT_PATH . '/cache/files.php')) {
-            $this->extra['files'] = include SF_ROOT_PATH . '/cache/files.php';
+        if (!$this->devMode && is_file(SF_ROOT_PATH . '/cache/files.php')) {
+            $this->extra['data'] = include SF_ROOT_PATH . '/cache/files.php';
             Log::debug('Loaded files from cache');
             return;
         }
@@ -86,10 +86,10 @@ class Config extends \Simflex\Core\ConfigBase
                 $services[$key] = array_merge($data['services'][$key] ?? [], $value);
             }
 
-            Log::notice('Loaded data of extension {name}', ['name' => $name]);
+            Log::debug('Loaded data of extension {name}', ['name' => $name]);
         }
 
-        $this->extra['files'] = [
+        $this->extra['data'] = [
             'routes' => $routes,
             'events' => $events,
             'services' => $services,
@@ -97,13 +97,16 @@ class Config extends \Simflex\Core\ConfigBase
         ];
 
         if (!$this->devMode) {
-            file_put_contents(SF_ROOT_PATH . '/cache/files.php', "<?php\nreturn " . var_export($this->extra['files'], true) . ';');
+            file_put_contents(
+                SF_ROOT_PATH . '/cache/files.php',
+                "<?php\nreturn " . var_export($this->extra['data'], true) . ';'
+            );
         }
     }
 
     protected function loadExtensions(): void
     {
-        if (is_file(SF_ROOT_PATH . '/cache/extensions.php')) {
+        if (!$this->devMode && is_file(SF_ROOT_PATH . '/cache/extensions.php')) {
             $this->extra['extensions'] = include SF_ROOT_PATH . '/cache/extensions.php';
             Log::debug('Loaded {n} extensions from cache', ['n' => count($this->extra['extensions'])]);
             return;
@@ -126,7 +129,8 @@ class Config extends \Simflex\Core\ConfigBase
             try {
                 $ref = new \ReflectionClass($class);
                 if (!$ref->isSubclassOf(ExtensionConfig::class)) {
-                    Log::error('Extension {file} does not extend Simflex\Core\ExtensionConfig class', ['file' => $file]);
+                    Log::error('Extension {file} does not extend Simflex\Core\ExtensionConfig class', ['file' => $file]
+                    );
                     continue;
                 }
             } catch (\ReflectionException $e) {
@@ -141,7 +145,7 @@ class Config extends \Simflex\Core\ConfigBase
                 'commands' => $class->getCommands(),
             ];
 
-            Log::notice('Loaded extension {name}', ['name' => $class->name]);
+            Log::debug('Loaded extension {name}', ['name' => $class->name]);
         }
 
         // sort by load order
@@ -155,7 +159,10 @@ class Config extends \Simflex\Core\ConfigBase
 
         $this->extra['extensions'] = $extensions;
         if (!$this->devMode) {
-            file_put_contents(SF_ROOT_PATH . '/cache/extensions.php', "<?php\nreturn " . var_export($extensions, true) . ';');
+            file_put_contents(
+                SF_ROOT_PATH . '/cache/extensions.php',
+                "<?php\nreturn " . var_export($extensions, true) . ';'
+            );
         }
     }
 }

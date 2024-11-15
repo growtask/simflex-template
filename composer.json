@@ -35,7 +35,9 @@
   "require-dev": {
     "codeception/module-phpbrowser": "*",
     "codeception/module-asserts": "*",
-    "composer/composer": "*"
+    "composer/composer": "*",
+    "codeception/module-filesystem": "^3.0",
+    "codeception/module-webdriver": "^4.0"
   },
   "suggest": {
   },
@@ -47,11 +49,12 @@
       "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
     ],
     "post-install-cmd": [
-      "php console.php install/install"
+      "php console.php install/install",
+      "./codecept run --steps"
     ],
     "post-update-cmd": [
       "php console.php migrate/up",
-      "php console.php seeder/run"
+      "php console.php seed/run"
     ]
   },
   "autoload": {
