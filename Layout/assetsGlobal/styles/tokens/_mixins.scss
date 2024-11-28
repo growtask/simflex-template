@@ -1,0 +1,154 @@
+/*----------BORDER RADIUS-----------*/
+@mixin border-r($radius...) {
+    @if length($radius) == 4 {
+        border-radius: vw(nth($radius, 1));
+
+        @include HD {
+            border-radius: vwh(nth($radius, 2));
+        }
+        @include Tablet {
+            border-radius: vwt(nth($radius, 3));
+        }
+        @include Mobile {
+            border-radius: vwm(nth($radius, 4));
+        }
+    } @else {
+        $value: nth($radius, 1);
+        border-radius: vw($value);
+
+        @include HD {
+            border-radius: vwh($value);
+        }
+        @include Tablet {
+            border-radius: vwt($value);
+        }
+        @include Mobile {
+            border-radius: vwm($value);
+        }
+    }
+}
+
+/*----------ICON SIZE-----------*/
+@mixin icon($size...) {
+    @if length($size) == 4 {
+        width: vw(nth($size, 1));
+        height: vw(nth($size, 1));
+
+        @include HD {
+            width: vwh(nth($size, 2));
+            height: vwh(nth($size, 2));
+        }
+        @include Tablet {
+            width: vwt(nth($size, 3));
+            height: vwt(nth($size, 3));
+        }
+        @include Mobile {
+            width: vwm(nth($size, 4));
+            height: vwm(nth($size, 4));
+        }
+    } @else {
+        $value: nth($size, 1);
+        width: vw($value);
+        height: vw($value);
+
+        @include HD {
+            width: vwh($value);
+            height: vwh($value);
+        }
+        @include Tablet {
+            width: vwt($value);
+            height: vwt($value);
+        }
+        @include Mobile {
+            width: vwm($value);
+            height: vwm($value);
+        }
+    }
+}
+
+/*----------TRANSITIONS-----------*/
+@mixin transition($properties: (), $duration: 0.2s, $timing-function: cubic-bezier(0.14, 0.18, 0.16, 1.02)) {
+    @if length($properties) == 0 {
+        transition: #{$duration} #{$timing-function};
+    } @else {
+        $transitions: ();
+
+        @each $property in $properties {
+            $transitions: append($transitions, #{$property} #{$duration} #{$timing-function}, comma);
+        }
+
+        transition: $transitions;
+    }
+}
+
+/*----------TEXT TRUNCATE-----------*/
+@mixin truncate($lines: 1) {
+    @if $lines == 1 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    } @else {
+        display: -webkit-box;
+        -webkit-line-clamp: $lines;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+/*----------FLEX LAYOUT-----------*/
+@mixin flex($direction: row, $justify: space-between, $align: center, $wrap: nowrap) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+    flex-wrap: $wrap;
+}
+
+/*----------GRID LAYOUT-----------*/
+@mixin grid($columns: 1fr, $rows: auto, $gap: 0) {
+    display: grid;
+    grid-template-columns: $columns;
+    grid-template-rows: $rows;
+    gap: $gap;
+}
+
+/*----------CENTER ELEMENT-----------*/
+@mixin center($position: absolute) {
+    position: $position;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/*----------SCROLLBAR-----------*/
+@mixin hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    &::-webkit-scrollbar-thumb {
+        display: none;
+    }
+}
+
+@mixin custom-scrollbar($width: 2%, $track-color: $grayWhite, $thumb-color: $color1Main) {
+    &::-webkit-scrollbar {
+        width: $width;
+    }
+    &::-webkit-scrollbar-track {
+        background: $track-color;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: $thumb-color;
+        border-radius: $width / 2;
+    }
+}
+
+/*----------HARDWARE ACCELERATION (ONLY USE WHEN NEEDED)-----------*/
+@mixin hardware-accelerate {
+    will-change: transform, opacity;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}

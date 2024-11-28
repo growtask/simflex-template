@@ -1,0 +1,84 @@
+.container {
+    margin: 0 vw(250px);
+
+    @include HD {
+        margin: 0 vwh(45px);
+    }
+
+    @include Tablet {
+        margin: 0 vwt(16px);
+    }
+
+    @include Mobile {
+        margin: 0 vwm(16px);
+    }
+}
+
+.wrapper {
+    padding: 0 vw(250px);
+
+    @include HD {
+        padding: 0 vwh(45px);
+    }
+
+    @include Tablet {
+        padding: 0 vwt(16px);
+    }
+
+    @include Mobile {
+        padding: 0 vwm(16px);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    clip-path: inset(100%);
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+}
+
+.scroll-lock {
+    overflow: hidden;
+}
+
+.accent-color {
+    color: var(--color1-main);
+}
+
+.underline {
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: vw(4px);
+    color: var(--color1-dark);
+    @include transition((color));
+
+    @include HD {
+        text-underline-offset: vwh(4px);
+    }
+    @include Tablet {
+        text-underline-offset: vwt(4px);
+    }
+    @include Mobile {
+        text-underline-offset: vwm(4px);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: var(--color1-main);
+        }
+    }
+
+    &:active {
+        color: var(--color1-darker);
+    }
+}
