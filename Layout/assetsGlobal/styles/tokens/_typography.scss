@@ -1,0 +1,226 @@
+/*----------HEADINGS-----------*/
+@mixin h1 {
+    font-size: vw(64px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 100%;
+
+    @include HD {
+        font-size: vwh(64px);
+    }
+    @include Tablet {
+        font-size: vwt(42px);
+    }
+    @include Mobile {
+        font-size: vwm(42px);
+    }
+}
+
+@mixin h1-light {
+    @include h1;
+    font-weight: 400;
+}
+
+@mixin h2 {
+    font-size: vw(42px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 100%;
+
+    @include HD {
+        font-size: vwh(42px);
+    }
+    @include Tablet {
+        font-size: vwt(28px);
+    }
+    @include Mobile {
+        font-size: vwm(28px);
+    }
+}
+
+@mixin h2-light {
+    @include h2;
+    font-weight: 400;
+}
+
+@mixin h3 {
+    font-size: vw(28px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 100%;
+
+    @include HD {
+        font-size: vwh(28px);
+    }
+    @include Tablet {
+        font-size: vwt(24px);
+    }
+    @include Mobile {
+        font-size: vwm(24px);
+    }
+}
+
+@mixin h4 {
+    font-size: vw(24px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 100%;
+
+    @include HD {
+        font-size: vwh(24px);
+    }
+    @include Tablet {
+        font-size: vwt(20px);
+    }
+    @include Mobile {
+        font-size: vwm(20px);
+    }
+}
+
+@mixin h5 {
+    font-size: vw(20px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 100%;
+
+    @include HD {
+        font-size: vwh(20px);
+    }
+    @include Tablet {
+        font-size: vwt(20px);
+    }
+    @include Mobile {
+        font-size: vwm(20px);
+    }
+}
+
+@mixin h6 {
+    font-size: vw(16px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 100%;
+
+    @include HD {
+        font-size: vwh(16px);
+    }
+    @include Tablet {
+        font-size: vwt(16px);
+    }
+    @include Mobile {
+        font-size: vwm(16px);
+    }
+}
+
+/*----------BODY TEXT-----------*/
+@mixin t1 {
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    font-size: vw(20px);
+
+    @include HD {
+        font-size: vwh(20px);
+    }
+    @include Tablet {
+        font-size: vwt(20px);
+    }
+    @include Mobile {
+        font-size: vwm(20px);
+    }
+}
+
+@mixin t2 {
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    font-size: vw(16px);
+
+    @include HD {
+        font-size: vwh(16px);
+    }
+    @include Tablet {
+        font-size: vwt(16px);
+    }
+    @include Mobile {
+        font-size: vwm(16px);
+    }
+}
+
+@mixin t3 {
+    font-size: vw(13px);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+
+    @include HD {
+        font-size: vwh(13px);
+    }
+    @include Tablet {
+        font-size: vwt(13px);
+    }
+    @include Mobile {
+        font-size: vwm(13px);
+    }
+}
+
+@mixin t4 {
+    font-size: vw(11px);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+
+    @include HD {
+        font-size: vwh(11px);
+    }
+    @include Tablet {
+        font-size: vwt(11px);
+    }
+    @include Mobile {
+        font-size: vwm(11px);
+    }
+}
+
+@mixin t4-lh {
+    @include t4;
+    line-height: 110%;
+}
+
+@mixin t5 {
+    font-size: vw(9px);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+
+    @include HD {
+        font-size: vwh(9px);
+    }
+    @include Tablet {
+        font-size: vwt(9px);
+    }
+    @include Mobile {
+        font-size: vwm(9px);
+    }
+}
+
+@mixin t5 {
+    @include t5;
+    line-height: 110%;
+}
+
+/*----------UNIQUE TEXT-----------*/
+@mixin hero {
+    font-size: vw(340px);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 80%;
+
+    @include HD {
+        font-size: vwh(340px);
+    }
+    @include Tablet {
+        font-size: vwt(200px);
+    }
+    @include Mobile {
+        font-size: vwm(200px);
+    }
+}

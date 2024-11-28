@@ -1,0 +1,24 @@
+/*----------BREAKPOINTS-----------*/
+$breakpoints: (
+    'hd': 1401px,
+    'tablet': 991px,
+    'mobile': 576px,
+);
+
+@mixin HD {
+    @media screen and (max-width: map-get($breakpoints, 'hd')) {
+        @content;
+    }
+}
+
+@mixin Tablet {
+    @media screen and (max-width: map-get($breakpoints, 'tablet')) {
+        @content;
+    }
+}
+
+@mixin Mobile {
+    @media screen and (max-width: map-get($breakpoints, 'mobile')) {
+        @content;
+    }
+}
