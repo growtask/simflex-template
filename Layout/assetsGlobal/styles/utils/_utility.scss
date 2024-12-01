@@ -1,14 +1,18 @@
+.debug {
+    * {
+        outline: 1px solid rgba(red, 0.2);
+    }
+}
+
 .container {
     margin: 0 vw(250px);
 
     @include HD {
         margin: 0 vwh(45px);
     }
-
     @include Tablet {
         margin: 0 vwt(16px);
     }
-
     @include Mobile {
         margin: 0 vwm(16px);
     }
@@ -20,11 +24,9 @@
     @include HD {
         padding: 0 vwh(45px);
     }
-
     @include Tablet {
         padding: 0 vwt(16px);
     }
-
     @include Mobile {
         padding: 0 vwm(16px);
     }

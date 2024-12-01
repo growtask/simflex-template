@@ -1,17 +1,41 @@
-@import 'styles/base/reset';
-@import 'styles/base/fonts';
-@import 'styles/base/root';
+/* System Configuration */
+@layer reset, base, utilities, components, overrides;
 
-@import 'styles/abstract/colors';
-@import 'styles/abstract/shadows';
-@import 'styles/abstract/animations';
-
-@import 'styles/tokens/breakpoints';
+/* Core Dependencies */
 @import 'styles/tokens/functions';
 @import 'styles/tokens/mixins';
-@import 'styles/tokens/typography';
+@import 'styles/tokens/breakpoints';
 @import 'styles/tokens/variables';
+@import 'styles/tokens/typography';
 
-@import 'styles/utils/utility';
+/* Reset Layer */
+@layer reset {
+    @import 'styles/base/reset';
+}
 
-@import "styles/shame/shame";
+/* Base Design System */
+@layer base {
+    @import 'styles/base/root';
+    @import 'styles/base/fonts';
+    @import 'styles/abstract/colors';
+    @import 'styles/abstract/shadows';
+}
+
+/* Utility Classes */
+@layer utilities {
+    @import 'styles/utils/utility';
+}
+
+/* Component Library */
+@layer components {
+    @import 'styles/abstract/animations';
+    /* Component imports */
+}
+
+/* Override Layer - for project-specific modifications */
+@layer overrides {
+    /* Project-specific overrides */
+}
+
+/* Development/Temporary Fixes */
+@import 'styles/shame/shame';
