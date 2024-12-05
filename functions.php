@@ -69,3 +69,17 @@ function getSimflexVersion(): string
         return InstalledVersions::getPrettyVersion('growtask/simflex');
     });
 }
+
+/**
+ * Renders an SVG icon reference from a sprite file
+ * @param string $iconName Name of the icon to reference
+ * @param string $className Optional CSS classes to apply
+ * @return string The SVG HTML with sprite reference
+ */
+function renderIcon(string $iconName, string $className = ''): string {
+    return sprintf(
+        '<svg class="%s"><use href="/assets/icons/icons.svg#icon-%s"></use></svg>',
+        htmlspecialchars($className),
+        htmlspecialchars($iconName)
+    );
+}

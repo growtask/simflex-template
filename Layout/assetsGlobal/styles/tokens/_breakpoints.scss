@@ -6,19 +6,19 @@ $breakpoints: (
 );
 
 @mixin HD {
-    @media screen and (max-width: map-get($breakpoints, 'hd')) {
+    @media screen and (width <= map-get($breakpoints, 'hd')) {
         @content;
     }
 }
 
 @mixin Tablet {
-    @media screen and (max-width: map-get($breakpoints, 'tablet')) {
+    @media screen and (width <= map-get($breakpoints, 'tablet')) {
         @content;
     }
 }
 
 @mixin Mobile {
-    @media screen and (max-width: map-get($breakpoints, 'mobile')) {
+    @media screen and (width <= map-get($breakpoints, 'mobile')) {
         @content;
     }
 }

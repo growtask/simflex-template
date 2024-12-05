@@ -1,0 +1,54 @@
+.loader-icon {
+    --animation-speed: 2s;
+    transform-origin: center;
+    animation: rotate var(--animation-speed) linear infinite;
+    will-change: transform;
+    overflow: visible;
+
+    &__track {
+        fill: none;
+        opacity: 0;
+        transition: stroke 0.5s ease;
+    }
+
+    &__car {
+        fill: none;
+        stroke-width: vw(5px);
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+        stroke-linecap: round;
+        animation: stretch calc(var(--animation-speed) * 0.75) ease-in-out infinite;
+        will-change: stroke-dasharray, stroke-dashoffset;
+        transition: stroke .5s ease;
+
+        @include HD {
+            stroke-width: vwh(5px);
+        }
+        @include Tablet {
+            stroke-width: vwt(5px);
+        }
+        @include Mobile {
+            stroke-width: vwm(5px);
+        }
+    }
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes stretch {
+    0% {
+        stroke-dasharray: 0, 150;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 75, 150;
+        stroke-dashoffset: -25;
+    }
+    100% {
+        stroke-dashoffset: -100;
+    }
+}
