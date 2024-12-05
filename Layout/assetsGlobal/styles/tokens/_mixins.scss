@@ -28,6 +28,21 @@
     }
 }
 
+/*----------BORDER WIDTH-----------*/
+@mixin border-w($width) {
+    border-width: max(#{vw($width), $width});
+
+    @include HD {
+        border-width: max(#{vwh($width), $width});
+    }
+    @include Tablet {
+        border-width: max(#{vwt($width), $width});
+    }
+    @include Mobile {
+        border-width: max(#{vwm($width), $width});
+    }
+}
+
 /*----------ICON SIZE-----------*/
 @mixin icon($size...) {
     @if length($size) == 4 {

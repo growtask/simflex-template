@@ -1,0 +1,662 @@
+.btn {
+    /*----------INITIAL STYLE-----------*/
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--font-family-body);
+    border: transparent solid;
+    @include transition((border, background-color, color, opacity));
+    @include border-w(2px);
+
+    &__text {
+        @include transition((color));
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        svg {
+            display: inline-block;
+            vertical-align: middle;
+            @include transition((fill, stroke));
+        }
+    }
+
+    &__loader {
+        display: none;
+    }
+
+    &.loading {
+        .btn__loader {
+            display: block;
+        }
+
+        .btn__text,
+        .btn__icon {
+            display: none;
+        }
+    }
+
+    /*----------STYLES-----------*/
+    &-primary {
+        background: var(--color1-main);
+        color: var(--gray-white);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--color1-light);
+            }
+        }
+
+        &:active {
+            background: var(--color1-dark);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+        }
+    }
+
+    &-secondary {
+        background: var(--gray-lighter);
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--color1-lighter);
+            }
+        }
+
+        &:active {
+            background: var(--color1-light);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+        }
+    }
+
+    &-accent {
+        background: var(--color2-dark);
+        color: var(--gray-white);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--color2-main);
+            }
+        }
+
+        &:active {
+            background: var(--color2-darker);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+        }
+    }
+
+    &-gray {
+        background: var(--gray-black);
+        color: var(--gray-white);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--gray-dark);
+            }
+        }
+
+        &:active {
+            background: var(--gray-darker);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+        }
+    }
+
+    &-outline {
+        background: transparent;
+        color: var(--gray-darker);
+        border-color: var(--color1-main);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--color1-light);
+                color: var(--gray-white);
+                border-color: var(--color1-light);
+            }
+        }
+
+        &:active {
+            background: var(--color1-dark);
+            color: var(--gray-white);
+            border-color: var(--color1-dark);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+            border-color: transparent;
+        }
+    }
+
+    &-monochrome {
+        background: transparent;
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--gray-light);
+                color: var(--color1-dark);
+            }
+        }
+
+        &:active {
+            background: var(--color1-lighter);
+            color: var(--color1-darker);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+        }
+    }
+
+    &-flat {
+        background: transparent;
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--gray-lighter);
+                color: var(--color1-dark);
+            }
+        }
+
+        &:active {
+            background: var(--color1-lighter);
+            color: var(--color1-darker);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+        }
+    }
+
+    /*----------SIZES-----------*/
+    &-size_l {
+        height: vw(56px);
+        padding: 0 vw(24px);
+        gap: vw(12px);
+        @include t2-b;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(56px);
+            padding: 0 vwh(24px);
+            gap: vwh(12px);
+        }
+        @include Tablet {
+            height: vwt(56px);
+            padding: 0 vwt(24px);
+            gap: vwt(12px);
+        }
+        @include Mobile {
+            height: vwm(56px);
+            padding: 0 vwm(24px);
+            gap: vwm(12px);
+        }
+
+        &:has(.btn__icon_left) {
+            padding-left: vw(20px);
+
+            @include HD {
+                padding-left: vwh(20px);
+            }
+            @include Tablet {
+                padding-left: vwt(20px);
+            }
+            @include Mobile {
+                padding-left: vwm(20px);
+            }
+        }
+
+        &:has(.btn__icon_right) {
+            padding-right: vw(20px);
+
+            @include HD {
+                padding-right: vwh(20px);
+            }
+            @include Tablet {
+                padding-right: vwt(20px);
+            }
+            @include Mobile {
+                padding-right: vwm(20px);
+            }
+        }
+
+        &:has(.btn__icon_center) {
+            padding: 0 vw(16px);
+
+            @include HD {
+                padding: 0 vwh(16px);
+            }
+            @include Tablet {
+                padding: 0 vwt(16px);
+            }
+            @include Mobile {
+                padding: 0 vwm(16px);
+            }
+        }
+
+        .btn__icon {
+            svg {
+                @include icon(24px);
+            }
+        }
+
+        .btn__loader {
+            @include icon(24px);
+        }
+    }
+
+    &-size_m {
+        height: vw(48px);
+        padding: 0 vw(20px);
+        gap: vw(8px);
+        @include t2-b;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(48px);
+            padding: 0 vwh(20px);
+            gap: vwh(8px);
+        }
+        @include Tablet {
+            height: vwt(48px);
+            padding: 0 vwt(20px);
+            gap: vwt(8px);
+        }
+        @include Mobile {
+            height: vwm(48px);
+            padding: 0 vwm(20px);
+            gap: vwm(8px);
+        }
+
+        &:has(.btn__icon_left) {
+            padding-left: vw(16px);
+
+            @include HD {
+                padding-left: vwh(16px);
+            }
+            @include Tablet {
+                padding-left: vwt(16px);
+            }
+            @include Mobile {
+                padding-left: vwm(16px);
+            }
+        }
+
+        &:has(.btn__icon_right) {
+            padding-right: vw(16px);
+
+            @include HD {
+                padding-right: vwh(16px);
+            }
+            @include Tablet {
+                padding-right: vwt(16px);
+            }
+            @include Mobile {
+                padding-right: vwm(16px);
+            }
+        }
+
+        &:has(.btn__icon_center) {
+            padding: 0 vw(12px);
+
+            @include HD {
+                padding: 0 vwh(12px);
+            }
+            @include Tablet {
+                padding: 0 vwt(12px);
+            }
+            @include Mobile {
+                padding: 0 vwm(12px);
+            }
+        }
+
+        .btn__icon {
+            svg {
+                @include icon(24px);
+            }
+        }
+
+        .btn__loader {
+            @include icon(24px);
+        }
+    }
+
+    &-size_s {
+        height: vw(40px);
+        padding: 0 vw(16px);
+        gap: vw(8px);
+        @include t3-b;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(40px);
+            padding: 0 vwh(16px);
+            gap: vwh(8px);
+        }
+        @include Tablet {
+            height: vwt(40px);
+            padding: 0 vwt(16px);
+            gap: vwt(8px);
+        }
+        @include Mobile {
+            height: vwm(40px);
+            padding: 0 vwm(16px);
+            gap: vwm(8px);
+        }
+
+        &:has(.btn__icon_left) {
+            padding-left: vw(12px);
+
+            @include HD {
+                padding-left: vwh(12px);
+            }
+            @include Tablet {
+                padding-left: vwt(12px);
+            }
+            @include Mobile {
+                padding-left: vwm(12px);
+            }
+        }
+
+        &:has(.btn__icon_right) {
+            padding-right: vw(12px);
+
+            @include HD {
+                padding-right: vwh(12px);
+            }
+            @include Tablet {
+                padding-right: vwt(12px);
+            }
+            @include Mobile {
+                padding-right: vwm(12px);
+            }
+        }
+
+        &:has(.btn__icon_center) {
+            padding: 0 vw(8px);
+
+            @include HD {
+                padding: 0 vwh(8px);
+            }
+            @include Tablet {
+                padding: 0 vwt(8px);
+            }
+            @include Mobile {
+                padding: 0 vwm(8px);
+            }
+        }
+
+        .btn__icon {
+            svg {
+                @include icon(24px);
+            }
+        }
+
+        .btn__loader {
+            @include icon(24px);
+        }
+    }
+
+    &-size_xs {
+        height: vw(32px);
+        padding: 0 vw(12px);
+        gap: vw(4px);
+        @include t3-b;
+        @include border-r(8px);
+
+        @include HD {
+            height: vwh(32px);
+            padding: 0 vwh(12px);
+            gap: vwh(4px);
+        }
+        @include Tablet {
+            height: vwt(32px);
+            padding: 0 vwt(12px);
+            gap: vwt(4px);
+        }
+        @include Mobile {
+            height: vwm(32px);
+            padding: 0 vwm(12px);
+            gap: vwm(4px);
+        }
+
+        &:has(.btn__icon_left) {
+            padding-left: vw(8px);
+
+            @include HD {
+                padding-left: vwh(8px);
+            }
+            @include Tablet {
+                padding-left: vwt(8px);
+            }
+            @include Mobile {
+                padding-left: vwm(8px);
+            }
+        }
+
+        &:has(.btn__icon_right) {
+            padding-right: vw(8px);
+
+            @include HD {
+                padding-right: vwh(8px);
+            }
+            @include Tablet {
+                padding-right: vwt(8px);
+            }
+            @include Mobile {
+                padding-right: vwm(8px);
+            }
+        }
+
+        &:has(.btn__icon_center) {
+            padding: 0 vw(8px);
+
+            @include HD {
+                padding: 0 vwh(8px);
+            }
+            @include Tablet {
+                padding: 0 vwt(8px);
+            }
+            @include Mobile {
+                padding: 0 vwm(8px);
+            }
+        }
+
+        .btn__icon {
+            svg {
+                @include icon(16px);
+            }
+        }
+
+        .btn__loader {
+            @include icon(16px);
+        }
+    }
+
+    /*----------THEME-----------*/
+    &-theme_dark {
+        &.btn-primary {
+            background: var(--color1-main);
+            color: var(--gray-white);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--color1-light);
+                }
+            }
+
+            &:active {
+                background: var(--color1-dark);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-dark);
+            }
+        }
+
+        &.btn-accent {
+            background: var(--color2-dark);
+            color: var(--gray-white);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--color2-main);
+                }
+            }
+
+            &:active {
+                background: var(--color2-darker);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-dark);
+            }
+        }
+
+        &.btn-secondary {
+            background: var(--gray-dark);
+            color: var(--gray-white);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--gray-medium);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                border-color: var(--gray-dark);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-dark);
+            }
+        }
+
+        &.btn-gray {
+            background: var(--gray-white);
+            color: var(--gray-black);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--gray-light);
+                }
+            }
+
+            &:active {
+                background: var(--gray-medium);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-dark);
+            }
+        }
+
+        &.btn-outline {
+            background: transparent;
+            color: var(--gray-white);
+            border-color: var(--color1-main);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--color1-light);
+                    border-color: var(--color1-light);
+                }
+            }
+
+            &:active {
+                background: var(--color1-dark);
+                border-color: var(--color1-dark);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-dark);
+                border-color: transparent;
+            }
+        }
+
+        &.btn-monochrome {
+            background: transparent;
+            color: var(--gray-white);
+            border-color: var(--gray-medium);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--gray-medium);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-dark);
+                border-color: transparent;
+            }
+        }
+
+        &.btn-flat {
+            background: transparent;
+            color: var(--gray-white);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--gray-dark);
+                    color: var(--color1-lighter);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                color: var(--color1-light);
+                border-color: var(--gray-dark);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-dark);
+                border-color: transparent;
+            }
+        }
+    }
+}

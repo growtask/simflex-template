@@ -16,7 +16,7 @@
     }
 }
 
-@mixin h1-light {
+@mixin h1-l {
     @include h1;
     font-weight: 400;
 }
@@ -38,7 +38,7 @@
     }
 }
 
-@mixin h2-light {
+@mixin h2-l {
     @include h2;
     font-weight: 400;
 }
@@ -129,6 +129,11 @@
     }
 }
 
+@mixin t1-b {
+    @include t1;
+    font-weight: 700;
+}
+
 @mixin t2 {
     font-style: normal;
     font-weight: 400;
@@ -144,6 +149,11 @@
     @include Mobile {
         font-size: vwm(16px);
     }
+}
+
+@mixin t2-b {
+    @include t2;
+    font-weight: 700;
 }
 
 @mixin t3 {
@@ -163,6 +173,11 @@
     }
 }
 
+@mixin t3-b {
+    @include t3;
+    font-weight: 700;
+}
+
 @mixin t4 {
     font-size: vw(11px);
     font-style: normal;
@@ -178,6 +193,11 @@
     @include Mobile {
         font-size: vwm(11px);
     }
+}
+
+@mixin t4-b {
+    @include t4;
+    font-weight: 700;
 }
 
 @mixin t4-lh {
@@ -202,7 +222,12 @@
     }
 }
 
-@mixin t5 {
+@mixin t5-b {
+    @include t5;
+    font-weight: 700;
+}
+
+@mixin t5-lh {
     @include t5;
     line-height: 110%;
 }
