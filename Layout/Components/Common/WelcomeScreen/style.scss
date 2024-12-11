@@ -1,0 +1,114 @@
+.welcome-screen {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: vw(60px);
+    background: linear-gradient(
+            135deg,
+            #4DC3FF 0%,
+            #3388FF 15%,
+            #004099 30%,
+            #0DAEFF 50%,
+            #004099 70%,
+            #3388FF 85%,
+            #4DC3FF 100%
+    );
+    background-size: 200% 200%;
+    animation: moveGradient 10s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+    box-sizing: border-box;
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        backdrop-filter: blur(50px);
+        -webkit-backdrop-filter: blur(50px);
+        z-index: 1;
+    }
+
+    @include HD {
+        padding-block: vwh(45px);
+    }
+    @include Tablet {
+        padding-block: vwt(16px);
+    }
+    @include Mobile {
+        padding-block: vwm(16px);
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        height: fit-content;
+        background: var(--gray-white);
+        box-shadow: var(--shadow-medium);
+        padding: vw(32px);
+        z-index: 2;
+        @include border-r(32px);
+
+        @include HD {
+            padding: vw(32px);
+        }
+        @include Tablet {
+            padding: vwt(16px);
+        }
+        @include Mobile {
+            padding: vwm(16px);
+        }
+    }
+
+    &__logo-wrap {
+        width: vw(845px);
+        height: vw(230px);
+
+        @include HD {
+            width: vwh(741px);
+            height: vwh(202px);
+        }
+        @include Tablet {
+            width: vwt(607px);
+            height: vwt(166px);
+        }
+        @include Mobile {
+            width: vwm(305px);
+            height: vwm(84px);
+        }
+
+
+    }
+    &__logo {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@keyframes moveGradient {
+    0% {
+        background-position: 0% 50%;
+        background-size: 200%;
+    }
+    25% {
+        background-position: 50% 50%;
+        background-size: 250%;
+    }
+    50% {
+        background-position: 100% 50%;
+        background-size: 200%;
+    }
+    75% {
+        background-position: 50% 50%;
+        background-size: 250%;
+    }
+    100% {
+        background-position: 0% 50%;
+        background-size: 200%;
+    }
+}
