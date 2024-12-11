@@ -1,0 +1,1 @@
+<?php App\Layout\Components\Common\WelcomeScreen\Layout::draw(); ?>
