@@ -10,10 +10,11 @@ class Layout extends LayoutBase
         string        $className = '',
         string        $text = '',
         string        $link = '',
+        string        $icon = '',
+        bool          $loader = false,
         ButtonStyle   $style = ButtonStyle::Primary,
         ButtonSize    $size = ButtonSize::Medium,
         ButtonTheme   $theme = ButtonTheme::Light,
-        string        $icon = '',
         ButtonIconPos $iconPos = ButtonIconPos::Left,
         array         $attributes = []
     ): void
@@ -23,12 +24,14 @@ class Layout extends LayoutBase
                 'text',
                 'link',
                 'icon',
+                'loader',
                 'attributes'
             ) + [
                 'style' => $style->value,
                 'size' => $size->value,
                 'theme' => $theme->value,
                 'iconPos' => $iconPos->value
-            ]);
+            ]
+        );
     }
 }

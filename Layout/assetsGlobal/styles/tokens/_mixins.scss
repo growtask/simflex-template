@@ -134,6 +134,55 @@
     transform: translate(-50%, -50%);
 }
 
+/*----------SPACING-----------*/
+@mixin spacing($property, $desktop, $hd: $desktop, $tablet: $desktop, $mobile: $desktop) {
+    #{$property}: vw($desktop);
+
+    @include HD {
+        #{$property}: vwh($hd);
+    }
+    @include Tablet {
+        #{$property}: vwt($tablet);
+    }
+    @include Mobile {
+        #{$property}: vwm($mobile);
+    }
+}
+
+/*----------GAP-----------*/
+@mixin gap($values...) {
+    @if length($values) == 1 {
+        @include spacing(gap, nth($values, 1));
+    } @else if length($values) == 2 {
+        @include spacing(row-gap, nth($values, 1));
+        @include spacing(column-gap, nth($values, 2));
+    }
+}
+
+/*----------PADDING-----------*/
+@mixin padding($top: null, $right: null, $bottom: null, $left: null) {
+    @if $right == null and $bottom == null and $left == null {
+        @include spacing(padding, $top);
+    } @else {
+        @if $top { @include spacing(padding-top, $top); }
+        @if $right { @include spacing(padding-right, $right); }
+        @if $bottom { @include spacing(padding-bottom, $bottom); }
+        @if $left { @include spacing(padding-left, $left); }
+    }
+}
+
+/*----------MARGIN-----------*/
+@mixin margin($top: null, $right: null, $bottom: null, $left: null) {
+    @if $right == null and $bottom == null and $left == null {
+        @include spacing(margin, $top);
+    } @else {
+        @if $top { @include spacing(margin-top, $top); }
+        @if $right { @include spacing(margin-right, $right); }
+        @if $bottom { @include spacing(margin-bottom, $bottom); }
+        @if $left { @include spacing(margin-left, $left); }
+    }
+}
+
 /*----------SCROLLBAR-----------*/
 @mixin hide-scrollbar {
     scrollbar-width: none;

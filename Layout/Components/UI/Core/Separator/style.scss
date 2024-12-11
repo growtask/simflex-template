@@ -1,0 +1,43 @@
+.separator {
+    flex-shrink: 0;
+
+    /*----------ORIENTATION-----------*/
+    &-orientation_horizontal {
+        width: 100%;
+        height: max(#{vw(2px), 2px});
+
+        @include HD {
+            height: max(#{vwh(2px), 2px});
+        }
+        @include Tablet {
+            height: max(#{vwt(2px), 2px});
+        }
+        @include Mobile {
+            height: max(#{vwm(2px), 2px});
+        }
+    }
+
+    &-orientation_vertical {
+        height: 100%;
+        width: max(#{vw(2px), 2px});
+
+        @include HD {
+            width: max(#{vwh(2px), 2px});
+        }
+        @include Tablet {
+            width: max(#{vwt(2px), 2px});
+        }
+        @include Mobile {
+            width: max(#{vwm(2px), 2px});
+        }
+    }
+
+    /*----------THEME-----------*/
+    &-theme_light {
+        background: var(--gray-lighter);
+    }
+
+    &-theme_dark {
+        background: var(--gray-dark);
+    }
+}

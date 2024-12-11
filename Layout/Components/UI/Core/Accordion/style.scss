@@ -1,0 +1,475 @@
+.accordion {
+    width: 100%;
+    display: grid;
+    grid-template-rows: min-content 0fr;
+    overflow: hidden;
+    border: solid transparent;
+    @include transition((grid-template-rows, background, border-color));
+    @include border-w(2px);
+
+    &.active {
+        grid-template-rows: min-content 1fr;
+    }
+
+    &:active {
+        background: var(--Gray-Light);
+    }
+
+    &__header {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+
+        &-wrapper {
+            display: inline-flex;
+            align-items: center;
+        }
+    }
+
+    &__icon {
+        flex-shrink: 0;
+        color: var(--gray-darker);
+        @include icon(24px);
+        @include transition((color));
+    }
+
+    &__text-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__title {
+        color: var(--gray-darker);
+        @include transition((color));
+    }
+
+    &__subtitle {
+        color: var(--gray-medium);
+    }
+
+    &__controls-wrapper {
+        display: inline-flex;
+        align-items: center;
+        gap: vw(8px);
+
+        @include HD {
+            gap: vwh(8px);
+        }
+        @include Tablet {
+            gap: vwt(8px);
+        }
+        @include Mobile {
+            gap: vwm(8px);
+        }
+    }
+
+    &__comment {
+        color: var(--gray-medium);
+        @include t3;
+    }
+
+    &__badge {
+        height: vw(16px);
+        padding-inline: vw(4px);
+        color: var(--gray-white);
+        background: var(--error-dark);
+        @include t4;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(16px);
+            padding-inline: vwh(4px);
+        }
+        @include Tablet {
+            height: vwt(16px);
+            padding-inline: vwt(4px);
+        }
+        @include Mobile {
+            height: vwm(16px);
+            padding-inline: vwm(4px);
+        }
+    }
+
+    &__button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        @include transition((background));
+
+        &.active {
+            .accordion__chevron {
+                transform: rotateX(180deg);
+            }
+        }
+    }
+
+    &__chevron {
+        flex-shrink: 0;
+        color: var(--gray-darker);
+        @include icon(24px);
+        @include transition((transform, color));
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+
+        overflow: hidden;
+    }
+
+    &__description {
+        color: var(--gray-dark);
+        @include t2;
+    }
+
+    /*----------STYLES-----------*/
+    &-filled {
+        background: var(--gray-lighter);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                border-color: var(--gray-light);
+            }
+        }
+
+        &:active {
+            background: var(--gray-light);
+            border-color: var(--gray-light);
+        }
+    }
+
+    &-underline {
+        background: transparent;
+        border-radius: 0 !important;
+        border-bottom-color: var(--gray-light);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                border-bottom-color: var(--color1-main);
+
+                .accordion__icon, .accordion__title, .accordion__chevron {
+                    color: var(--color1-main);
+                }
+            }
+        }
+
+        &:active {
+            border-bottom-color: var(--color1-dark);
+
+            .accordion__icon, .accordion__title, .accordion__chevron {
+                color: var(--color1-dark);
+            }
+        }
+    }
+
+    &-button {
+        background: var(--gray-lighter);
+
+        .accordion__button {
+            background: var(--gray-black);
+            @include icon(40px);
+            @include border-r(12px);
+        }
+
+        .accordion__chevron {
+            color: var(--gray-white);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                border-color: var(--gray-light);
+
+                .accordion__button {
+                    background: var(--gray-dark);
+                }
+            }
+        }
+
+        &:active {
+            background: var(--gray-light);
+            border-color: var(--gray-light);
+
+            .accordion__button {
+                background: var(--gray-darker);
+            }
+        }
+    }
+
+    /*----------SIZES-----------*/
+    &-size_l {
+        padding: vw(24px);
+        @include border-r(20px);
+
+        @include HD {
+            padding: vwh(24px);
+        }
+        @include Tablet {
+            padding: vwt(24px);
+        }
+        @include Mobile {
+            padding: vwm(24px);
+        }
+
+        .accordion__header-wrapper {
+            gap: vw(20px);
+
+            @include HD {
+                gap: vwh(20px);
+            }
+            @include Tablet {
+                gap: vwt(20px);
+            }
+            @include Mobile {
+                gap: vwm(20px);
+            }
+        }
+
+        .accordion__text-wrapper {
+            gap: vw(8px);
+
+            @include HD {
+                gap: vwh(8px);
+            }
+            @include Tablet {
+                gap: vwt(8px);
+            }
+            @include Mobile {
+                gap: vwm(8px);
+            }
+        }
+
+        .accordion__title {
+            @include h5;
+        }
+
+        .accordion__subtitle {
+            @include t3;
+        }
+
+        .accordion__description {
+            margin-top: vw(24px);
+
+            @include HD {
+                margin-top: vwh(24px);
+            }
+            @include Tablet {
+                margin-top: vwt(24px);
+            }
+            @include Mobile {
+                margin-top: vwm(24px);
+            }
+        }
+    }
+
+    &-size_m {
+        padding: vw(20px);
+        @include border-r(12px);
+
+        @include HD {
+            padding: vwh(20px);
+        }
+        @include Tablet {
+            padding: vwt(20px);
+        }
+        @include Mobile {
+            padding: vwm(20px);
+        }
+
+        .accordion__header-wrapper {
+            gap: vw(20px);
+
+            @include HD {
+                gap: vwh(20px);
+            }
+            @include Tablet {
+                gap: vwt(20px);
+            }
+            @include Mobile {
+                gap: vwm(20px);
+            }
+        }
+
+        .accordion__text-wrapper {
+            gap: 0;
+        }
+
+        .accordion__title {
+            @include t1-b;
+        }
+
+        .accordion__subtitle {
+            @include t3;
+        }
+
+        .accordion__description {
+            margin-top: vw(20px);
+
+            @include HD {
+                margin-top: vwh(20px);
+            }
+            @include Tablet {
+                margin-top: vwt(20px);
+            }
+            @include Mobile {
+                margin-top: vwm(20px);
+            }
+        }
+    }
+
+    &-size_s {
+        padding: vw(16px);
+        @include border-r(12px);
+
+        @include HD {
+            padding: vwh(16px);
+        }
+        @include Tablet {
+            padding: vwt(16px);
+        }
+        @include Mobile {
+            padding: vwm(16px);
+        }
+
+        .accordion__header-wrapper {
+            gap: vw(16px);
+
+            @include HD {
+                gap: vwh(16px);
+            }
+            @include Tablet {
+                gap: vwt(16px);
+            }
+            @include Mobile {
+                gap: vwm(16px);
+            }
+        }
+
+        .accordion__text-wrapper {
+            gap: 0;
+        }
+
+        .accordion__title {
+            @include t2-b;
+        }
+
+        .accordion__subtitle {
+            @include t3;
+        }
+
+        .accordion__description {
+            margin-top: vw(16px);
+
+            @include HD {
+                margin-top: vwh(16px);
+            }
+            @include Tablet {
+                margin-top: vwt(16px);
+            }
+            @include Mobile {
+                margin-top: vwm(16px);
+            }
+        }
+    }
+
+    /*----------THEME-----------*/
+    &-theme_dark {
+        &.accordion-filled {
+            background: var(--gray-dark);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    border-color: var(--gray-light);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                border-color: var(--gray-light);
+            }
+
+            .accordion__title, .accordion__chevron, .accordion__icon, .accordion__description {
+                color: var(--gray-white);
+            }
+
+            .accordion__subtitle, .accordion__comment {
+                color: var(--gray-light);
+            }
+        }
+
+        &.accordion-underline {
+            border-bottom-color: var(--gray-dark);
+
+            .accordion__title, .accordion__chevron, .accordion__icon, .accordion__description {
+                color: var(--gray-white);
+            }
+
+            .accordion__subtitle, .accordion__comment {
+                color: var(--gray-light);
+            }
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    border-bottom-color: var(--color1-main);
+
+                    .accordion__icon, .accordion__title, .accordion__chevron {
+                        color: var(--color1-main);
+                    }
+                }
+            }
+
+            &:active {
+                border-bottom-color: var(--color1-dark);
+
+                .accordion__icon, .accordion__title, .accordion__chevron {
+                    color: var(--color1-dark);
+                }
+            }
+        }
+
+        &.accordion-button {
+            background: var(--gray-dark);
+
+            .accordion__button {
+                background: var(--gray-white);
+                @include icon(40px);
+                @include border-r(12px);
+            }
+
+            .accordion__chevron {
+                color: var(--gray-darker);
+            }
+
+            .accordion__title, .accordion__icon, .accordion__description {
+                color: var(--gray-white);
+            }
+
+            .accordion__subtitle, .accordion__comment {
+                color: var(--gray-light);
+            }
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    border-color: var(--gray-light);
+
+                    .accordion__button {
+                        background: var(--gray-light);
+                    }
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                border-color: var(--gray-light);
+
+                .accordion__button {
+                    background: var(--gray-medium);
+                }
+
+                .accordion__chevron {
+                    color: var(--gray-white);
+                }
+            }
+        }
+    }
+}
