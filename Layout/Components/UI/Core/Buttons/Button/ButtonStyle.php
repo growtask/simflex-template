@@ -11,4 +11,3 @@ enum ButtonStyle: string
    case Monochrome = 'monochrome';
    case Flat = 'flat';
 }
-

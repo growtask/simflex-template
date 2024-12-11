@@ -1,0 +1,289 @@
+.toggle {
+    /*----------CORE STYLE-----------*/
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+
+    &__wrapper {
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    &__input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    &__background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--gray-light);
+        border-radius: 999px;
+        @include transition((background-color));
+    }
+
+    &__text {
+        @include t2;
+    }
+
+    &-position {
+        &_left {
+            flex-direction: row;
+        }
+
+        &_right {
+            flex-direction: row-reverse;
+        }
+    }
+
+    /* Hover states */
+    &__input:not(:checked):hover + .toggle__background {
+        background-color: var(--gray-medium);
+    }
+
+    &__input:checked:hover + .toggle__background {
+        background-color: var(--color1-light);
+    }
+
+    /* Active states */
+    &__input:not(:checked):active + .toggle__background {
+        background-color: var(--gray-dark);
+    }
+
+    &__input:checked:active + .toggle__background {
+        background-color: var(--color1-dark);
+    }
+
+    &__thumb {
+        position: absolute;
+        background-color: var(--gray-white);
+        border-radius: 50%;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        @include transition((transform));
+    }
+
+    /* Checkmark styles */
+    &__check {
+        stroke-width: 3;
+        stroke: var(--color1-main);
+        stroke-dasharray: 20;
+        stroke-dashoffset: 20;
+        @include transition((stroke, stroke-dashoffset));
+    }
+
+    &__input:checked + .toggle__background {
+        background-color: var(--color1-main);
+    }
+
+    &__input:checked + .toggle__background .toggle__thumb {
+        transform: translateX(116%);
+    }
+
+    &__input:checked + .toggle__background .toggle__check {
+        stroke-dashoffset: 0;
+        stroke: var(--color1-main);
+    }
+
+    /*----------SIZES-----------*/
+    &-size_l {
+        gap: vw(12px);
+
+        @include HD {
+            gap: vwh(12px);
+        }
+        @include Tablet {
+            gap: vwt(12px);
+        }
+        @include Mobile {
+            gap: vwm(12px);
+        }
+
+        .toggle__wrapper {
+            width: vw(74px);
+            height: vw(40px);
+
+            @include HD {
+                width: vwh(74px);
+                height: vwh(40px);
+            }
+            @include Tablet {
+                width: vwt(74px);
+                height: vwt(40px);
+            }
+            @include Mobile {
+                width: vwm(74px);
+                height: vwm(40px);
+            }
+        }
+
+        .toggle__thumb {
+            top: vw(6px);
+            left: vw(6px);
+            bottom: vw(6px);
+            @include icon(28px);
+
+            @include HD {
+                top: vwh(6px);
+                left: vwh(6px);
+                bottom: vwh(6px);
+            }
+            @include Tablet {
+                top: vwt(6px);
+                left: vwt(6px);
+                bottom: vwt(6px);
+            }
+            @include Mobile {
+                top: vwm(6px);
+                left: vwm(6px);
+                bottom: vwm(6px);
+            }
+        }
+
+        .toggle__check {
+            @include icon(24px);
+        }
+    }
+
+    &-size_m {
+        gap: vw(8px);
+
+        @include HD {
+            gap: vwh(8px);
+        }
+        @include Tablet {
+            gap: vwt(8px);
+        }
+        @include Mobile {
+            gap: vwm(8px);
+        }
+
+        .toggle__wrapper {
+            flex-shrink: 0;
+            width: vw(60px);
+            height: vw(32px);
+
+            @include HD {
+                width: vwh(60px);
+                height: vwh(32px);
+            }
+            @include Tablet {
+                width: vwt(60px);
+                height: vwt(32px);
+            }
+            @include Mobile {
+                width: vwm(60px);
+                height: vwm(32px);
+            }
+        }
+
+        .toggle__thumb {
+            top: vw(4px);
+            left: vw(4px);
+            bottom: vw(4px);
+            @include icon(24px);
+
+            @include HD {
+                top: vwh(4px);
+                left: vwh(4px);
+                bottom: vwh(4px);
+            }
+            @include Tablet {
+                top: vwt(4px);
+                left: vwt(4px);
+                bottom: vwt(4px);
+            }
+            @include Mobile {
+                top: vwm(4px);
+                left: vwm(4px);
+                bottom: vwm(4px);
+            }
+        }
+
+        .toggle__check {
+            @include icon(16px);
+        }
+    }
+
+    &-size_s {
+        gap: vw(8px);
+
+        @include HD {
+            gap: vwh(8px);
+        }
+        @include Tablet {
+            gap: vwt(8px);
+        }
+        @include Mobile {
+            gap: vwm(8px);
+        }
+
+        .toggle__wrapper {
+            width: vw(44px);
+            height: vw(24px);
+
+            @include HD {
+                width: vwh(44px);
+                height: vwh(24px);
+            }
+            @include Tablet {
+                width: vwt(44px);
+                height: vwt(24px);
+            }
+            @include Mobile {
+                width: vwm(44px);
+                height: vwm(24px);
+            }
+        }
+
+        .toggle__thumb {
+            top: vw(4px);
+            left: vw(4px);
+            bottom: vw(4px);
+            @include icon(16px);
+
+            @include HD {
+                top: vwh(4px);
+                left: vwh(4px);
+                bottom: vwh(4px);
+            }
+            @include Tablet {
+                top: vwt(4px);
+                left: vwt(4px);
+                bottom: vwt(4px);
+            }
+            @include Mobile {
+                top: vwm(4px);
+                left: vwm(4px);
+                bottom: vwm(4px);
+            }
+        }
+
+        .toggle__check {
+            @include icon(16px);
+        }
+    }
+
+    /*----------THEME-----------*/
+    &-theme_dark {
+        .toggle__text {
+            color: var(--gray-dark);
+        }
+    }
+
+    &-theme_dark {
+        .toggle__text {
+            color: var(--gray-lighter);
+        }
+    }
+}

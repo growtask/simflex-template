@@ -1,0 +1,82 @@
+.badge-stock {
+    /*----------CORE STYLE-----------*/
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    @include transition((background, color, opacity));
+
+    &__icon {
+        @include transition((color));
+    }
+
+    &__text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        @include transition((fill, stroke));
+    }
+
+    /*----------STYLES-----------*/
+    &-many {
+        background: var(--gray-lighter);
+        color: var(--success-dark);
+    }
+
+    &-normal {
+        background: var(--gray-lighter);
+        color: var(--color1-main);
+    }
+
+    &-few {
+        background: var(--gray-lighter);
+        color: var(--error-dark);
+    }
+
+    &-no-stock {
+        background: var(--gray-lighter);
+        color: var(--gray-medium);
+    }
+
+    /*----------SIZES-----------*/
+    &-size_s {
+        height: vw(32px);
+        padding: 0 vw(12px);
+        @include t3;
+        @include border-r(8px);
+
+        @include HD {
+            height: vwh(32px);
+            padding: 0 vwh(12px);
+        }
+        @include Tablet {
+            height: vwt(32px);
+            padding: 0 vwt(12px);
+        }
+        @include Mobile {
+            height: vwm(32px);
+            padding: 0 vwm(12px);
+        }
+    }
+
+    &-size_xs {
+        height: vw(16px);
+        padding: 0 vw(4px);
+        @include t4;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(16px);
+            padding: 0 vwh(4px);
+        }
+        @include Tablet {
+            height: vwt(16px);
+            padding: 0 vwt(4px);
+        }
+        @include Mobile {
+            height: vwm(16px);
+            padding: 0 vwm(4px);
+        }
+    }
+}

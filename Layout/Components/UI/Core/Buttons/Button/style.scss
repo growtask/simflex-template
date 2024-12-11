@@ -1,12 +1,12 @@
 .btn {
-    /*----------INITIAL STYLE-----------*/
+    /*----------CORE STYLE-----------*/
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-family: var(--font-family-body);
     border: transparent solid;
-    @include transition((border, background-color, color, opacity));
+    width: fit-content;
+    @include transition((border, background, color, opacity));
     @include border-w(2px);
 
     &__text {
@@ -40,6 +40,25 @@
             display: none;
         }
     }
+
+    /*============QUICK CONFIG============*/
+    &-size_l {
+        @include t2-b;
+        @include border-r(12px);
+    }
+    &-size_m {
+        @include t2-b;
+        @include border-r(12px);
+    }
+    &-size_s {
+        @include t3-b;
+        @include border-r(12px);
+    }
+    &-size_xs {
+        @include t3-b;
+        @include border-r(8px);
+    }
+    /*====================================*/
 
     /*----------STYLES-----------*/
     &-primary {
@@ -201,8 +220,6 @@
         height: vw(56px);
         padding: 0 vw(24px);
         gap: vw(12px);
-        @include t2-b;
-        @include border-r(12px);
 
         @include HD {
             height: vwh(56px);
@@ -277,8 +294,6 @@
         height: vw(48px);
         padding: 0 vw(20px);
         gap: vw(8px);
-        @include t2-b;
-        @include border-r(12px);
 
         @include HD {
             height: vwh(48px);
@@ -353,8 +368,6 @@
         height: vw(40px);
         padding: 0 vw(16px);
         gap: vw(8px);
-        @include t3-b;
-        @include border-r(12px);
 
         @include HD {
             height: vwh(40px);
@@ -429,8 +442,6 @@
         height: vw(32px);
         padding: 0 vw(12px);
         gap: vw(4px);
-        @include t3-b;
-        @include border-r(8px);
 
         @include HD {
             height: vwh(32px);
@@ -567,7 +578,7 @@
 
         &.btn-gray {
             background: var(--gray-white);
-            color: var(--gray-black);
+            color: var(--gray-darker);
 
             @media (hover: hover) and (pointer: fine) {
                 &:hover {
