@@ -1,0 +1,106 @@
+.debug {
+    * {
+        outline: 1px solid rgba(red, 0.2);
+    }
+}
+
+.container {
+    margin-inline: vw(250px);
+
+    @include HD {
+        margin-inline: vwh(45px);
+    }
+    @include Tablet {
+        margin-inline: vwt(16px);
+    }
+    @include Mobile {
+        margin-inline: vwm(16px);
+    }
+}
+
+.wrapper {
+    padding-inline: vw(250px);
+
+    @include HD {
+        padding-inline: vwh(45px);
+    }
+    @include Tablet {
+        padding-inline: vwt(16px);
+    }
+    @include Mobile {
+        padding-inline: vwm(16px);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    clip-path: inset(100%);
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+}
+
+.scroll-lock {
+    overflow: hidden;
+}
+
+.accent-color {
+    color: var(--color1-main);
+}
+
+.underline {
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: vw(4px);
+    color: var(--color1-dark);
+    @include transition((color));
+
+    @include HD {
+        text-underline-offset: vwh(4px);
+    }
+    @include Tablet {
+        text-underline-offset: vwt(4px);
+    }
+    @include Mobile {
+        text-underline-offset: vwm(4px);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: var(--color1-main);
+        }
+    }
+
+    &:active {
+        color: var(--color1-darker);
+    }
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.w-full {
+    width: 100% !important;
+}
+
+.w-fit {
+    width: fit-content !important;
+}
+
+.h-full {
+    height: 100% !important;
+}
+
+.h-fit {
+    height: fit-content !important;
+}

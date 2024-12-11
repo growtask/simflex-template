@@ -1,0 +1,278 @@
+.btn-menu {
+    /*----------CORE STYLE-----------*/
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: transparent solid;
+    width: fit-content;
+    position: relative;
+    @include transition((border, background, color, opacity));
+    @include border-w(2px);
+
+    &__badge {
+        position: absolute;
+        top: vw(-2px);
+        right: vw(-2px);
+        height: vw(16px);
+        padding-inline: vw(4px);
+        color: var(--gray-white);
+        background: var(--error-dark);
+        max-width: 10ch;
+        @include t4;
+        @include border-r(12px);
+        @include truncate();
+
+        @include HD {
+            top: vw(-2px);
+            right: vw(-2px);
+            height: vwh(16px);
+            padding-inline: vwh(4px);
+        }
+        @include Tablet {
+            top: vwt(-2px);
+            right: vwt(-2px);
+            height: vwt(16px);
+            padding-inline: vwt(4px);
+        }
+        @include Mobile {
+            top: vwm(-2px);
+            right: vwm(-2px);
+            height: vwm(16px);
+            padding-inline: vwm(4px);
+        }
+    }
+
+    &__text {
+        @include transition((color));
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        @include transition((fill, stroke));
+        @include icon(24px);
+    }
+
+    /*----------STYLES-----------*/
+    &-flat {
+        background: transparent;
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--gray-lighter);
+            }
+        }
+
+        &:active {
+            background: var(--color1-lighter);
+            color: var(--color1-darker);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+        }
+
+        &.active {
+            background: var(--gray-lighter);
+            color: var(--color1-darker);
+        }
+    }
+
+    &-secondary {
+        background: var(--gray-lighter);
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--color1-lighter);
+            }
+        }
+
+        &:active {
+            background: var(--color1-light);
+            color: var(--color1-dark);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+        }
+
+        &.active {
+            background: var(--gray-lighter);
+            color: var(--color1-darker);
+        }
+    }
+
+    /*----------SIZES-----------*/
+    &-size_l {
+        height: vw(56px);
+        padding: 0 vw(16px);
+        gap: vw(2px);
+        @include t3-b;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(56px);
+            padding: 0 vwh(16px);
+            gap: vwh(2px);
+        }
+        @include Tablet {
+            height: vwt(56px);
+            padding: 0 vwt(16px);
+            gap: vwt(2px);
+        }
+        @include Mobile {
+            height: vwm(56px);
+            padding: 0 vwm(16px);
+            gap: vwm(2px);
+        }
+
+        &:has(.btn-menu__text) {
+            padding: 0 vw(6px);
+
+            @include HD {
+                padding: 0 vwh(6px);
+            }
+            @include Tablet {
+                padding: 0 vwt(6px);
+            }
+            @include Mobile {
+                padding: 0 vwm(6px);
+            }
+        }
+    }
+
+    &-size_m {
+        height: vw(48px);
+        padding: 0 vw(16px);
+        gap: vw(2px);
+        @include t4-lh;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(48px);
+            padding: 0 vwh(16px);
+            gap: vwh(2px);
+        }
+        @include Tablet {
+            height: vwt(48px);
+            padding: 0 vwt(16px);
+            gap: vwt(2px);
+        }
+        @include Mobile {
+            height: vwm(48px);
+            padding: 0 vwm(16px);
+            gap: vwm(2px);
+        }
+
+        &:has(.btn-menu__text) {
+            padding: 0 vw(6px);
+
+            @include HD {
+                padding: 0 vwh(6px);
+            }
+            @include Tablet {
+                padding: 0 vwt(6px);
+            }
+            @include Mobile {
+                padding: 0 vwm(6px);
+            }
+        }
+    }
+
+    &-size_s {
+        height: vw(40px);
+        padding: 0 vw(16px);
+        gap: vw(2px);
+        @include t4-lh;
+        @include border-r(12px);
+
+        @include HD {
+            height: vwh(40px);
+            padding: 0 vwh(16px);
+            gap: vwh(2px);
+        }
+        @include Tablet {
+            height: vwt(40px);
+            padding: 0 vwt(16px);
+            gap: vwt(2px);
+        }
+        @include Mobile {
+            height: vwm(40px);
+            padding: 0 vwm(16px);
+            gap: vwm(2px);
+        }
+
+        .btn-menu__text {
+            display: none;
+        }
+    }
+
+    /*----------THEME-----------*/
+    &-theme_dark {
+        &.btn-menu-secondary {
+            background: var(--gray-dark);
+            color: var(--gray-white);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--gray-medium);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                color: var(--color1-light);
+                border-color: var(--gray-dark);
+            }
+
+            &.active {
+                background: var(--gray-dark);
+                color: var(--color1-light);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-dark);
+            }
+        }
+
+        &.btn-menu-flat {
+            background: transparent;
+            color: var(--gray-white);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--gray-dark);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                color: var(--color1-light);
+                border-color: var(--gray-dark);
+            }
+
+            &.active {
+                background: var(--gray-dark);
+                color: var(--color1-light);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-);
+                color: var(--gray-dark);
+                border-color: transparent;
+            }
+        }
+    }
+}

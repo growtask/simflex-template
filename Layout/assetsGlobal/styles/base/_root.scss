@@ -1,0 +1,19 @@
+:root {
+    /*----------FONT FAMILY SETTINGS-----------*/
+    --font-family-heading: 'Inter', Montserrat, Inter, Helvetica, sans-serif;
+    --font-family-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    /*----------ROOT STYLES-----------*/
+    font-family: var(--font-family-body);
+    color-scheme: light;
+    accent-color: var(--color1-main);
+}
+
+body {
+    position: relative;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-heading);
+}

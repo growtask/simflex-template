@@ -1,0 +1,36 @@
+/*----------RESPONSIVE MEDIA-----------*/
+@function stripUnit($value) {
+@return $value / ($value * 0 + 1);
+}
+
+@function vw($px, $media: 1920) {
+    @return #{stripUnit($px) / stripUnit($media) * 100}vw;
+}
+
+@function vwh($px, $media: 1366) {
+    @return #{stripUnit($px) / stripUnit($media) * 100}vw;
+}
+
+@function vwt($px, $media: 768) {
+    @return #{stripUnit($px) / stripUnit($media) * 100}vw;
+}
+
+@function vwm($px, $media: 375) {
+    @return #{stripUnit($px) / stripUnit($media) * 100}vw;
+}
+
+/*----------DEFAULT Z-INDEXES-----------*/
+@function z($layer: 'default') {
+    $z-layers: (
+        'debug': 9999,
+        'notification': 1200,
+        'tooltip': 1100,
+        'modal': 1000,
+        'overlay': 900,
+        'dropdown': 500,
+        'header': 100,
+        'footer': 90,
+        'default': 1
+    );
+    @return map-get($z-layers, $layer);
+}
