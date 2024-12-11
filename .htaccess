@@ -23,7 +23,7 @@ AddDefaultCharset UTF-8
 </IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|css|jpg|jpeg|png|ico|webp|svg|json)$">
+  <FilesMatch "\.(js|css|gif|jpg|jpeg|png|ico|swf|svg|svgz|woff|woff2|ttf|eot)$">
     Header set Cache-Control "max-age=31536000"
   </FilesMatch>
   Header set Access-Control-Allow-Origin "*"
