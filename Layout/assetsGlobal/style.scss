@@ -1,0 +1,41 @@
+/* System Configuration */
+@layer reset, base, utilities, components, overrides;
+
+/* Core Dependencies */
+@import 'styles/tokens/functions';
+@import 'styles/tokens/mixins';
+@import 'styles/tokens/breakpoints';
+@import 'styles/tokens/variables';
+@import 'styles/tokens/typography';
+
+/* Reset Layer */
+@layer reset {
+    @import 'styles/base/reset';
+}
+
+/* Base Design System */
+@layer base {
+    @import 'styles/base/root';
+    @import 'styles/base/fonts';
+    @import 'styles/abstract/colors';
+    @import 'styles/abstract/shadows';
+}
+
+/* Utility Classes */
+@layer utilities {
+    @import 'styles/utils/utility';
+}
+
+/* Component Library */
+@layer components {
+    @import 'styles/abstract/animations';
+    /* Component imports */
+}
+
+/* Override Layer - for project-specific modifications */
+@layer overrides {
+    /* Project-specific overrides */
+}
+
+/* Development/Temporary Fixes */
+@import 'styles/shame/shame';

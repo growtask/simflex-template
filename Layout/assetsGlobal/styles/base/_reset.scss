@@ -1,0 +1,284 @@
+/* Box sizing rules
+============================================= */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Reset margins and paddings
+============================================= */
+* {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+
+/* Document defaults
+============================================= */
+:root {
+    font-style: normal;
+    font-optical-sizing: auto;
+    font-synthesis: none;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body:host {
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+}
+
+body > :is(header, footer),
+section,
+article,
+main, {
+    container-type: inline-size;
+}
+
+/* Hide "tap" highlights on iOS and iPadOS for offending elements */
+a,
+details summary {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* Typography reset
+============================================= */
+p, li, figcaption {
+    text-wrap: pretty;
+}
+
+body, h1, h2, h3, h4, h5, h6, p,
+ul, ol, dl, dd, figure, blockquote {
+    margin: 0;
+    font: inherit;
+}
+
+b,
+strong {
+    font-weight: bolder;
+}
+
+i, em {
+    font-style: italic;
+}
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+code,
+kbd,
+samp,
+pre {
+    font-family: FiraCode, SFMono-Regular, Consolas, Liberation Mono, Menlo, Monaco, Courier, monospace;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    font-feature-settings: "ss01" off, "ss02" off, "ss03" off, "ss04" on, "ss05" off, "ss06" on, "ss07" off, "zero" off, "onum" off;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    min-width: 0;
+}
+
+small {
+    font-size: 80%;
+}
+
+/* List reset
+============================================= */
+ul[role='list'],
+ol[role='list'],
+li {
+    list-style: none;
+    padding: 0;
+}
+
+/* Anchor reset
+============================================= */
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+a:not([class]) {
+    text-decoration-skip-ink: auto;
+}
+
+/* Table reset
+============================================= */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Media elements reset
+============================================= */
+img, picture, svg,
+audio, canvas, iframe, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    vertical-align: top;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+svg,
+svg path,
+svg circle,
+svg polygon,
+svg rect,
+svg line {
+    shape-rendering: geometricprecision;
+}
+
+/* Form elements reset
+============================================= */
+input, button, textarea, select, optgroup {
+    font: inherit;
+    color: inherit;
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
+}
+
+input, textarea {
+    resize: none;
+}
+
+button {
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+::-webkit-search-decoration,
+::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+
+::-webkit-file-upload-button {
+    -webkit-appearance: button;
+    font: inherit;
+}
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+    height: auto;
+}
+
+:-moz-focusring {
+    outline: auto;
+}
+
+:-moz-ui-invalid {
+    box-shadow: none;
+}
+
+progress {
+    vertical-align: baseline;
+}
+
+/* Autofill styles
+============================================= */
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: black !important;
+}
+
+input:-moz-autofill,
+input:-moz-autofill:focus,
+input:-moz-autofill:hover,
+input:-moz-autofill:active {
+    -moz-box-shadow: 0 0 0 30px white inset !important;
+    -moz-text-fill-color: black !important;
+}
+
+input:-ms-autofill,
+input:-ms-autofill:focus,
+input:-ms-autofill:hover,
+input:-ms-autofill:active {
+    -ms-box-shadow: 0 0 0 30px white inset !important;
+    -ms-text-fill-color: black !important;
+}
+
+/* Dialog reset
+============================================= */
+dialog {
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    height: fit-content;
+    width: fit-content;
+    margin: auto;
+    padding: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+}
+
+dialog[open] {
+    display: block;
+    translate: 0 0;
+    opacity: 1;
+    transition: opacity, translate 0.2s ease-in-out;
+
+    @starting-style {
+        opacity: 0;
+        translate: 0 -25vh;
+    }
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Focus styles
+============================================= */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Reduce motion
+============================================= */
+@media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
