@@ -1,23 +1,16 @@
 <?php
 /** @var array $data */
 
-$accordionClasses = array_filter([
+$accordionClasses = [
     'accordion',
     "accordion-{$data['style']}",
     "accordion-size_{$data['size']}",
     "accordion-theme_{$data['theme']}",
     $data['className'] ?? ''
-]);
-
-$attributes = $data['attributes'] ?? [];
-$attributeString = implode(' ', array_map(
-    fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value)),
-    array_keys($attributes),
-    $attributes
-));
+];
 ?>
 
-<li class="<?= implode(' ', $accordionClasses) ?>" <?= $attributeString ?>>
+<li class="<?= implode(' ', $accordionClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
     <div class="accordion__header" role="tab">
         <div class="accordion__header-wrapper">
             <?php if ($data['icon']): ?>

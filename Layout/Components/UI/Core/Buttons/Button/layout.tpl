@@ -1,24 +1,17 @@
 <?php
 /** @var array $data */
 
-$buttonClasses = array_filter([
+$buttonClasses = [
     'btn',
     "btn-{$data['style']}",
     "btn-size_{$data['size']}",
     "btn-theme_{$data['theme']}",
     $data['className'] ?? ''
-]);
-
-$attributes = $data['attributes'] ?? [];
-$attributeString = implode(' ', array_map(
-    fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value)),
-    array_keys($attributes),
-    $attributes
-));
+];
 ?>
 
 <?php if ($data['link']): ?>
-    <a href="<?= $data['link'] ?>" class="<?= implode(' ', $buttonClasses) ?>" <?= $attributeString ?>>
+    <a href="<?= $data['link'] ?>" class="<?= implode(' ', $buttonClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
         <?php if ($data['icon'] && $data['iconPos'] === 'left' && $data['text']): ?>
             <span class="btn__icon btn__icon_left">
                 <?= renderIcon($data['icon']) ?>
@@ -42,7 +35,7 @@ $attributeString = implode(' ', array_map(
         <?php endif; ?>
     </a>
 <?php else: ?>
-    <button class="<?= implode(' ', $buttonClasses) ?>" <?= $attributeString ?>>
+    <button class="<?= implode(' ', $buttonClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
         <?php if ($data['icon'] && $data['iconPos'] === 'left' && $data['text']): ?>
             <span class="btn__icon btn__icon_left">
                 <?= renderIcon($data['icon']) ?>

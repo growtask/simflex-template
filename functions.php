@@ -83,3 +83,21 @@ function renderIcon(string $iconName, string $className = ''): string {
         htmlspecialchars($iconName)
     );
 }
+
+/**
+ * Generates HTML attribute string from array of key-value pairs
+ * @param array<string,mixed> $attributes Key-value pairs of HTML attributes
+ * @return string Generated HTML attribute string with escaped values
+ */
+function buildAttrs(array $attributes = []): string
+{
+    if (empty($attributes)) {
+        return '';
+    }
+
+    return implode(' ', array_map(
+        fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
+        array_keys($attributes),
+        $attributes
+    ));
+}

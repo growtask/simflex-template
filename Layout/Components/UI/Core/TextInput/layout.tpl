@@ -1,31 +1,24 @@
 <?php
 /** @var array $data */
 
-$inputClasses = array_filter([
+$inputClasses = [
     'text-input',
     "text-input-pos_{$data['labelPos']}",
     "text-input-style_{$data['style']}",
     "text-input-size_{$data['size']}",
     "text-input-theme_{$data['theme']}",
     $data['className'] ?? ''
-]);
-
-$attributes = $data['attributes'] ?? [];
-$attributeString = implode(' ', array_map(
-    fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value)),
-    array_keys($attributes),
-    $attributes
-));
+];
 ?>
 
-<div class="<?= implode(' ', $inputClasses) ?>" <?= $attributeString ?>>
+<div class="<?= implode(' ', $inputClasses) ?>">
     <div class="text-input__wrapper">
         <?php if ($data['labelPos'] === 'standard'): ?>
             <label class="text-input__label" for="<?= $data['id'] ?>"><?= $data['labelText'] ?></label>
         <?php endif; ?>
 
         <div class="text-input__input-container">
-            <input type="text" id="<?= $data['id'] ?>" class="text-input__field" <?= $attributeString ?>>
+            <input type="text" id="<?= $data['id'] ?>" class="text-input__field" <?= buildAttrs($data['attributes'] ?? []) ?>>
 
             <?php if ($data['icon']): ?>
                 <?= renderIcon($data['icon'], 'text-input__icon') ?>
