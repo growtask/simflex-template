@@ -1,24 +1,17 @@
 <?php
 /** @var array $data */
 
-$buttonMenuClasses = array_filter([
+$buttonMenuClasses = [
     'btn-menu',
     "btn-menu-{$data['style']}",
     "btn-menu-size_{$data['size']}",
     "btn-menu-theme_{$data['theme']}",
     $data['className'] ?? ''
-]);
-
-$attributes = $data['attributes'] ?? [];
-$attributeString = implode(' ', array_map(
-    fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value)),
-    array_keys($attributes),
-    $attributes
-));
+];
 ?>
 
 <?php if ($data['link']): ?>
-    <a href="<?= $data['link'] ?>" class="<?= implode(' ', $buttonMenuClasses) ?>" <?= $attributeString ?>>
+    <a href="<?= $data['link'] ?>" class="<?= implode(' ', $buttonMenuClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
         <?php if ($data['badge']): ?>
             <span class="btn-menu__badge"><?= $data['badge'] ?></span>
         <?php endif; ?>
@@ -32,7 +25,7 @@ $attributeString = implode(' ', array_map(
         <?php endif; ?>
     </a>
 <?php else: ?>
-    <button class="<?= implode(' ', $buttonMenuClasses) ?>" <?= $attributeString ?>>
+    <button class="<?= implode(' ', $buttonMenuClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
         <?php if ($data['badge']): ?>
             <span class="btn-menu__badge"><?= $data['badge'] ?></span>
         <?php endif; ?>

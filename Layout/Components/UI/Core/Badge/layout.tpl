@@ -1,22 +1,15 @@
 <?php
 /** @var array $data */
 
-$badgeClasses = array_filter([
+$badgeClasses = [
     'badge',
     "badge-{$data['style']}",
     "badge-size_{$data['size']}",
     $data['className'] ?? ''
-]);
-
-$attributes = $data['attributes'] ?? [];
-$attributeString = implode(' ', array_map(
-    fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value)),
-    array_keys($attributes),
-    $attributes
-));
+];
 ?>
 
-<div class="<?= implode(' ', $badgeClasses) ?>" <?= $attributeString ?>>
+<div class="<?= implode(' ', $badgeClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
     <?php if ($data['icon'] && !$data['dot']): ?>
         <?= renderIcon($data['icon'], 'badge__icon') ?>
     <?php endif; ?>

@@ -1,25 +1,18 @@
 <?php
 /** @var array $data */
 
-$toggleClasses = array_filter([
+$toggleClasses = [
     'toggle',
     "toggle-size_{$data['size']}",
     "toggle-position_{$data['position']}",
     "toggle-theme_{$data['theme']}",
     $data['className'] ?? ''
-]);
-
-$attributes = $data['attributes'] ?? [];
-$attributeString = implode(' ', array_map(
-    fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value)),
-    array_keys($attributes),
-    $attributes
-));
+];
 ?>
 
 <div class="<?= implode(' ', $toggleClasses) ?>">
     <label class="toggle__wrapper">
-        <input type="checkbox" class="toggle__input" role="switch" <?= $attributeString ?>>
+        <input type="checkbox" class="toggle__input" role="switch" <?= buildAttrs($data['attributes'] ?? []) ?>>
         <div class="toggle__background">
             <div class="toggle__thumb">
                 <?php if ($data['icon']): ?>
