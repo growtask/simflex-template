@@ -54,6 +54,7 @@ class Config extends \Simflex\Core\ConfigBase
         $this->files['commands'] = SF_ROOT_PATH . '/provider/commands.php';
 
         // extra settings
+        $this->extra['configDebug'] = env('CONFIG_DEBUG', false);
         $this->extra['timezone'] = env('TIMEZONE', 'Asia/Yekaterinburg');
         $this->extra['extensions'] = [];
 
@@ -66,7 +67,7 @@ class Config extends \Simflex\Core\ConfigBase
     {
         if (!$this->devMode && is_file(SF_ROOT_PATH . '/cache/files.php')) {
             $this->extra['data'] = include SF_ROOT_PATH . '/cache/files.php';
-            Log::debug('Loaded files from cache');
+            $this->log('Loaded files from cache');
             return;
         }
 
@@ -86,7 +87,7 @@ class Config extends \Simflex\Core\ConfigBase
                 $services[$key] = array_merge($data['services'][$key] ?? [], $value);
             }
 
-            Log::debug('Loaded data of extension {name}', ['name' => $name]);
+            $this->log('Loaded data of extension {name}', ['name' => $name]);
         }
 
         $this->extra['data'] = [
@@ -108,7 +109,7 @@ class Config extends \Simflex\Core\ConfigBase
     {
         if (!$this->devMode && is_file(SF_ROOT_PATH . '/cache/extensions.php')) {
             $this->extra['extensions'] = include SF_ROOT_PATH . '/cache/extensions.php';
-            Log::debug('Loaded {n} extensions from cache', ['n' => count($this->extra['extensions'])]);
+            $this->log('Loaded {n} extensions from cache', ['n' => count($this->extra['extensions'])]);
             return;
         }
 
@@ -121,40 +122,41 @@ class Config extends \Simflex\Core\ConfigBase
 
             /** @var ExtensionConfig $class */
             $class = include SF_ROOT_PATH . '/provider/extension/' . $file;
-            if (!$class || is_object($class)) {
-                Log::error('Extension {file} cannot be loaded', ['file' => $file]);
+            if (!$class || !is_object($class)) {
+                $this->log('Extension {file} cannot be loaded', ['file' => $file]);
                 continue;
             }
 
             try {
                 $ref = new \ReflectionClass($class);
                 if (!$ref->isSubclassOf(ExtensionConfig::class)) {
-                    Log::error('Extension {file} does not extend Simflex\Core\ExtensionConfig class', ['file' => $file]
+                    $this->log('Extension {file} does not extend Simflex\Core\ExtensionConfig class', ['file' => $file]
                     );
                     continue;
                 }
             } catch (\ReflectionException $e) {
-                Log::error('Extension {file} cannot be loaded: {ex}', ['file' => $file, 'ex' => $e->getMessage()]);
+                $this->log('Extension {file} cannot be loaded: {ex}', ['file' => $file, 'ex' => $e->getMessage()]);
                 continue;
             }
 
             $extensions[$class->name] = [
+                'loadOrder' => $class->loadOrder,
                 'routes' => $class->getRoutes(),
                 'events' => $class->getEvents(),
                 'services' => $class->getServices(),
                 'commands' => $class->getCommands(),
             ];
 
-            Log::debug('Loaded extension {name}', ['name' => $class->name]);
+            $this->log('Loaded extension {name}', ['name' => $class->name]);
         }
 
         // sort by load order
-        uasort($extensions, function (ExtensionConfig $a, ExtensionConfig $b) {
-            if ($a->loadOrder == $b->loadOrder) {
+        uasort($extensions, function (array $a, array $b) {
+            if ($a['loadOrder'] == $b['loadOrder']) {
                 return 0;
             }
 
-            return $a->loadOrder < $b->loadOrder ? -1 : 1;
+            return $a['loadOrder'] < $b['loadOrder'] ? -1 : 1;
         });
 
         $this->extra['extensions'] = $extensions;
@@ -162,6 +164,29 @@ class Config extends \Simflex\Core\ConfigBase
             file_put_contents(
                 SF_ROOT_PATH . '/cache/extensions.php',
                 "<?php\nreturn " . var_export($extensions, true) . ';'
+            );
+        }
+    }
+
+    protected function log(string $msg, array $i = []): void
+    {
+        if (!$this->extra['configDebug']) {
+            return;
+        }
+
+        $logPath = true;
+        if (!is_dir($rootDir = $this->logPath)) {
+            if (!@mkdir($rootDir, 0700, true)) {
+                $logPath = false;
+            }
+        }
+
+        if ($logPath) {
+            $logPath = $rootDir . '/' . date('Y-m-d') . '.log';
+            file_put_contents(
+                $logPath,
+                str_replace(array_map(fn(string $k) => '{' . $k . '}', array_keys($i)), array_values($i), $msg) . "\n",
+                FILE_APPEND
             );
         }
     }
