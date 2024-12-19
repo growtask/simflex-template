@@ -1,30 +1,82 @@
 AddDefaultCharset UTF-8
 
-<IfModule mod_rewrite.c>
-  RewriteEngine on
+# Prevent directory listing
+Options -Indexes
 
-  RewriteRule ^tests/ - [R=404,L]
-  RewriteRule ^uf/log/ - [R=404,L]
-  RewriteRule ^docker/ - [R=404,L]
-  RewriteRule ^database/ - [R=404,L]
-  RewriteRule ^(codeception.yml|composer.json|composer.lock|docker-compose.yml|docker-compose.test.yml|LICENSE|README.md|sf|codecept|test|.env|.gitignore)$ - [R=404,L]
-
-  RewriteCond %{HTTP_HOST} ^api\.(.*) [NC]
-  RewriteRule .*    api.php [L]
-
-  RewriteRule ^sitemap.xml    sitemap.php [L]
-  RewriteRule ^robots.txt     robots.php [L]
-
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^admin /Admin/index.php [L]
-
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule . index.php
-</IfModule>
-
+# Security Headers
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|css|gif|jpg|jpeg|png|ico|swf|svg|svgz|woff|woff2|ttf|eot)$">
-    Header set Cache-Control "max-age=31536000"
-  </FilesMatch>
-  Header set Access-Control-Allow-Origin "*"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
+
+# URL Rewriting Rules
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+
+    # Block access to specific directories
+    RewriteRule ^tests/ - [R=404,L]
+    RewriteRule ^uf/log/ - [R=404,L]
+    RewriteRule ^docker/ - [R=404,L]
+    RewriteRule ^database/ - [R=404,L]
+
+    # Block access to specific files
+    RewriteRule ^(codeception.yml|composer.json|composer.lock|docker-compose.yml|docker-compose.test.yml|LICENSE|README.md|sf|codecept|test|.env|.gitignore)$ - [R=404,L]
+
+    RewriteCond %{HTTP_HOST} ^api\.(.*) [NC]
+    RewriteRule .*    api.php [L]
+
+    RewriteRule ^sitemap.xml    sitemap.php [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^admin /Admin/index.php [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule . index.php
+</IfModule>
+
+# File Caching and CORS
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css|gif|jpg|jpeg|png|ico|swf|svg|svgz|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "max-age=31536000"
+    </FilesMatch>
+
+    # CORS Headers
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET,POST,OPTIONS,DELETE,PUT"
+    Header set Access-Control-Allow-Headers "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+</IfModule>
+
+# MIME Types
+<IfModule mod_mime.c>
+    # SVG
+    AddType image/svg+xml svg svgz
+    AddEncoding gzip svgz
+
+    # Fonts
+    AddType application/font-woff woff
+    AddType application/font-woff2 woff2
+    AddType application/x-font-ttf ttf
+    AddType application/x-font-eot eot
+</IfModule>
+
+# Enable GZIP Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE application/font-woff
+    AddOutputFilterByType DEFLATE application/font-woff2
+    AddOutputFilterByType DEFLATE application/x-font-ttf
+</IfModule>
+
+# Custom Error Pages
+ErrorDocument 404 /404
