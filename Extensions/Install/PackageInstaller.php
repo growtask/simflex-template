@@ -15,6 +15,8 @@ class PackageInstaller
         if (is_file($path)) {
             require_once $path;
             \Simflex\Extensions\Install\PackageInstaller::onPackageEvent($event);
+        } else {
+            echo "[!] PackageInstaller not found, skipping.\n";
         }
     }
 }
