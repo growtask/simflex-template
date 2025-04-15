@@ -30,7 +30,8 @@
     "tubalmartin/cssmin": "^4.1",
     "ext-readline": "*",
     "growtask/simflex-file-manager": "dev-master",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "curl/curl": "^2.5"
   },
   "require-dev": {
     "codeception/module-phpbrowser": "*",
@@ -62,12 +63,6 @@
       "App\\": ""
     }
   },
-  "repositories": [
-    {
-      "url": "https://github.com/growtask/simflex.git",
-      "type": "git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

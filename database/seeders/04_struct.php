@@ -654,7 +654,7 @@ return new class implements Seeder {
             [
                 'npp' => 1,
                 'table_id' => $structData->table_id,
-                'field_id' => 15,
+                'field_id' => $nppField->field_id,
                 'name' => 'npp',
                 'label' => '№ п/п',
                 'help' => '',
@@ -1207,7 +1207,7 @@ return new class implements Seeder {
             [
                 'npp' => 3,
                 'table_id' => $adminMenu->table_id,
-                'field_id' => 15,
+                'field_id' => $nppField->field_id,
                 'name' => 'npp',
                 'label' => '№ п/п',
                 'help' => '',

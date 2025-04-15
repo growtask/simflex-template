@@ -11,10 +11,12 @@ class PackageInstaller
         // make sure core is installed, if so - run the actual thing
         $path = $event->getComposer()->getConfig()->get(
                 'vendor-dir'
-            ) . '/growtask/simflex/Extensions/Install/PackageInstaller.php';
+            ) . '/growtask/simflex/src/Extensions/Install/PackageInstaller.php';
         if (is_file($path)) {
             require_once $path;
             \Simflex\Extensions\Install\PackageInstaller::onPackageEvent($event);
+        } else {
+            echo "[!] PackageInstaller not found, skipping (path: $path).\n";
         }
     }
 }

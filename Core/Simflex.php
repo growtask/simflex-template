@@ -49,6 +49,7 @@ class Simflex
             $this->initPhpCli();
         }
 
+        $this->initExceptionHandler();
         $this->initServices();
         $this->initEvents();
         $this->initLogger();
@@ -187,6 +188,21 @@ class Simflex
         $this->cfg->load();
 
         Container::set('config', $this->cfg);
+    }
+
+    protected function initExceptionHandler(): void
+    {
+        // whoops catches the errors, no need for us to do it
+        if ($this->cfg->devMode) {
+            return;
+        }
+
+        set_exception_handler(function (\Throwable $ex) {
+            Log::emergency("Exception: {ex}\n\nStack trace: {st}", [
+                'ex' => $ex->getMessage(),
+                'st' => $ex->getTraceAsString(),
+            ]);
+        });
     }
 
     /**
