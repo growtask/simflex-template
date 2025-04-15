@@ -21,6 +21,7 @@
     text-rendering: geometricPrecision;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    interpolate-size: allow-keywords;
 }
 
 html,
@@ -140,7 +141,6 @@ audio, canvas, iframe, video {
     max-width: 100%;
     height: auto;
     display: block;
-    vertical-align: top;
     object-fit: cover;
     overflow: hidden;
 }
@@ -161,7 +161,6 @@ input, button, textarea, select, optgroup {
     color: inherit;
     padding: 0;
     margin: 0;
-    vertical-align: middle;
 }
 
 input, textarea {
@@ -192,7 +191,7 @@ button {
 }
 
 :-moz-focusring {
-    outline: auto;
+    outline: none;
 }
 
 :-moz-ui-invalid {

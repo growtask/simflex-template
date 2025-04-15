@@ -78,7 +78,7 @@ function getSimflexVersion(): string
  */
 function renderIcon(string $iconName, string $className = ''): string {
     return sprintf(
-        '<svg class="%s"><use href="/assets/icons/icons.svg#icon-%s"></use></svg>',
+        '<svg class="%s" aria-hidden="true"><use href="/assets/icons/icons.svg#icon-%s"></use></svg>',
         htmlspecialchars($className),
         htmlspecialchars($iconName)
     );

@@ -30,9 +30,19 @@
     <link rel="canonical" href="<?= url(Simflex\Core\Container::getRequest()->getPath()) ?>"/>
 
     <!-- Main meta data -->
-    <?php Simflex\Core\Page::meta(); ?>
-    <meta name="description" content="<?= Simflex\Core\Page::$override['description'] ?>"/>
-    <meta name="keywords" content="<?= Simflex\Core\Page::$override['keywords'] ?>"/>
+    <?php
+    $content = App\Extensions\Content\Content::getStatic(Simflex\Core\Container::getRequest()->getPath());
+
+    Simflex\Core\Page::$override['title'] = Simflex\Core\Page::$override['title'] ?: ($content['params']['meta_title'] ?: '');
+    if (Simflex\Core\Page::$override['title']) {
+        Simflex\Core\Page::$override['uses_meta'] = true;
+    }
+
+    Simflex\Core\Page::meta(); ?>
+    <meta name="description"
+          content="<?= Simflex\Core\Page::$override['description'] ?: $content['params']['meta_de'] ?>"/>
+    <meta name="keywords"
+          content="<?= Simflex\Core\Page::$override['keywords'] ?: $content['params']['meta_kw'] ?>"/>
     <meta name="robots" content="index, follow">
 
     <!-- Structured data -->
@@ -61,12 +71,11 @@
     <meta property="og:url" content="<?= url(Simflex\Core\Container::getRequest()->getPath()) ?>">
     <meta property="og:description" content="<?= Simflex\Core\Page::$override['description'] ?>">
     <meta property="og:site_name" content="{site_name}">
-    <meta property="og:description" content="{company}"/>
     <meta property="og:logo" content="<?= url('/assets/meta/favicon/icon-192.png') ?>">
     <meta property="og:locale" content="ru_RU"/>
     <meta property="og:image" content="<?= url('/assets/meta/og-image.png') ?>">
     <meta property="vk:image" content="<?= url('/assets/meta/og-image.png') ?>">
-    <meta name="twitter:card" content="<?= url('/assets/meta/og-image.png') ?>">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="<?= url('/assets/meta/og-image.png') ?>">
 
     <!-- Analytics tools (Yandex.Metrika etc.) -->
