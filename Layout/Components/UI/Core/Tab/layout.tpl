@@ -12,8 +12,8 @@ $tabClasses = [
 
 <?php if ($data['link']): ?>
     <a href="<?= $data['link'] ?>" class="<?= implode(' ', $tabClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
-        <?php if ($data['icon']): ?>
-            <?= renderIcon($data['icon'], 'tab__icon') ?>
+        <?php if ($data['iconLeft']): ?>
+            <?= renderIcon($data['iconLeft'], 'tab__icon-left') ?>
         <?php endif; ?>
 
         <span class="tab__text"><?= $data['text'] ?></span>
@@ -22,14 +22,14 @@ $tabClasses = [
             <span class="tab__badge"><?= $data['badge'] ?></span>
         <?php endif; ?>
 
-        <?php if ($data['chevron']): ?>
-            <?= renderIcon('chevron-' . $data['chevron'] . '-sm', 'tab__chevron') ?>
+        <?php if ($data['iconRight']): ?>
+            <?= renderIcon($data['iconRight'], 'tab__icon-right') ?>
         <?php endif; ?>
     </a>
 <?php else: ?>
-    <button class="<?= implode(' ', $tabClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
-        <?php if ($data['icon']): ?>
-            <?= renderIcon($data['icon'], 'tab__icon') ?>
+    <button type="<?= $data['attributes']['type'] ?? 'button' ?>" class="<?= implode(' ', $tabClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
+        <?php if ($data['iconLeft']): ?>
+            <?= renderIcon($data['iconLeft'], 'tab__icon-left') ?>
         <?php endif; ?>
 
         <span class="tab__text"><?= $data['text'] ?></span>
@@ -38,8 +38,8 @@ $tabClasses = [
             <span class="tab__badge"><?= $data['badge'] ?></span>
         <?php endif; ?>
 
-        <?php if ($data['chevron']): ?>
-            <?= renderIcon('chevron-' . $data['chevron'] . '-sm', 'tab__chevron') ?>
+        <?php if ($data['iconRight']): ?>
+            <?= renderIcon($data['iconRight'], 'tab__icon-right') ?>
         <?php endif; ?>
     </button>
 <?php endif; ?>

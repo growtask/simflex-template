@@ -6,12 +6,12 @@
     cursor: pointer;
     border: transparent solid;
     width: fit-content;
+    touch-action: manipulation;
     @include transition((border, background, color, opacity));
     @include border-w(2px);
 
     &__text {
         margin-inline: vw(4px);
-        @include transition((color));
 
         @include HD {
             margin-inline: vwh(4px);
@@ -24,7 +24,7 @@
         }
     }
 
-    &__icon {
+    &__icon-left, &__icon-right {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -54,16 +54,6 @@
             padding-inline: vwm(4px);
         }
     }
-
-    &__chevron {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        @include transition((fill, stroke, transform));
-        @include icon(24px);
-    }
-
 
     /*----------STYLES-----------*/
     &-primary {
@@ -324,22 +314,7 @@
             @include t3-b;
         }
 
-        .tab__icon {
-            margin-inline: vw(4px);
-            @include icon(16px);
-
-            @include HD {
-                margin-inline: vwh(4px);
-            }
-            @include Tablet {
-                margin-inline: vwt(4px);
-            }
-            @include Mobile {
-                margin-inline: vwm(4px);
-            }
-        }
-
-        .tab__chevron {
+        .tab__icon-left, .tab__icon-right {
             margin-inline: vw(4px);
             @include icon(16px);
 
@@ -485,7 +460,7 @@
             padding-inline: 0 !important;
             border-radius: 0 !important;
             background: transparent;
-            color: var(--gray-lighter);
+            color: var(--gray-light);
 
             @media (hover: hover) and (pointer: fine) {
                 &:hover {

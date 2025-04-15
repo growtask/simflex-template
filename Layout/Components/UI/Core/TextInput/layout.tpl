@@ -18,7 +18,7 @@ $inputClasses = [
         <?php endif; ?>
 
         <div class="text-input__input-container">
-            <input type="text" id="<?= $data['id'] ?>" class="text-input__field" <?= buildAttrs($data['attributes'] ?? []) ?>>
+            <input type="<?= $data['attributes']['type'] ?? 'text' ?>" id="<?= $data['id'] ?>" class="text-input__field" <?= buildAttrs($data['attributes'] ?? []) ?>>
 
             <?php if ($data['icon']): ?>
                 <?= renderIcon($data['icon'], 'text-input__icon') ?>

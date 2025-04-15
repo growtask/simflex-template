@@ -8,6 +8,7 @@
     border: transparent solid;
     width: fit-content;
     position: relative;
+    touch-action: manipulation;
     @include transition((border, background, color, opacity));
     @include border-w(2px);
 

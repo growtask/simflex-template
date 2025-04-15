@@ -34,7 +34,7 @@ $accordionClasses = [
                 <span class="accordion__badge"><?= $data['badge'] ?></span>
             <?php endif; ?>
 
-            <button class="accordion__button">
+            <button type="button" class="accordion__button">
                 <?= renderIcon('chevron-down', 'accordion__chevron') ?>
             </button>
         </div>

@@ -8,6 +8,7 @@
     padding: vw(2px);
     margin: vw(-2px);
     gap: vw(10px);
+    touch-action: manipulation;
     @include transition((background-color));
 
     @include HD {
