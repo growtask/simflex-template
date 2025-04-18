@@ -18,6 +18,7 @@
     }
 
     &-orientation_vertical {
+        align-self: stretch;
         height: 100%;
         width: max(#{vw(2px), 2px});
 

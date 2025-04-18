@@ -4,6 +4,7 @@
     grid-template-rows: min-content 0fr;
     overflow: hidden;
     border: solid transparent;
+    touch-action: manipulation;
     @include transition((grid-template-rows, background, border-color));
     @include border-w(2px);
 
@@ -11,15 +12,16 @@
         grid-template-rows: min-content 1fr;
     }
 
-    &:active {
-        background: var(--Gray-Light);
+    @media (hover: hover) and (pointer: fine) {
+        &:hover:not(:has(&__content:hover)) {
+            cursor: pointer;
+        }
     }
 
     &__header {
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
-        cursor: pointer;
 
         &-wrapper {
             display: inline-flex;
@@ -114,7 +116,6 @@
     &__content {
         display: flex;
         flex-direction: column;
-
         overflow: hidden;
     }
 
@@ -128,12 +129,12 @@
         background: var(--gray-lighter);
 
         @media (hover: hover) and (pointer: fine) {
-            &:hover {
+            &:hover:not(:has(.accordion__content:hover)) {
                 border-color: var(--gray-light);
             }
         }
 
-        &:active {
+        &:active:not(:has(.accordion__content:active)) {
             background: var(--gray-light);
             border-color: var(--gray-light);
         }
@@ -145,7 +146,7 @@
         border-bottom-color: var(--gray-light);
 
         @media (hover: hover) and (pointer: fine) {
-            &:hover {
+            &:hover:not(:has(.accordion__content:hover)) {
                 border-bottom-color: var(--color1-main);
 
                 .accordion__icon, .accordion__title, .accordion__chevron {
@@ -154,7 +155,7 @@
             }
         }
 
-        &:active {
+        &:active:not(:has(.accordion__content:active)) {
             border-bottom-color: var(--color1-dark);
 
             .accordion__icon, .accordion__title, .accordion__chevron {
@@ -177,7 +178,7 @@
         }
 
         @media (hover: hover) and (pointer: fine) {
-            &:hover {
+            &:hover:not(:has(.accordion__content:hover)) {
                 border-color: var(--gray-light);
 
                 .accordion__button {
@@ -186,7 +187,7 @@
             }
         }
 
-        &:active {
+        &:active:not(:has(.accordion__content:active)) {
             background: var(--gray-light);
             border-color: var(--gray-light);
 
@@ -378,12 +379,12 @@
             background: var(--gray-dark);
 
             @media (hover: hover) and (pointer: fine) {
-                &:hover {
+                &:hover:not(:has(.accordion__content:hover)) {
                     border-color: var(--gray-light);
                 }
             }
 
-            &:active {
+            &:active:not(:has(.accordion__content:active)) {
                 background: var(--gray-darker);
                 border-color: var(--gray-light);
             }
@@ -409,7 +410,7 @@
             }
 
             @media (hover: hover) and (pointer: fine) {
-                &:hover {
+                &:hover:not(:has(.accordion__content:hover)) {
                     border-bottom-color: var(--color1-main);
 
                     .accordion__icon, .accordion__title, .accordion__chevron {
@@ -418,7 +419,7 @@
                 }
             }
 
-            &:active {
+            &:active:not(:has(.accordion__content:active)) {
                 border-bottom-color: var(--color1-dark);
 
                 .accordion__icon, .accordion__title, .accordion__chevron {
@@ -449,7 +450,7 @@
             }
 
             @media (hover: hover) and (pointer: fine) {
-                &:hover {
+                &:hover:not(:has(.accordion__content:hover)) {
                     border-color: var(--gray-light);
 
                     .accordion__button {
@@ -458,7 +459,7 @@
                 }
             }
 
-            &:active {
+            &:active:not(:has(.accordion__content:active)) {
                 background: var(--gray-darker);
                 border-color: var(--gray-light);
 

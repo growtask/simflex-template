@@ -25,7 +25,7 @@ $buttonMenuClasses = [
         <?php endif; ?>
     </a>
 <?php else: ?>
-    <button class="<?= implode(' ', $buttonMenuClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
+    <button type="<?= $data['attributes']['type'] ?? 'button' ?>" class="<?= implode(' ', $buttonMenuClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
         <?php if ($data['badge']): ?>
             <span class="btn-menu__badge"><?= $data['badge'] ?></span>
         <?php endif; ?>
