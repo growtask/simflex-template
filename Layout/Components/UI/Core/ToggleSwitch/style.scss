@@ -3,6 +3,7 @@
     display: inline-flex;
     align-items: center;
     width: fit-content;
+    touch-action: manipulation;
 
     &__wrapper {
         flex-shrink: 0;

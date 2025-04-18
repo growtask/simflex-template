@@ -35,7 +35,7 @@ $buttonClasses = [
         <?php endif; ?>
     </a>
 <?php else: ?>
-    <button class="<?= implode(' ', $buttonClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
+    <button type="<?= $data['attributes']['type'] ?? 'button' ?>" class="<?= implode(' ', $buttonClasses) ?>" <?= buildAttrs($data['attributes'] ?? []) ?>>
         <?php if ($data['icon'] && $data['iconPos'] === 'left' && $data['text']): ?>
             <span class="btn__icon btn__icon_left">
                 <?= renderIcon($data['icon']) ?>

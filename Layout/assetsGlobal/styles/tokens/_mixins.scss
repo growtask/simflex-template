@@ -98,15 +98,17 @@
 
 /*----------TEXT TRUNCATE-----------*/
 @mixin truncate($lines: 1) {
-    @if $lines == 1 {
-        white-space: nowrap;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    @supports (-webkit-line-clamp: $lines) {
         overflow: hidden;
         text-overflow: ellipsis;
-    } @else {
+        white-space: initial;
         display: -webkit-box;
         -webkit-line-clamp: $lines;
         -webkit-box-orient: vertical;
-        overflow: hidden;
     }
 }
 
@@ -124,6 +126,16 @@
     display: grid;
     grid-template-columns: $columns;
     grid-template-rows: $rows;
+}
+
+/*----------GAP-----------*/
+@mixin gap($values...) {
+    @if length($values) == 1 {
+        @include spacing(gap, nth($values, 1));
+    } @else if length($values) == 2 {
+        @include spacing(row-gap, nth($values, 1));
+        @include spacing(column-gap, nth($values, 2));
+    }
 }
 
 /*----------CENTER ELEMENT-----------*/

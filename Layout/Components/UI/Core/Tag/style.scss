@@ -6,6 +6,7 @@
     cursor: pointer;
     border: transparent solid;
     width: fit-content;
+    touch-action: manipulation;
     @include transition((border, background, color, opacity));
     @include border-w(2px);
 
@@ -18,7 +19,6 @@
 
     &__text {
         @include truncate();
-        @include transition((color));
     }
 
     &__icon {
