@@ -292,10 +292,7 @@ class Simflex
             Log::addLogger(Container::get('debugbar')->getMessages());
         }
 
-        // cli logger
-        if (SF_LOCATION == SF_LOCATION_CLI) {
-            Log::addLogger(new StdLogger());
-        }
+        Log::addLogger(new StdLogger());
 
         // file logger
         $this->cfg->extra['logPath'] = SF_ROOT_PATH . '/uf/log';
