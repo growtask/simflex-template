@@ -1,6 +1,6 @@
 /*----------RESPONSIVE MEDIA-----------*/
 @function stripUnit($value) {
-@return $value / ($value * 0 + 1);
+    @return $value / ($value * 0 + 1);
 }
 
 @function vw($px, $media: 1920) {
