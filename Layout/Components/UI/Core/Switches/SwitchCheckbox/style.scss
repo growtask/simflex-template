@@ -1,0 +1,206 @@
+.checkbox {
+    /*----------CORE STYLE-----------*/
+    position: relative;
+    display: inline-flex;
+    width: fit-content;
+    cursor: pointer;
+    touch-action: manipulation;
+    @include spacing(gap, 8px);
+    @include transition((background-color));
+
+    &__input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    &__icon {
+        position: relative;
+        flex-shrink: 0;
+
+        &-default,
+        &-hover,
+        &-active,
+        &-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            transition: all .2s ease;
+        }
+
+        &-default,
+        &-hover,
+        &-line {
+            color: var(--gray-medium);
+        }
+
+        &-hover,
+        &-active {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        &-default {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        &-active {
+            color: var(--color1-main);
+        }
+
+        &-line {
+            path {
+                fill: transparent;
+                transition: all .2s ease;
+            }
+        }
+    }
+
+    &__text {
+        user-select: none;
+        @include t2;
+
+        a {
+            color: var(--color1-dark);
+            @include transition((color));
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: var(--color1-main);
+                }
+            }
+
+            &:active {
+                color: var(--color1-darker);
+            }
+        }
+    }
+
+    /*----------POSITION-----------*/
+    &-position {
+        &_left {
+            flex-direction: row;
+        }
+
+        &_right {
+            flex-direction: row-reverse;
+        }
+    }
+
+    /*----------STYLES-----------*/
+    &-solid {
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                .checkbox__input:not(:checked) ~ .checkbox__icon .checkbox__icon-hover {
+                    visibility: visible;
+                    opacity: 1;
+                }
+
+                .checkbox__input:checked ~ .checkbox__icon .checkbox__icon-active {
+                    color: var(--color1-light);
+                }
+            }
+        }
+
+        .checkbox__input:checked ~ .checkbox__icon .checkbox__icon {
+            &-default,
+            &-hover {
+                visibility: hidden;
+                opacity: 0;
+            }
+
+            &-active {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+    }
+
+    &-line {
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                .checkbox__input:not(:checked) ~ .checkbox__icon .checkbox__icon-line path {
+                    fill: var(--color1-light);
+                }
+
+                .checkbox__input:checked ~ .checkbox__icon .checkbox__icon-line {
+                    color: var(--color1-dark);
+
+                    path {
+                        fill: var(--color1-dark);
+                    }
+                }
+            }
+        }
+
+        .checkbox__input:checked ~ .checkbox__icon .checkbox__icon-line {
+            color: var(--color1-main);
+
+            path {
+                fill: var(--color1-main);
+            }
+        }
+    }
+
+    /*----------SIZES-----------*/
+    &-size_m .checkbox {
+        &-line .checkbox__icon {
+            @include icon(34px);
+        }
+
+        &__icon {
+            @include icon(32px);
+        }
+
+        &__text {
+            @include spacing(padding-top, 4px);
+            @include spacing(padding-bottom, 4px);
+        }
+    }
+
+    &-size_s .checkbox {
+        &-line .checkbox__icon {
+            @include icon(26px);
+        }
+
+        &__icon {
+            @include icon(24px);
+        }
+    }
+
+    /*----------THEME-----------*/
+    &-theme_light {
+        .checkbox__text {
+            color: var(--gray-dark);
+        }
+    }
+
+    &-theme_dark  {
+        .checkbox__text {
+            color: var(--gray-lighter);
+        }
+
+        &.checkbox-line {
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    .checkbox__input:not(:checked) ~ .checkbox__icon .checkbox__icon-line path {
+                        fill: var(--color1-darker);
+                    }
+
+                    .checkbox__input:checked ~ .checkbox__icon .checkbox__icon-line {
+                        color: var(--color1-light);
+
+                        path {
+                            fill: var(--color1-light);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
