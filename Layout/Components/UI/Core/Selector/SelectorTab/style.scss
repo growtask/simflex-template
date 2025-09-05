@@ -1,0 +1,46 @@
+.selector-tab {
+    display: inline-flex;
+    align-items: center;
+    color: var(--gray-medium);
+    background: transparent;
+    @include spacing(gap, 4px);
+    @include spacing(height, 48px);
+    @include spacing(padding-inline, 12px);
+    @include border-r(12px);
+    @include transition((background, color));
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            color: var(--color1-main);
+        }
+    }
+
+    &:active {
+        color: var(--color1-dark);
+    }
+
+    &__icon {
+        flex-shrink: 0;
+        @include icon(24px);
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &__text {
+        @include spacing(padding-inline, 4px);
+        @include t2-b;
+    }
+
+    &-theme_light.active {
+        color: var(--gray-darker);
+        background: var(--gray-white);
+    }
+
+    &-theme_dark.active {
+        color: var(--gray-white);
+        background: var(--gray-dark);
+    }
+}

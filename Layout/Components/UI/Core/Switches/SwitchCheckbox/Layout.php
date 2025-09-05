@@ -2,10 +2,6 @@
 
 namespace App\Layout\Components\UI\Core\Switches\SwitchCheckbox;
 
-use App\Layout\Components\UI\Core\Switches\SwitchCheckbox\SwitchCheckboxPosition;
-use App\Layout\Components\UI\Core\Switches\SwitchCheckbox\SwitchCheckboxSize;
-use App\Layout\Components\UI\Core\Switches\SwitchCheckbox\SwitchCheckboxStyle;
-use App\Layout\Components\UI\Core\Switches\SwitchCheckbox\SwitchCheckboxTheme;
 use App\Layout\LayoutBase;
 
 class Layout extends LayoutBase
