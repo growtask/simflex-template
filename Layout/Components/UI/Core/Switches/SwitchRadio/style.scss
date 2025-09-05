@@ -1,16 +1,16 @@
-.radio-option {
+.radio {
     width: fit-content;
     touch-action: manipulation;
 
     &-position {
         &_left {
-            .radio-option__label {
+            .radio__label {
                 flex-direction: row;
             }
         }
 
         &_right {
-            .radio-option__label {
+            .radio__label {
                 flex-direction: row-reverse;
             }
         }
@@ -22,22 +22,20 @@
         width: 0;
         height: 0;
 
-
-
-        &:checked + .radio-option__label .radio-option__indicator {
+        &:checked + .radio__label .radio__indicator {
             animation: select 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        &:checked + .radio-option__label .radio-option__indicator {
+        &:checked + .radio__label .radio__indicator {
             border-color: var(--color1-main);
             background-color: var(--color1-main);
         }
 
-        &:checked + .radio-option__label .radio-option__indicator::after {
+        &:checked + .radio__label .radio__indicator::after {
             transform: translate(-50%, -50%) scale(1);
         }
 
-        &:disabled + .radio-option__label {
+        &:disabled + .radio__label {
             opacity: 0.5;
             cursor: not-allowed;
         }
@@ -74,22 +72,12 @@
     }
 
     /*----------SIZES-----------*/
-    &-size_l {
-        .radio-option__label {
-            gap: vw(12px);
-
-            @include HD {
-                gap: vwh(12px);
-            }
-            @include Tablet {
-                gap: vwt(12px);
-            }
-            @include Mobile {
-                gap: vwm(12px);
-            }
+    &-size-radio_l {
+        .radio__label {
+            @include spacing(gap, 12px);
         }
 
-        .radio-option__indicator {
+        .radio__indicator {
             @include icon(40px);
             @include border-w(6px);
 
@@ -98,22 +86,13 @@
             }
         }
     }
-    &-size_m {
-        .radio-option__label {
-            gap: vw(8px);
 
-            @include HD {
-                gap: vwh(8px);
-            }
-            @include Tablet {
-                gap: vwt(8px);
-            }
-            @include Mobile {
-                gap: vwm(8px);
-            }
+    &-size-radio_m {
+        .radio__label {
+            @include spacing(gap, 8px);
         }
 
-        .radio-option__indicator {
+        .radio__indicator {
             @include icon(32px);
             @include border-w(4px);
 
@@ -123,22 +102,12 @@
         }
     }
 
-    &-size_s {
-        .radio-option__label {
-            gap: vw(8px);
-
-            @include HD {
-                gap: vwh(8px);
-            }
-            @include Tablet {
-                gap: vwt(8px);
-            }
-            @include Mobile {
-                gap: vwm(8px);
-            }
+    &-size-radio_s {
+        .radio__label {
+            @include spacing(gap, 8px);
         }
 
-        .radio-option__indicator {
+        .radio__indicator {
             @include icon(24px);
             @include border-w(4px);
 
@@ -148,28 +117,34 @@
         }
     }
 
+    &-size_m {
+        @include spacing(padding-top, 4px);
+        @include spacing(padding-bottm, 4px);
+    }
+
     /*----------THEME-----------*/
     &-theme_light {
-        .radio-option__input {
-            &:not(:disabled, :checked) + .radio-option__label:hover .radio-option__indicator {
+        .radio__input {
+            &:not(:disabled, :checked) + .radio__label:hover .radio__indicator {
                 border-color: var(--color1-light);
             }
         }
 
-        .radio-option__text {
+        .radio__text {
             color: var(--gray-dark);
         }
 
 
     }
+
     &-theme_dark {
-        .radio-option__input {
-            &:not(:disabled, :checked) + .radio-option__label:hover .radio-option__indicator {
+        .radio__input {
+            &:not(:disabled, :checked) + .radio__label:hover .radio__indicator {
                 border-color: var(--color1-darker);
             }
         }
 
-        .radio-option__text {
+        .radio__text {
             color: var(--gray-lighter);
         }
     }

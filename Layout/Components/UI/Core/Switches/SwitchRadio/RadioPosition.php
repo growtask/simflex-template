@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Layout\Components\UI\Core\RadioOption;
+namespace App\Layout\Components\UI\Core\Switches\SwitchRadio;
 
 enum RadioPosition: string
 {
