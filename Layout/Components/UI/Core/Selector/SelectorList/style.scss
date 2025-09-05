@@ -1,0 +1,18 @@
+.selector-list {
+    display: inline-flex;
+    border: solid;
+    @include spacing(gap, 4px);
+    @include spacing(padding, 2px);
+    @include border-w(2px);
+    @include border-r(16px);
+
+    &-theme_light {
+        border-color: var(--gray-lighter);
+        background: var(--gray-lighter);
+    }
+
+    &-theme_dark {
+        border-color: var(--gray-dark);
+        background: var(--gray-black);
+    }
+}

@@ -4,6 +4,7 @@
 $checkboxClasses = [
     'selector-tab',
     "selector-tab-theme_{$data['theme']}",
+    $data['isActive'] ? 'active' : '',
     $data['className'] ?? ''
 ];
 ?>
