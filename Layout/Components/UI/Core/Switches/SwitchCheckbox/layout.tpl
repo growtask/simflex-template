@@ -4,8 +4,9 @@
 $checkboxClasses = [
     'checkbox',
     "checkbox-{$data['style']}",
+    "checkbox-size-icon_{$data['iconSize']}",
     "checkbox-size_{$data['size']}",
-    "checkbox-position_{$data['position']}",
+    "checkbox-position_{$data['iconPosition']}",
     "checkbox-theme_{$data['theme']}",
     $data['className'] ?? ''
 ];

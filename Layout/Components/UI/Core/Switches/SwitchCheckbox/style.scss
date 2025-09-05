@@ -148,7 +148,7 @@
     }
 
     /*----------SIZES-----------*/
-    &-size_m .checkbox {
+    &-size-icon_m .checkbox {
         &-line .checkbox__icon {
             @include icon(34px);
         }
@@ -163,7 +163,7 @@
         }
     }
 
-    &-size_s .checkbox {
+    &-size-icon_s .checkbox {
         &-line .checkbox__icon {
             @include icon(26px);
         }
@@ -171,6 +171,11 @@
         &__icon {
             @include icon(24px);
         }
+    }
+
+    &-size_m {
+        @include spacing(padding-top, 4px);
+        @include spacing(padding-bottom, 4px);
     }
 
     /*----------THEME-----------*/

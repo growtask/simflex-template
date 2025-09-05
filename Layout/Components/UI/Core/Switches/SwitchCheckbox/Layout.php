@@ -14,9 +14,10 @@ class Layout extends LayoutBase
         string                 $className = '',
         string                 $text = '',
         SwitchCheckboxStyle    $style = SwitchCheckboxStyle::Solid,
+        SwitchCheckboxSizeIcon $iconSize = SwitchCheckboxSizeIcon::Small,
         SwitchCheckboxSize     $size = SwitchCheckboxSize::Small,
         SwitchCheckboxTheme    $theme = SwitchCheckboxTheme::Light,
-        SwitchCheckboxPosition $position = SwitchCheckboxPosition::Left,
+        SwitchCheckboxPosition $iconPosition = SwitchCheckboxPosition::Left,
         array                  $attributes = []
     ): void
     {
@@ -26,9 +27,10 @@ class Layout extends LayoutBase
                 'attributes'
             ) + [
                 'style' => $style->value,
+                'iconSize' => $iconSize->value,
                 'size' => $size->value,
                 'theme' => $theme->value,
-                'position' => $position->value
+                'iconPosition' => $iconPosition->value
             ]
         );
     }
