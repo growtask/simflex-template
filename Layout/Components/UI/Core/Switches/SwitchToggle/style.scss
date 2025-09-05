@@ -1,0 +1,178 @@
+.toggle {
+    /*----------CORE STYLE-----------*/
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    touch-action: manipulation;
+
+    &__wrapper {
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    &__input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    &__background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--gray-light);
+        border-radius: 999px;
+        @include transition((background-color));
+    }
+
+    &__text {
+        @include t2;
+    }
+
+    &-position {
+        &_left {
+            flex-direction: row;
+        }
+
+        &_right {
+            flex-direction: row-reverse;
+        }
+    }
+
+    /* Hover states */
+    &__input:not(:checked):hover + .toggle__background {
+        background-color: var(--gray-medium);
+    }
+
+    &__input:checked:hover + .toggle__background {
+        background-color: var(--color1-light);
+    }
+
+    /* Active states */
+    &__input:not(:checked):active + .toggle__background {
+        background-color: var(--gray-dark);
+    }
+
+    &__input:checked:active + .toggle__background {
+        background-color: var(--color1-dark);
+    }
+
+    &__thumb {
+        position: absolute;
+        background-color: var(--gray-white);
+        border-radius: 50%;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        @include transition((transform));
+    }
+
+    /* Checkmark styles */
+    &__check {
+        stroke-width: 3;
+        stroke: var(--color1-main);
+        stroke-dasharray: 20;
+        stroke-dashoffset: 20;
+        @include transition((stroke, stroke-dashoffset));
+    }
+
+    &__input:checked + .toggle__background {
+        background-color: var(--color1-main);
+    }
+
+    &__input:checked + .toggle__background .toggle__thumb {
+        transform: translateX(116%);
+    }
+
+    &__input:checked + .toggle__background .toggle__check {
+        stroke-dashoffset: 0;
+        stroke: var(--color1-main);
+    }
+
+    /*----------SIZES-----------*/
+    &-size-toggle_l {
+        @include spacing(gap, 12px);
+
+        .toggle__wrapper {
+            @include spacing(width, 74px);
+            @include spacing(height, 40px);
+        }
+
+        .toggle__thumb {
+            @include spacing(top, 6px);
+            @include spacing(left, 6px);
+            @include spacing(bottom, 6px);
+            @include icon(28px);
+        }
+
+        .toggle__check {
+            @include icon(24px);
+        }
+    }
+
+    &-size-toggle_m {
+        @include spacing(gap, 8px);
+
+        .toggle__wrapper {
+            flex-shrink: 0;
+            @include spacing(width, 60px);
+            @include spacing(height, 32px);
+        }
+
+        .toggle__thumb {
+            @include spacing(top, 4px);
+            @include spacing(left, 4px);
+            @include spacing(bottom, 4px);
+            @include icon(24px);
+        }
+
+        .toggle__check {
+            @include icon(16px);
+        }
+    }
+
+    &-size-toggle_s {
+        @include spacing(gap, 8px);
+
+        .toggle__wrapper {
+            @include spacing(width, 44px);
+            @include spacing(height, 24px);
+        }
+
+        .toggle__thumb {
+            @include spacing(top, 4px);
+            @include spacing(left, 4px);
+            @include spacing(bottom, 4px);
+            @include icon(16px);
+        }
+
+        .toggle__check {
+            @include icon(16px);
+        }
+    }
+
+    &-size_m {
+        @include spacing(padding-top, 4px);
+        @include spacing(padding-bottom, 4px);
+    }
+
+    /*----------THEME-----------*/
+    &-theme_dark {
+        .toggle__text {
+            color: var(--gray-dark);
+        }
+    }
+
+    &-theme_dark {
+        .toggle__text {
+            color: var(--gray-lighter);
+        }
+    }
+}

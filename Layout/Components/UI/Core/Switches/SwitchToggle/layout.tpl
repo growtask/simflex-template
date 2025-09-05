@@ -2,9 +2,10 @@
 /** @var array $data */
 
 $toggleClasses = [
-    'toggle',
+    "toggle",
+    "toggle-size-toggle_{$data['toggleSize']}",
     "toggle-size_{$data['size']}",
-    "toggle-position_{$data['position']}",
+    "toggle-position_{$data['togglePosition']}",
     "toggle-theme_{$data['theme']}",
     $data['className'] ?? ''
 ];
