@@ -52,7 +52,7 @@ function asset(string $path, bool $siteOnly = false): string
 function url(string $path, array $get = []): string
 {
     $q = http_build_query($get);
-    return ('http' . ($_SERVER['HTTPS'] ? 's' : '')) . '://' . $_SERVER['HTTP_HOST'] . $path . ($q ? ('?' . $q) : '');
+    return ('http' . (!empty($_SERVER['HTTPS']) ? 's' : '')) . '://' . $_SERVER['HTTP_HOST'] . $path . ($q ? ('?' . $q) : '');
 }
 
 /**

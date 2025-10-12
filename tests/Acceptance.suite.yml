@@ -7,9 +7,9 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://replaceme/
+            url: http://php/
             browser: chrome
-            host: localhost
+            host: selenium
             port: 4444
             restart: true
             wait: 10

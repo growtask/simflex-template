@@ -33,16 +33,16 @@
     <?php
     $content = App\Extensions\Content\Content::getStatic(Simflex\Core\Container::getRequest()->getPath());
 
-    Simflex\Core\Page::$override['title'] = Simflex\Core\Page::$override['title'] ?: ($content['params']['meta_title'] ?: '');
-    if (Simflex\Core\Page::$override['title']) {
+    $title = Simflex\Core\Page::$override['title'] ?? $content['params']['meta_title'] ?? '';
+    if ($title) {
         Simflex\Core\Page::$override['uses_meta'] = true;
     }
+    $description = Simflex\Core\Page::$override['description'] ?? $content['params']['meta_de'] ?? '';
+    $keywords = Simflex\Core\Page::$override['keywords'] ?? $content['params']['meta_kw'] ?? '';
 
     Simflex\Core\Page::meta(); ?>
-    <meta name="description"
-          content="<?= Simflex\Core\Page::$override['description'] ?: $content['params']['meta_de'] ?>"/>
-    <meta name="keywords"
-          content="<?= Simflex\Core\Page::$override['keywords'] ?: $content['params']['meta_kw'] ?>"/>
+    <meta name="description" content="<?= $description ?>"/>
+    <meta name="keywords" content="<?= $keywords ?>"/>
     <meta name="robots" content="index, follow">
 
     <!-- Structured data -->
@@ -51,7 +51,7 @@
             "@context": "https://schema.org",
             "@type": "WebPage",
             "name": "{site_name}",
-            "description": "<?= Simflex\Core\Page::$override['description'] ?>",
+            "description": "<?= $description ?>",
             "url": "<?= url('') ?>",
             "logo": "<?= url('/assets/meta/favicon/icon.svg') ?>",
             "sameAs": [
@@ -67,9 +67,9 @@
 
     <!-- Open Graph data -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="<?= Simflex\Core\Page::$override['title'] ?>">
+    <meta property="og:title" content="<?= $title ?>">
     <meta property="og:url" content="<?= url(Simflex\Core\Container::getRequest()->getPath()) ?>">
-    <meta property="og:description" content="<?= Simflex\Core\Page::$override['description'] ?>">
+    <meta property="og:description" content="<?= $description ?>">
     <meta property="og:site_name" content="{site_name}">
     <meta property="og:logo" content="<?= url('/assets/meta/favicon/icon-192.png') ?>">
     <meta property="og:locale" content="ru_RU"/>
@@ -82,10 +82,8 @@
 
 </head>
 <body>
-<?php
-\Simflex\Core\Page::content(); ?>
+<?php \Simflex\Core\Page::content() ?>
 
-<?php
-\Simflex\Core\Page::metaJS(); ?>
+<?php \Simflex\Core\Page::metaJS() ?>
 </body>
 </html>

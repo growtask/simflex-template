@@ -3,7 +3,6 @@ version: '3'
 services:
 
   php:
-#    restart: always
     build: docker/php
     volumes:
       - ./:/var/www/html
@@ -12,7 +11,6 @@ services:
       - "480:80"
 
   db:
-#    restart: always
     build: docker/mysql
     volumes:
       - ./docker/data/mysql:/var/lib/mysql
@@ -24,3 +22,9 @@ services:
       MYSQL_PASSWORD: simflex
       MYSQL_ROOT_PASSWORD: root
       VIRTUAL_HOST: db
+
+  selenium:
+    image: selenium/standalone-chrome:latest
+    shm_size: 2gb
+    ports:
+      - "4444:4444"
