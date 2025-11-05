@@ -1,0 +1,36 @@
+.tab-headling {
+    /*----------CORE STYLE-----------*/
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: fit-content;
+    border-bottom: transparent solid;
+    touch-action: manipulation;
+    color: var(--text-icon-gray-medium);
+    @include transition((border, background, color, opacity));
+    @include spacing(height, 56px);
+    @include spacing(gap, 8px);
+    @include border-w(2px);
+
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            border-color: var(--color1-lighter);
+            color: var(--text-icon-gray-dark);
+        }
+    }
+
+    &:active {
+        border-color: var(--color1-light);
+    }
+
+    &.active {
+        border-color: var(--color1-main);
+        color: var(--text-icon-gray-black);
+    }
+
+    &__text {
+        @include truncate(1);
+        @include h4;
+    }
+}

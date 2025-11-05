@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Layout\Components\UI\Core\Tab;
+namespace App\Layout\Components\UI\Core\Tabs\TabMain;
 
-enum TabSize: string
+enum TabMainSize: string
 {
     case Large = 'l';
     case Medium = 'm';

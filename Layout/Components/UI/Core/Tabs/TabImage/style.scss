@@ -1,5 +1,6 @@
-.tab {
+.tab-image {
     /*----------CORE STYLE-----------*/
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -8,51 +9,54 @@
     width: fit-content;
     touch-action: manipulation;
     @include transition((border, background, color, opacity));
+    @include spacing(padding-inline, 4px);
     @include border-w(2px);
+    @include border-r(12px);
 
-    &__text {
-        margin-inline: vw(4px);
-
-        @include HD {
-            margin-inline: vwh(4px);
-        }
-        @include Tablet {
-            margin-inline: vwt(4px);
-        }
-        @include Mobile {
-            margin-inline: vwm(4px);
-        }
+    &__image {
+        @include border-r(8px);
     }
 
-    &__icon-left, &__icon-right {
+    &__image {
+        object-fit: contain;
+        flex-shrink: 0;
+        user-select: none;
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        @include spacing(gap, 4px);
+    }
+
+    &__text-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: self-start;
+    }
+
+    &__text {
+        text-align: left;
+        @include truncate(1);
+    }
+
+    &__desc {
+        color: var(--gray-medium);
+    }
+
+    &__badge {
+        @include spacing(margin-left, 4px);
+    }
+
+    &__icon-right {
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        @include transition((fill, stroke));
+        @include transition((fill, stroke, transform));
         @include icon(24px);
-    }
-
-    &__badge {
-        height: vw(16px);
-        padding-inline: vw(4px);
-        color: var(--gray-white);
-        background: var(--error-dark);
-        @include t4;
-        @include border-r(12px);
-
-        @include HD {
-            height: vwh(16px);
-            padding-inline: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(16px);
-            padding-inline: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(16px);
-            padding-inline: vwm(4px);
-        }
     }
 
     /*----------STYLES-----------*/
@@ -72,7 +76,6 @@
         }
 
         &.active {
-            cursor: default;
             background: var(--color1-lighter);
             color: var(--gray-black);
         }
@@ -211,128 +214,99 @@
     }
 
     /*----------SIZES-----------*/
-    &-size_l {
-        height: vw(56px);
-        padding-inline: vw(16px);
-        gap: vw(8px);
-        @include border-r(12px);
+    &-size_xl {
+        @include spacing(height, 72px);
+        @include spacing(gap, 20px);
 
-        @include HD {
-            height: vwh(56px);
-            padding-inline: vwh(16px);
-            gap: vwh(8px);
-        }
-        @include Tablet {
-            height: vwt(56px);
-            padding-inline: vwt(16px);
-            gap: vwt(8px);
-        }
-        @include Mobile {
-            height: vwm(56px);
-            padding-inline: vwm(16px);
-            gap: vwm(8px);
+        .tab-image__image {
+            @include icon(64px);
         }
 
-        .tab__text {
+        .tab-image__text {
             @include t2-b;
+        }
+
+        .tab-image__desc {
+            @include t3;
+        }
+    }
+
+    &-size_l {
+        @include spacing(height, 64px);
+        @include spacing(gap, 20px);
+
+        .tab-image__image {
+            @include icon(56px);
+        }
+
+        .tab-image__text {
+            @include t2-b;
+        }
+
+        .tab-image__desc {
+            @include t3;
         }
     }
 
     &-size_m {
-        height: vw(48px);
-        padding-inline: vw(12px);
-        gap: vw(4px);
-        @include border-r(12px);
+        @include spacing(height, 56px);
+        @include spacing(gap, 12px);
 
-        @include HD {
-            height: vwh(48px);
-            padding-inline: vwh(12px);
-            gap: vwh(4px);
+        .tab-image__image {
+            @include icon(48px);
         }
-        @include Tablet {
-            height: vwt(48px);
-            padding-inline: vwt(12px);
-            gap: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(48px);
-            padding-inline: vwm(12px);
-            gap: vwm(4px);
-        }
-        .tab__text {
+
+        .tab-image__text {
             @include t2-b;
+        }
+
+        .tab-image__desc {
+            @include t4;
         }
     }
 
     &-size_s {
-        height: vw(40px);
-        padding-inline: vw(8px);
-        gap: vw(4px);
-        @include border-r(12px);
+        @include spacing(height, 48px);
+        @include spacing(gap, 12px);
 
-        @include HD {
-            height: vwh(40px);
-            padding-inline: vwh(8px);
-            gap: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(40px);
-            padding-inline: vwt(8px);
-            gap: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(40px);
-            padding-inline: vwm(8px);
-            gap: vwm(4px);
+        .tab-image__image {
+            @include icon(40px);
         }
 
-        .tab__text {
-            @include t3-b;
+        .tab-image__text {
+            @include t2-b;
+        }
+
+        .tab-image__desc {
+            @include t4;
         }
     }
 
     &-size_xs {
-        height: vw(36px);
-        padding-inline: vw(4px);
-        gap: 0;
-        @include border-r(8px);
+        @include spacing(height, 40px);
+        @include spacing(gap, 12px);
+        @include spacing(padding-left, 52px);
 
-        @include HD {
-            height: vwh(36px);
-            padding-inline: vwh(4px);
-        }
-        @include Tablet {
-            height: vwt(36px);
-            padding-inline: vwt(4px);
-        }
-        @include Mobile {
-            height: vwm(36px);
-            padding-inline: vwm(4px);
+        .tab-image__image {
+            z-index: 1;
+            position: absolute;
+            @include spacing(left, -2px);
+            @include icon(40px);
+            @include border-r(12px);
         }
 
-        .tab__text {
+        .tab-image__text {
             @include t3-b;
         }
 
-        .tab__icon-left, .tab__icon-right {
-            margin-inline: vw(4px);
-            @include icon(16px);
-
-            @include HD {
-                margin-inline: vwh(4px);
-            }
-            @include Tablet {
-                margin-inline: vwt(4px);
-            }
-            @include Mobile {
-                margin-inline: vwm(4px);
-            }
+        .tab-image__desc {
+            @include t4-lh;
         }
     }
 
     /*----------THEME-----------*/
     &-theme_dark {
-        &.tab-primary {
+        &.tab-image-primary {
             background: var(--gray-dark);
             color: var(--gray-lighter);
 
@@ -363,7 +337,7 @@
             }
         }
 
-        &.tab-secondary {
+        &.tab-image-secondary {
             background: transparent;
             color: var(--gray-lighter);
 
@@ -394,7 +368,7 @@
             }
         }
 
-        &.tab-outline {
+        &.tab-image-outline {
             background: transparent;
             border-color: var(--gray-dark);
             color: var(--gray-lighter);
@@ -425,7 +399,7 @@
             }
         }
 
-        &.tab-underline {
+        &.tab-image-underline {
             padding-inline: 0 !important;
             border-radius: 0 !important;
             background: transparent;
@@ -456,7 +430,7 @@
             }
         }
 
-        &.tab-flat {
+        &.tab-image-flat {
             padding-inline: 0 !important;
             border-radius: 0 !important;
             background: transparent;

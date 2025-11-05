@@ -8,12 +8,26 @@
     --gray-lighter: #EDF3FA;
     --gray-white: #FFFFFF;
 
+    --text-icon-gray-black: #0D0D0D;
+    --text-icon-gray-darker: #262626;
+    --text-icon-gray-dark: #4D4D4D;
+    --text-icon-gray-medium: #919599;
+    --text-icon-gray-light: #DADFE5;
+    --text-icon-gray-lighter: #EDF3FA;
+    --text-icon-gray-white: #FFFFFF;
+
     /*----------COLOR1-----------*/
     --color1-darker: #104FA6;
     --color1-dark: #1461CC;
     --color1-main: #1975F7;
     --color1-light: #63A1F7;
     --color1-lighter: #D2E2F7;
+
+    --text-icon-color1-darker: #104FA6;
+    --text-icon-color1-dark: #1461CC;
+    --text-icon-color1-main: #1975F7;
+    --text-icon-color1-light: #63A1F7;
+    --text-icon-color1-lighter: #D2E2F7;
 
     /*----------COLOR2-----------*/
     --color2-darker: #38388C;
@@ -22,10 +36,20 @@
     --color2-light: #9191F2;
     --color2-lighter: #E5E5FF;
 
+    --text-icon-color2-darker: #38388C;
+    --text-icon-color2-dark: #4D4DBF;
+    --text-icon-color2-main: #6161F2;
+    --text-icon-color2-light: #9191F2;
+    --text-icon-color2-lighter: #E5E5FF;
+
     /*----------GRADIENT-----------*/
     --gradient1-dark: linear-gradient(90deg, #008FD9 0%, #003073 100%);
     --gradient1-main: linear-gradient(90deg, #0DAEFF 0%, #004099 100%);
     --gradient1-light: linear-gradient(90deg, #4DC3FF 0%, #3388FF 100%);
+
+    --text-icon-gradient1-dark: linear-gradient(90deg, #008FD9 0%, #003073 100%);
+    --text-icon-gradient1-main: linear-gradient(90deg, #0DAEFF 0%, #004099 100%);
+    --text-icon-gradient1-light: linear-gradient(90deg, #4DC3FF 0%, #3388FF 100%);
 
     /*----------BACKGROUND-----------*/
     --bg-light: #FFFFFF;

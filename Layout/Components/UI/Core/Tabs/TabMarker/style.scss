@@ -1,0 +1,479 @@
+.tab-marker {
+    /*----------CORE STYLE-----------*/
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: transparent solid;
+    width: fit-content;
+    touch-action: manipulation;
+    @include transition((border, background, color, opacity));
+    @include spacing(padding-inline, 4px);
+    @include border-w(2px);
+    @include border-r(12px);
+
+    &__marker {
+        @include border-r(8px);
+    }
+
+    &__marker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: transparent solid;
+        width: fit-content;
+        color: var(--color1-light);
+        background: var(--color1-lighter);
+
+        &-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            @include icon(24px)
+        }
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        @include spacing(gap, 4px);
+    }
+
+    &__text-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: self-start;
+    }
+
+    &__text {
+        text-align: left;
+        @include truncate(1);
+    }
+
+    &__desc {
+        color: var(--gray-medium);
+    }
+
+    &__badge {
+        @include spacing(margin-left, 4px);
+    }
+
+    &__icon-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        @include transition((fill, stroke, transform));
+        @include icon(24px);
+    }
+
+    /*----------STYLES-----------*/
+    &-primary {
+        background: var(--gray-lighter);
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                color: var(--color1-main);
+            }
+        }
+
+        &:active {
+            background: var(--color1-lighter);
+            color: var(--color1-dark);
+        }
+
+        &.active {
+            background: var(--color1-lighter);
+            color: var(--gray-black);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+            border-color: transparent;
+        }
+    }
+
+    &-secondary {
+        background: transparent;
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--gray-lighter);
+                color: var(--color1-main);
+            }
+        }
+
+        &:active {
+            background: var(--color1-lighter);
+            color: var(--color1-dark);
+        }
+
+        &.active {
+            cursor: default;
+            background: transparent;
+            color: var(--gray-darker);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+            border-color: transparent;
+        }
+    }
+
+    &-outline {
+        background: transparent;
+        border-color: var(--color1-light);
+        color: var(--gray-dark);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background: var(--gray-lighter);
+                border-color: var(--color1-light);
+                color: var(--gray-dark);
+            }
+        }
+
+        &:active {
+            background: transparent;
+            border-color: var(--color1-main);
+            color: var(--gray-black);
+        }
+
+        &.active {
+            cursor: default;
+            background: transparent;
+            border-color: transparent;
+            color: var(--gray-darker);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: var(--gray-medium);
+            color: var(--gray-white);
+            border-color: transparent;
+        }
+    }
+
+    &-underline {
+        padding-inline: 0 !important;
+        border-radius: 0 !important;
+        background: transparent;
+        border-bottom-color: var(--color1-lighter);
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                border-bottom-color: var(--color1-light);
+            }
+        }
+
+        &:active {
+            border-bottom-color: var(--color1-main);
+        }
+
+        &.active {
+            cursor: default;
+            background: transparent;
+            color: var(--color1-main);
+            border-bottom-color: var(--color1-main);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: transparent;
+            color: var(--gray-medium);
+            border-bottom-color: var(--gray-medium);
+        }
+    }
+
+    &-flat {
+        padding-inline: 0 !important;
+        border-radius: 0 !important;
+        background: transparent;
+        color: var(--gray-darker);
+
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                color: var(--color1-main);
+            }
+        }
+
+        &:active {
+            color: var(--color1-darker);
+        }
+
+        &.active {
+            cursor: default;
+            background: transparent;
+            color: var(--gray-black);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background: transparent;
+            color: var(--gray-medium);
+        }
+    }
+
+    /*----------SIZES-----------*/
+    &-size_xl {
+        @include spacing(height, 72px);
+        @include spacing(gap, 20px);
+
+        .tab-marker__marker {
+            @include icon(64px);
+        }
+
+        .tab-marker__text {
+            @include t2-b;
+        }
+
+        .tab-marker__desc {
+            @include t3;
+        }
+    }
+
+    &-size_l {
+        @include spacing(height, 64px);
+        @include spacing(gap, 20px);
+
+        .tab-marker__marker {
+            @include icon(56px);
+        }
+
+        .tab-marker__text {
+            @include t2-b;
+        }
+
+        .tab-marker__desc {
+            @include t3;
+        }
+    }
+
+    &-size_m {
+        @include spacing(height, 56px);
+        @include spacing(gap, 12px);
+
+        .tab-marker__marker {
+            @include icon(48px);
+        }
+
+        .tab-marker__text {
+            @include t2-b;
+        }
+
+        .tab-marker__desc {
+            @include t4;
+        }
+    }
+
+    &-size_s {
+        @include spacing(height, 48px);
+        @include spacing(gap, 12px);
+
+        .tab-marker__marker {
+            @include icon(40px);
+        }
+
+        .tab-marker__text {
+            @include t2-b;
+        }
+
+        .tab-marker__desc {
+            @include t4;
+        }
+    }
+
+    &-size_xs {
+        @include spacing(height, 40px);
+        @include spacing(gap, 12px);
+        @include spacing(padding-left, 52px);
+
+        .tab-marker__marker {
+            z-index: 1;
+            position: absolute;
+            @include spacing(left, -2px);
+            @include icon(40px);
+            @include border-r(12px);
+        }
+
+        .tab-marker__text {
+            @include t3-b;
+        }
+
+        .tab-marker__desc {
+            @include t4-lh;
+        }
+    }
+
+    /*----------THEME-----------*/
+    &-theme_dark {
+        .tab-marker__marker {
+            background: var(--gray-medium);
+            color: var(--gray-darker);
+        }
+
+        &.tab-marker-primary {
+            background: var(--gray-dark);
+            color: var(--gray-lighter);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: var(--color1-light);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                color: var(--color1-main);
+                border-color: var(--gray-dark);
+            }
+
+            &.active {
+                cursor: default;
+                background: var(--gray-darker);
+                border-color: var(--gray-dark);
+                color: var(--gray-lighter);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-white);
+                border-color: transparent;
+            }
+        }
+
+        &.tab-marker-secondary {
+            background: transparent;
+            color: var(--gray-lighter);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    background: var(--gray-dark);
+                    color: var(--color1-light);
+                }
+            }
+
+            &:active {
+                background: var(--gray-darker);
+                border-color: var(--gray-dark);
+                color: var(--color1-main);
+            }
+
+            &.active {
+                cursor: default;
+                background: var(--gray-dark);
+                color: var(--gray-lighter);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-white);
+                border-color: transparent;
+            }
+        }
+
+        &.tab-marker-outline {
+            background: transparent;
+            border-color: var(--gray-dark);
+            color: var(--gray-lighter);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    border-color: var(--gray-medium);
+                }
+            }
+
+            &:active {
+                background: var(--gray-dark);
+                border-color: var(--gray-medium);
+            }
+
+            &.active {
+                cursor: default;
+                background: transparent;
+                border-color: var(--color1-main);
+                color: var(--gray-lighter);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: var(--gray-medium);
+                color: var(--gray-white);
+                border-color: transparent;
+            }
+        }
+
+        &.tab-marker-underline {
+            padding-inline: 0 !important;
+            border-radius: 0 !important;
+            background: transparent;
+            color: var(--gray-lighter);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    border-bottom-color: var(--gray-medium);
+                }
+            }
+
+            &:active {
+                border-bottom-color: var(--gray-dark);
+            }
+
+            &.active {
+                cursor: default;
+                background: transparent;
+                color: var(--gray-white);
+                border-bottom-color: var(--color1-main);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: transparent;
+                color: var(--gray-medium);
+                border-bottom-color: var(--gray-medium);
+            }
+        }
+
+        &.tab-marker-flat {
+            padding-inline: 0 !important;
+            border-radius: 0 !important;
+            background: transparent;
+            color: var(--gray-light);
+
+            @media (hover: hover) and (pointer: fine) {
+                &:hover {
+                    color: var(--color1-light);
+                }
+            }
+
+            &:active {
+                color: var(--color1-main);
+            }
+
+            &.active {
+                cursor: default;
+                background: transparent;
+                color: var(--gray-white);
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                background: transparent;
+                color: var(--gray-medium);
+            }
+        }
+    }
+}

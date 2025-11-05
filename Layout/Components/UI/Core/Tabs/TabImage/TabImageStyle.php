@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Layout\Components\UI\Core\Tab;
+namespace App\Layout\Components\UI\Core\Tabs\TabImage;
 
-enum TabStyle: string
+enum TabImageStyle: string
 {
     case Primary = 'primary';
     case Secondary = 'secondary';

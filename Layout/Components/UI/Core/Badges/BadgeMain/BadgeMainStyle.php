@@ -1,7 +1,7 @@
 <?php
-namespace App\Layout\Components\UI\Core\Badge;
+namespace App\Layout\Components\UI\Core\Badges\BadgeMain;
 
-enum BadgeStyle: string
+enum BadgeMainStyle: string
 {
     case Error = 'error';
     case Alert = 'alert';

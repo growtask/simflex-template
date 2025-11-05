@@ -54,8 +54,8 @@ $menuTabTheme = $data['menuTheme'] === 'light' ? App\Layout\Components\UI\Core\T
                     icon: $option['icon'] ?? '',
                     badge: $option['badge'] ?? '',
                     chevron: \App\Layout\Components\UI\Core\Tab\TabChevron::None,
-                    style: \App\Layout\Components\UI\Core\Tab\TabStyle::Secondary,
-                    size: \App\Layout\Components\UI\Core\Tab\TabSize::Small,
+                    style: \App\Layout\Components\UI\Core\Tab\TabMainStyle::Secondary,
+                    size: \App\Layout\Components\UI\Core\Tab\TabMainSize::Small,
                     theme: $menuTabTheme,
                     attributes: [
 

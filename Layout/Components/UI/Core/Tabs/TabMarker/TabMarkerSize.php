@@ -1,7 +1,8 @@
 <?php
-namespace App\Layout\Components\UI\Core\Badge;
 
-enum BadgeSize: string
+namespace App\Layout\Components\UI\Core\Tabs\TabMarker;
+
+enum TabMarkerSize: string
 {
     case ExtraLarge = 'xl';
     case Large = 'l';
