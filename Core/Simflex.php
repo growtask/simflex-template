@@ -34,8 +34,16 @@ class Simflex
     }
 
     /**
+     * Checks if the request path belongs to the admin panel (its URL prefix is set in config: adminPath)
+     */
+    public function isAdminPath(string $path): bool
+    {
+        $this->initConfig();
+        return \Simflex\Admin\Core::isAdminPath($path);
+    }
+
+    /**
      * Initializes app
-     * @return void
      * @throws SassException
      */
     public function init(): void
@@ -95,9 +103,19 @@ class Simflex
     }
 
     /**
+     * Handles admin file manager API request. Available to admin panel users only
+     */
+    public function executeFileManager(): void
+    {
+        $mgr = new \Simflex\FileManager\Manager(SF_PUBLIC_PATH . '/uf', function () {
+            return (bool)Container::getUser()?->ican(\Simflex\Admin\Auth::LOGIN_PRIV);
+        });
+
+        $mgr->handleRequest();
+    }
+
+    /**
      * Prepares data for output to the user
-     * @param string $data
-     * @return string
      */
     public function prepareOutput(string $data): string
     {
@@ -105,12 +123,17 @@ class Simflex
         $ev->dispatch(new Event(Events::PrePrepareOutput, static::class, $data));
 
         // replace params
-        $params = Container::getCore()::siteParam();
+        // site params are always taken from the site core: Admin\Core::siteParam() requires a key
+        // and can't return the full list
+        $params = \Simflex\Core\Core::siteParam();
+        $params = is_array($params) ? $params : [];
         $params['year'] = date('Y');
 
-        $data = str_replace(array_map(fn(string $key) => '{' . $key . '}', array_keys($params)),
-            array_values($params),
-            $data);
+        $data = str_replace(
+            array_map(fn(int|string $key) => '{' . $key . '}', array_keys($params)),
+            array_map('strval', array_values($params)),
+            $data
+        );
 
         // strip unnecessary stuff
         if (!$this->cfg->devMode) {
@@ -118,12 +141,12 @@ class Simflex
                 '/>[^\S ]+/', // strip whitespaces after tags, except space
                 '/[^\S ]+</', // strip whitespaces before tags, except space
                 '/(\s)+/', // shorten multiple whitespace sequences
-                '/<!--(.|\s)*?-->/' // strip HTML comments
+                '/<!--(.|\s)*?-->/', // strip HTML comments
             ], [
                 '>',
                 '<',
                 '\\1',
-                ''
+                '',
             ], $data);
         }
 
@@ -133,7 +156,6 @@ class Simflex
 
     /**
      * Initializes authorization mechanisms
-     * @return void
      */
     protected function initAuth(): void
     {
@@ -157,7 +179,6 @@ class Simflex
      * Initializes app core and page
      *
      * Note, that if location is set to CLI - neither will initialize
-     * @return void
      */
     protected function initCore(): void
     {
@@ -177,10 +198,13 @@ class Simflex
 
     /**
      * Initializes config
-     * @return void
      */
     protected function initConfig(): void
     {
+        if (isset($this->cfg)) {
+            return;
+        }
+
         Dotenv::createImmutable(SF_ROOT_PATH)->safeLoad();
 
         require_once SF_ROOT_PATH . '/config.php';
@@ -207,7 +231,6 @@ class Simflex
 
     /**
      * Initializes php-specific options
-     * @return void
      */
     protected function initPhp(): void
     {
@@ -217,7 +240,6 @@ class Simflex
 
     /**
      * Initializes PHP CLI environment
-     * @return void
      */
     protected function initPhpCli(): void
     {
@@ -228,7 +250,6 @@ class Simflex
 
     /**
      * Initializes services
-     * @return void
      */
     protected function initServices(): void
     {
@@ -263,7 +284,6 @@ class Simflex
 
     /**
      * Initializes events
-     * @return void
      */
     protected function initEvents(): void
     {
@@ -275,7 +295,6 @@ class Simflex
 
     /**
      * Initializes base logger
-     * @return void
      */
     protected function initLogger(): void
     {
@@ -294,9 +313,10 @@ class Simflex
 
         Log::addLogger(new StdLogger());
 
-        // file logger
-        $this->cfg->extra['logPath'] = SF_ROOT_PATH . '/uf/log';
-        Log::addLogger(new FileLogger());
+        // file logger, opt-in (IS_LOG_TO_FILE=1); by default the log goes to stdout only
+        if ($this->cfg->logToFile) {
+            Log::addLogger(new FileLogger());
+        }
 
         // fire logging init event
         $ev->dispatch(new Event(Events::PostLoggerInit, static::class));

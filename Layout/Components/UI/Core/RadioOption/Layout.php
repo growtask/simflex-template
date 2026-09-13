@@ -15,9 +15,9 @@ class Layout extends LayoutBase
         RadioTheme    $theme = RadioTheme::Light,
         RadioPosition $position = RadioPosition::Left,
         array         $attributes = []
-    ): void
-    {
-        static::draw(compact(
+    ): void {
+        static::draw(
+            compact(
                 'className',
                 'text',
                 'id',
@@ -26,7 +26,7 @@ class Layout extends LayoutBase
             ) + [
                 'size' => $size->value,
                 'theme' => $theme->value,
-                'position' => $position->value
+                'position' => $position->value,
             ]
         );
     }

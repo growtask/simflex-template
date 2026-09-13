@@ -17,9 +17,9 @@ class Layout extends LayoutBase
         ButtonTheme   $theme = ButtonTheme::Light,
         ButtonIconPos $iconPos = ButtonIconPos::Left,
         array         $attributes = []
-    ): void
-    {
-        static::draw(compact(
+    ): void {
+        static::draw(
+            compact(
                 'className',
                 'text',
                 'link',
@@ -30,7 +30,7 @@ class Layout extends LayoutBase
                 'style' => $style->value,
                 'size' => $size->value,
                 'theme' => $theme->value,
-                'iconPos' => $iconPos->value
+                'iconPos' => $iconPos->value,
             ]
         );
     }

@@ -15,9 +15,9 @@ class Layout extends LayoutBase
         CheckboxTheme    $theme = CheckboxTheme::Light,
         CheckboxPosition $position = CheckboxPosition::Left,
         array            $attributes = []
-    ): void
-    {
-        static::draw(compact(
+    ): void {
+        static::draw(
+            compact(
                 'className',
                 'text',
                 'policy',
@@ -26,7 +26,7 @@ class Layout extends LayoutBase
                 'style' => $style->value,
                 'size' => $size->value,
                 'theme' => $theme->value,
-                'position' => $position->value
+                'position' => $position->value,
             ]
         );
     }

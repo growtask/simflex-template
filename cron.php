@@ -16,7 +16,7 @@ $sf->init();
 $request = Container::getRequest();
 
 try {
-    $cron = new Cron($request->arg('cron_id'));
+    $cron = new Cron($request->arg('job'));
     $cron->execute();
 } catch (Exception $e) {
     Log::critical('Cron error: {error}', ['error' => $e->getMessage()]);

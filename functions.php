@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Simplex Framework core functions
  * Loaded automatically from the bootstrap
@@ -9,23 +10,10 @@ use Simflex\Core\Buffer;
 
 /**
  * Get environment variable
- * @param string $name
- * @param mixed|null $defaultValue
- * @return mixed|null
  */
 function env(string $name, mixed $defaultValue = null): mixed
 {
     return array_key_exists($name, $_ENV) ? $_ENV[$name] : $defaultValue;
-}
-
-/**
- * Remove DOCUMENT_ROOT from the path
- * @param string $path Path to process
- * @return string Processed path
- */
-function removeRoot(string $path): string
-{
-    return str_replace(SF_ROOT_PATH, '', $path);
 }
 
 /**
@@ -37,7 +25,7 @@ function removeRoot(string $path): string
 function asset(string $path, bool $siteOnly = false): string
 {
     if (!$siteOnly && SF_LOCATION == SF_LOCATION_ADMIN) {
-        return removeRoot(SF_CORE_ROOT_PATH) . '/Admin/theme/new/' . $path;
+        return \Simflex\Admin\Core::webVendorPath() . '/theme/new/' . $path;
     }
 
     return '/assets/' . $path;
@@ -76,7 +64,8 @@ function getSimflexVersion(): string
  * @param string $className Optional CSS classes to apply
  * @return string The SVG HTML with sprite reference
  */
-function renderIcon(string $iconName, string $className = ''): string {
+function renderIcon(string $iconName, string $className = ''): string
+{
     return sprintf(
         '<svg class="%s" aria-hidden="true"><use href="/assets/icons/icons.svg#icon-%s"></use></svg>',
         htmlspecialchars($className),
@@ -95,9 +84,12 @@ function buildAttrs(array $attributes = []): string
         return '';
     }
 
-    return implode(' ', array_map(
-        fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
-        array_keys($attributes),
-        $attributes
-    ));
+    return implode(
+        ' ',
+        array_map(
+            fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
+            array_keys($attributes),
+            $attributes
+        )
+    );
 }

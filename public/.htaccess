@@ -12,25 +12,16 @@ Options -Indexes
 </IfModule>
 
 # URL Rewriting Rules
+# Document root is public/: it contains only index.php and static files, the code lives one level up.
 <IfModule mod_rewrite.c>
     RewriteEngine on
 
-    # Block access to specific directories
-    RewriteRule ^(tests|uf/log|docker|database|\.git|\.idea)/ - [R=404,L]
+    # Only index.php is executed: any other script (e.g. one uploaded to uf/) is never run
+    RewriteRule ^(?!index\.php$).*\.(php\d?|phtml|phar)$ - [R=404,L,NC]
 
-    # Block access to specific files
-    RewriteRule ^(codeception.yml|composer.json|composer.lock|docker-compose.yml|docker-compose.test.yml|LICENSE|README.md|sf|codecept|test|.env|.gitignore)$ - [R=404,L]
-
-    RewriteCond %{HTTP_HOST} ^api\.(.*) [NC]
-    RewriteRule .*    api.php [L]
-
-    RewriteRule ^sitemap.xml    sitemap.php [L]
-
+    # Everything that is not an existing file goes to the front controller (site, /admin, /admin/fm)
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^admin /Admin/index.php [L]
-
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule . index.php
+    RewriteRule ^ index.php [L]
 </IfModule>
 
 # File Caching and CORS

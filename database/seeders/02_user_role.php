@@ -3,8 +3,7 @@
 use Simflex\Core\Models\UserPriv;
 use Simflex\Core\Models\UserRole;
 
-return new class implements \Simflex\Core\DB\Seeder
-{
+return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
         $devPriv = UserPriv::byName('dev');

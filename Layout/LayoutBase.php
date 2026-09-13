@@ -4,7 +4,7 @@ namespace App\Layout;
 
 use Simflex\Core\Buffer;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
+use Simflex\Core\Models\ContentTemplateParam;
 use Simflex\Core\Path;
 use Simflex\Extensions\Content\Model\ModelContent;
 
@@ -16,9 +16,9 @@ abstract class LayoutBase
     public const FIELD_IMAGE = 'image';
     public const FIELD_FILE = 'file';
 
-    public static $extraAssets = [];
+    public static array $extraAssets = [];
 
-    protected static $inputData = [];
+    protected static array $inputData = [];
 
     public static function initAssets(): void
     {
@@ -40,10 +40,10 @@ abstract class LayoutBase
         LayoutManager::useStyle(static::layoutRootDir() . '/style.scss');
     }
 
-    public static function draw(array $data = [])
+    public static function draw(array $data = []): void
     {
         // generate fields if requested.
-        if (LayoutManager::$shouldGenerateFields && !$data['__no_gen']) {
+        if (LayoutManager::$shouldGenerateFields && empty($data['__no_gen'])) {
             self::$inputData = $data;
             self::generateFields();
         }
@@ -82,7 +82,7 @@ abstract class LayoutBase
         ];
     }
 
-    protected static function generateFields()
+    protected static function generateFields(): void
     {
         $schema = static::getFieldSchema();
         if (self::$inputData['__group'] ?? false) {
@@ -103,10 +103,7 @@ abstract class LayoutBase
 
         // delete the entire group.
         if ($schema['group']) {
-            DB::query(
-                'DELETE FROM content_template_param WHERE group_name = ? AND template_id = ?',
-                [$schema['group'], $page->template_id]
-            );
+            ContentTemplateParam::bulkDelete(['group_name' => $schema['group'], 'template_id' => $page->template_id]);
         }
 
         // create new fields.
@@ -118,23 +115,22 @@ abstract class LayoutBase
         }
 
         foreach ($fields as $field) {
-            DB::query(
-                'INSERT INTO content_template_param (template_id, param_pid, position, field_id, name, label, npp, params, default_value, group_name) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    $page->template_id,
-                    'left', // TODO: allow to change from schema?
-                    self::findFieldId($field['type']),
-                    self::mangleName($schema, $field),
-                    $field['name'],
-                    LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
-                    serialize(['main' => $field['params'] ?? []]),
-                    $field['default'] ?? '',
-                    $field['group'] ?? $schema['group']
-                ]
-            );
+            $param = new ContentTemplateParam();
+            $inserted = $param->insert([
+                'template_id' => $page->template_id,
+                'param_pid' => null,
+                'position' => 'left', // TODO: allow to change from schema?
+                'field_type' => self::findFieldType($field['type']),
+                'name' => self::mangleName($schema, $field),
+                'label' => $field['name'],
+                'npp' => LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
+                'params' => serialize(['main' => $field['params'] ?? []]),
+                'default_value' => $field['default'] ?? '',
+                'group_name' => $field['group'] ?? $schema['group'],
+            ]);
 
-            if (DB::error()) {
-                throw new \Exception(DB::error());
+            if (!$inserted) {
+                throw new \Exception($param->getLastError()['text']);
             }
         }
     }
@@ -144,17 +140,12 @@ abstract class LayoutBase
         return $schema['prefix'] . '_' . $field['id'];
     }
 
-    protected static function findFieldId(string $type): int
+    protected static function findFieldType(string $type): string
     {
-        // TODO: optimize this
-
-        $q = DB::query('SELECT field_id, class FROM struct_field');
-        while ($r = DB::fetch($q)) {
-            if (strpos(strtolower($r['class']), $type) !== false) {
-                return $r['field_id'];
-            }
+        if (str_contains($type, '\\')) {
+            return ltrim($type, '\\');
         }
 
-        return 0;
+        return 'Simflex\\Admin\\Fields\\Field' . ucfirst($type);
     }
 }

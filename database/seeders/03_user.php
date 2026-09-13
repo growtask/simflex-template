@@ -3,8 +3,7 @@
 use Simflex\Core\Models\User;
 use Simflex\Core\Models\UserRole;
 
-return new class implements \Simflex\Core\DB\Seeder
-{
+return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
         $devRole = UserRole::byAlias('dev');
@@ -20,7 +19,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'hash_admin' => '',
                 'email' => 'dev@simflex',
                 'name' => 'Developer',
-                'code' => ''
+                'code' => '',
             ],
             [
                 'role_id' => $adminRole->role_id,
@@ -31,8 +30,8 @@ return new class implements \Simflex\Core\DB\Seeder
                 'hash_admin' => '',
                 'email' => 'admin@simflex',
                 'name' => 'Administrator',
-                'code' => ''
-            ]
+                'code' => '',
+            ],
         ]);
     }
 };

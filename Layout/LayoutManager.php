@@ -4,6 +4,7 @@ namespace App\Layout;
 
 use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\Exception\SassException;
+use Simflex\Core\Assets;
 use Simflex\Core\Container;
 use Simflex\Core\Profiler;
 use tubalmartin\CssMin\Minifier;
@@ -41,7 +42,6 @@ class LayoutManager
     /**
      * Use layout
      * @param string $class Layout class
-     * @return void
      */
     public static function useLayout(string $class): void
     {
@@ -51,7 +51,6 @@ class LayoutManager
     /**
      * Use style
      * @param string $path Path to css/scss
-     * @return void
      */
     public static function useStyle(string $path): void
     {
@@ -61,7 +60,6 @@ class LayoutManager
     /**
      * Use JS script
      * @param string $path Path to js
-     * @return void
      */
     public static function useScript(string $path): void
     {
@@ -81,7 +79,7 @@ class LayoutManager
         }
 
         Profiler::traceStart(__CLASS__, __FUNCTION__);
-        Container::getPage()::js('/Layout/assetsGlobal/script.js');
+        Container::getPage()::js(Assets::publish(SF_ROOT_PATH . '/Layout/assetsGlobal/script.js'));
         foreach (static::$usedLayouts as $class) {
             $class::initAssets();
         }
@@ -105,7 +103,7 @@ class LayoutManager
 
         // check if cache file exists.
         $compiler = new Compiler();
-        if ($config->devMode || !is_file(SF_ROOT_PATH . $cachePath)) {
+        if ($config->devMode || !is_file(SF_PUBLIC_PATH . $cachePath)) {
             // force add root style implicitly.
             $implicitPath = SF_ROOT_PATH . '/Layout/assetsGlobal/style.scss';
             $implicit = '';
@@ -147,7 +145,10 @@ class LayoutManager
             }
 
             // write new style.
-            file_put_contents(SF_ROOT_PATH . $cachePath, $styleString);
+            if (!is_dir(dirname(SF_PUBLIC_PATH . $cachePath))) {
+                mkdir(dirname(SF_PUBLIC_PATH . $cachePath), 0777, true);
+            }
+            file_put_contents(SF_PUBLIC_PATH . $cachePath, $styleString);
         }
 
         // use cached style.

@@ -2,28 +2,41 @@
 
 namespace App\Extensions\Form\Component;
 
-use App\Extensions\Catalog\MailAssist;
-use App\Plugins\ReCaptcha\ReCaptcha;
+use App\Extensions\Form\Model\ModelCallback;
+use App\Extensions\Form\Model\ModelCallbackEmail;
+use App\Extensions\Form\Model\ModelCatalogProduct;
+use Simflex\Core\Api\JsonResponse;
 use Simflex\Core\ComponentBase;
 use Simflex\Core\Container;
 use Simflex\Core\Core;
-use Simflex\Core\DB;
-
+use Simflex\Core\Mail\Mailer;
+use Simflex\Core\Mail\Transport\PhpMailer;
 use Simflex\Core\Time;
 
-use function Sodium\compare;
-
+/**
+ * @todo Incomplete: there are no migrations for the callback, callback_email tables, so this code fails on SQL
+ *       in a real environment. To be moved to a separate composer package.
+ */
 class AjaxForm extends ComponentBase
 {
-    protected $errors = [];
-    protected $data = [];
+    protected array $errors = [];
+    protected array $data = [];
 
-    protected function content()
+    /**
+     * ComponentBase::execute() ignores the return value of content() and returns only the
+     * buffered output, so the JSON is sent directly via JsonResponse (like Api\Json does).
+     */
+    protected function content(): void
     {
-        if (!ReCaptcha::checkResponse()) {
-            return json_encode(['success' => false]);
-        }
+        $this->sendJson($this->process());
+    }
 
+    /**
+     * Handles the form request
+     * @return array Response data
+     */
+    protected function process(): array
+    {
         $type = $_REQUEST['type'] ?? '';
         $name = $_REQUEST['name'] ?? '';
         $email = strtolower($_REQUEST['email'] ?? '');
@@ -36,7 +49,7 @@ class AjaxForm extends ComponentBase
         // fix type
         if ($type == 'available') {
             $type = 'Сообщить о поступлении';
-            $message = DB::result('select name from catalog_product where product_id = ?', 'name', [$message]);
+            $message = ModelCatalogProduct::findOne(['product_id' => $message])?->name;
         } elseif ($type == 'callback') {
             $type = 'Остались вопросы';
         }
@@ -44,41 +57,77 @@ class AjaxForm extends ComponentBase
         $this->data = compact('type', 'name', 'email', 'phone', 'message', 'date', 'from', 'fromTitle');
 
         // insert to db
-        $type = 'normal';
         if (!$email) {
-            DB::query(
-                'INSERT INTO callback (name, phone, message, date) VALUES (?, ?, ?, ?)',
-                [$name, $phone, $message, $date]
-            );
-        } else {
-            DB::query(
-                'insert into callback_email (email, is_subscribed) select ?, 1 where not exists(select 1 from callback_email where email = ?)',
-                [$email, $email]
-            );
+            ModelCallback::insertStatic(['name' => $name, 'phone' => $phone, 'message' => $message, 'date' => $date]);
+        } elseif (!ModelCallbackEmail::findOne(['email' => $email])) {
+            ModelCallbackEmail::insertStatic(['email' => $email, 'is_subscribed' => 1]);
         }
-        return json_encode(['success' => $this->sendMail() && $this->sendTelegram(), 'errors' => $this->errors]);
+
+        // run both channels, even if the first one fails
+        $mailSent = $this->sendMail();
+        $telegramSent = $this->sendTelegram();
+        return ['success' => $mailSent && $telegramSent, 'errors' => $this->errors];
     }
 
-    protected function sendMail()
+    /**
+     * Sends JSON response and stops execution
+     */
+    protected function sendJson(array $data): never
     {
-        $m = new MailAssist(Core::siteParam('form_email'), 'Новая заявка с сайта');
-
-        $html = <<<HTML
-<p><b>Форма: </b> {$this->data['type']}</p>
-<p><b>Страница: </b> <a href="{$this->data['from']}">{$this->data['fromTitle']}</a></p>
-<p></p>
-<p><b>Имя: </b> {$this->data['name']}</p>
-<p><b>E-mail: </b> {$this->data['email']}</p>
-<p><b>Телефон: </b> {$this->data['phone']}</p>
-<p></p>
-<p><b>Сообщение: </b> {$this->data['message']}</p>
-HTML;
-
-        $m->content($html);
-        return $m->send();
+        (new JsonResponse())->setData($data)->output();
+        exit;
     }
 
-    protected function sendTelegram()
+    protected function getMailer(): Mailer
+    {
+        if (Container::isSet('mailer')) {
+            return Container::get('mailer');
+        }
+
+        $mailer = new Mailer();
+        $mailer->transport = new PhpMailer();
+        return $mailer;
+    }
+
+    protected function buildMailBody(): string
+    {
+        $d = array_map(fn($v) => htmlspecialchars((string)$v, ENT_QUOTES), $this->data);
+
+        return <<<HTML
+<p><b>Форма: </b> {$d['type']}</p>
+<p><b>Страница: </b> <a href="{$d['from']}">{$d['fromTitle']}</a></p>
+<p></p>
+<p><b>Имя: </b> {$d['name']}</p>
+<p><b>E-mail: </b> {$d['email']}</p>
+<p><b>Телефон: </b> {$d['phone']}</p>
+<p></p>
+<p><b>Сообщение: </b> {$d['message']}</p>
+HTML;
+    }
+
+    protected function sendMail(): bool
+    {
+        $to = (string)Core::siteParam('form_email');
+        if (!$to) {
+            // mail notifications are not configured
+            return true;
+        }
+
+        $html = $this->buildMailBody();
+        try {
+            $sent = $this->getMailer()->sendText('Новая заявка с сайта', $to, $html, strip_tags($html));
+        } catch (\Throwable $ex) {
+            $this->errors[] = 'mail: ' . $ex->getMessage();
+            return false;
+        }
+
+        if (!$sent) {
+            $this->errors[] = 'mail: not sent';
+        }
+        return $sent;
+    }
+
+    protected function sendTelegram(): bool
     {
         $patch = function ($i) {
             return str_replace(
@@ -101,7 +150,7 @@ HTML;
                     '\\{',
                     '\\}',
                     '\\.',
-                    '\\!'
+                    '\\!',
                 ],
                 $i
             );
@@ -120,18 +169,24 @@ HTML;
 **Сообщение: ** {$patch($this->data['message'])}
 MD;
 
+        $token = (string)Core::siteParam('form_tg_token');
+        if (!$token) {
+            // telegram notifications are not configured
+            return true;
+        }
+
         $ch = curl_init();
 
         curl_setopt(
             $ch,
             CURLOPT_URL,
-            'https://api.telegram.org/bot' . Core::siteParam('form_tg_token') . '/sendMessage'
+            'https://api.telegram.org/bot' . $token . '/sendMessage'
         );
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
             'chat_id' => Core::siteParam('form_tg_chat_id'),
             'parse_mode' => 'MarkdownV2',
-            'text' => $md
+            'text' => $md,
         ]));
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

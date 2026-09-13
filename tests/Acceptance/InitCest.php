@@ -1,18 +1,17 @@
 <?php
 
-
 namespace Tests\Acceptance;
 
 use Tests\Support\AcceptanceTester;
 
 class InitCest
 {
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
     }
 
     // tests
-    public function tryToTest(AcceptanceTester $I)
+    public function tryToTest(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
         $I->dontSee('Fatal');
@@ -20,11 +19,6 @@ class InitCest
         $I->dontSee('Warning');
         $I->dontSee('Notice');
 
-        $date = date('Y-m-d');
-        $I->openFile('uf/log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 }

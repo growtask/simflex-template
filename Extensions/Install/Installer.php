@@ -14,16 +14,16 @@ class Installer extends ConsoleBase
 {
     protected const DIRECTORIES = [
         'cache',
-        'cache/css',
-        'uf/files',
-        'uf/images',
+        'public/cache',
+        'public/uf/files',
+        'public/uf/images',
     ];
 
     #[Command('Installs the framework')]
     public function install(): void
     {
-        $this->initDir('uf', false);
-        $this->initDir('uf/log', false);
+        $this->initDir('public/uf', false);
+        $this->initDir('log', false);
 
         $config = Container::getConfig();
         Log::info('Testing database connection');
@@ -49,7 +49,7 @@ class Installer extends ConsoleBase
             'c',
             [
                 'migration',
-                $config->db['name']
+                $config->db['name'],
             ]
         );
 
@@ -84,7 +84,7 @@ class Installer extends ConsoleBase
                 "DB_USER={$config->db['user']}",
                 "DB_PASS={$config->db['password']}",
                 "DB_NAME={$config->db['name']}",
-                "DEVELOPER=1", // enabled by default
+                'DEVELOPER=1', // enabled by default
             ])
         );
     }

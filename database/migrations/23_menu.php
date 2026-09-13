@@ -1,14 +1,14 @@
 <?php
-use Simflex\Core\DB;
-use \Simflex\Core\DB\Schema;
 
-return new class implements \Simflex\Core\DB\Migration {
-    public function up(Schema $s)
+use Simflex\Core\DB\Schema;
+
+return new class () implements \Simflex\Core\DB\Migration {
+    public function up(Schema $s): void
     {
         $s->createTable('menu', function (Schema\Table $c) {
             $c->id('menu_id');
             $c->integer('menu_pid');
-            $c->integer('component_id')->foreignKey('component');
+            $c->string('component');
             $c->boolean('active')->setDefault(0);
             $c->boolean('hidden')->setDefault(0);
             $c->integer('npp')->setDefault(0);
@@ -17,7 +17,7 @@ return new class implements \Simflex\Core\DB\Migration {
         });
     }
 
-    public function down(Schema $s)
+    public function down(Schema $s): void
     {
         $s->dropTable('menu');
     }

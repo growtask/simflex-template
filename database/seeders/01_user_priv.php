@@ -2,7 +2,7 @@
 
 use Simflex\Core\Models\UserPriv;
 
-return new class implements \Simflex\Core\DB\Seeder {
+return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
         UserPriv::bulkInsert([
@@ -10,31 +10,31 @@ return new class implements \Simflex\Core\DB\Seeder {
                 'active' => true,
                 'npp' => 1,
                 'name' => 'dev',
-                'comment' => 'Привилегия разработчика'
+                'comment' => 'Привилегия разработчика',
             ],
             [
                 'active' => true,
                 'npp' => 2,
                 'name' => 'admin',
-                'comment' => 'Привилегия администратора'
+                'comment' => 'Привилегия администратора',
             ],
             [
                 'active' => true,
                 'npp' => 2,
                 'name' => 'simplex_admin',
-                'comment' => 'Доступ к административному интерфейсу'
+                'comment' => 'Доступ к административному интерфейсу',
             ],
             [
                 'active' => true,
                 'npp' => 3,
                 'name' => 'debug',
-                'comment' => 'Показывать отладчик'
+                'comment' => 'Показывать отладчик',
             ],
             [
                 'active' => true,
                 'npp' => 4,
                 'name' => 'manager',
-                'comment' => 'Менеджер'
+                'comment' => 'Менеджер',
             ],
         ]);
     }

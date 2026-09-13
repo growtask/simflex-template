@@ -14,9 +14,9 @@ class Layout extends LayoutBase
         string     $icon = '',
         bool       $dot = false,
         array      $attributes = []
-    ): void
-    {
-        static::draw(compact(
+    ): void {
+        static::draw(
+            compact(
                 'className',
                 'text',
                 'icon',

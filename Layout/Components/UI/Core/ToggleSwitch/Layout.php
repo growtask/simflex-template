@@ -2,7 +2,6 @@
 
 namespace App\Layout\Components\UI\Core\ToggleSwitch;
 
-
 use App\Layout\LayoutBase;
 
 class Layout extends LayoutBase
@@ -15,9 +14,9 @@ class Layout extends LayoutBase
         ToggleTheme    $theme = ToggleTheme::Light,
         TogglePosition $position = TogglePosition::Left,
         array          $attributes = []
-    ): void
-    {
-        static::draw(compact(
+    ): void {
+        static::draw(
+            compact(
                 'className',
                 'text',
                 'icon',
@@ -25,7 +24,7 @@ class Layout extends LayoutBase
             ) + [
                 'size' => $size->value,
                 'theme' => $theme->value,
-                'position' => $position->value
+                'position' => $position->value,
             ]
         );
     }

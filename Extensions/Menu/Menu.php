@@ -12,10 +12,9 @@ use Simflex\Core\ModuleBase;
  */
 class Menu extends ModuleBase
 {
+    private array|false $menu = false;
 
-    private $menu = false;
-
-    protected function content()
+    protected function content(): void
     {
         $this->menu = Core::menu();
 
@@ -29,7 +28,6 @@ class Menu extends ModuleBase
             $pid = -1;
             if (isset($this->menu[$start_id])) {
                 foreach ($this->menu[$start_id] as $id => $item) {
-                    //echo $item['link'], ' ', mb_substr(SFCore::path(), 0, mb_strlen($item['link'])), '<br />';
                     if ($item['link'] === mb_substr(Core::path(), 0, mb_strlen($item['link']))) {
                         $pid = $item['menu_id'];
                     }
@@ -38,18 +36,16 @@ class Menu extends ModuleBase
         }
 
         include 'tpl/index.tpl';
-
-//        $this->tree($pid);
     }
 
-    private function tree($pid = 0, $lvl = 0)
+    private function tree(int|string $pid = 0, int $lvl = 0): void
     {
         if (!isset($this->menu[$pid])) {
             return;
         }
 
         foreach ($this->menu[$pid] as $id => $item) {
-            $c = array();
+            $c = [];
             if (empty($item['hidden'])) {
                 $isActive = $item['link'] === '/' && Core::path() === '/';
                 $isActive |= $item['link'] !== '/' && $item['link'] === mb_substr(Core::path(), 0, mb_strlen($item['link']));
@@ -64,5 +60,4 @@ class Menu extends ModuleBase
 
         include 'tpl/treenode.tpl';
     }
-
 }

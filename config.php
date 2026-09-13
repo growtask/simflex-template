@@ -37,15 +37,15 @@ class Config extends \Simflex\Core\ConfigBase
     {
         $this->defaultComponent = Content::class;
 
-        // configure database
-        $this->db['host'] = env('DB_HOST', '127.0.0.1');
-        $this->db['user'] = env('DB_USER', 'simflex');
-        $this->db['password'] = env('DB_PASS', 'simflex');
-        $this->db['name'] = env('DB_NAME', 'simflex');
-
-        // developer options
-        $this->devMode = env('DEVELOPER', true);
-        $this->enableLogging = env('LOGGING', false);
+        // settings from the environment. Defaults are declared in ConfigBase only
+        $this->db['host'] = env('DB_HOST', $this->db['host']);
+        $this->db['user'] = env('DB_USER', $this->db['user']);
+        $this->db['password'] = env('DB_PASS', $this->db['password']);
+        $this->db['name'] = env('DB_NAME', $this->db['name']);
+        $this->adminPath = env('ADMIN_PATH', $this->adminPath);
+        $this->devMode = env('DEVELOPER', $this->devMode);
+        $this->enableLogging = env('LOGGING', $this->enableLogging);
+        $this->logToFile = env('IS_LOG_TO_FILE', $this->logToFile);
 
         // default files
         $this->files['routes'] = SF_ROOT_PATH . '/provider/routes.php';
@@ -94,7 +94,7 @@ class Config extends \Simflex\Core\ConfigBase
             'routes' => $routes,
             'events' => $events,
             'services' => $services,
-            'commands' => $commands
+            'commands' => $commands,
         ];
 
         if (!$this->devMode) {
@@ -130,7 +130,9 @@ class Config extends \Simflex\Core\ConfigBase
             try {
                 $ref = new \ReflectionClass($class);
                 if (!$ref->isSubclassOf(ExtensionConfig::class)) {
-                    $this->log('Extension {file} does not extend Simflex\Core\ExtensionConfig class', ['file' => $file]
+                    $this->log(
+                        'Extension {file} does not extend Simflex\Core\ExtensionConfig class',
+                        ['file' => $file]
                     );
                     continue;
                 }

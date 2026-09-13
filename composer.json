@@ -34,6 +34,7 @@
     "curl/curl": "^2.5"
   },
   "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.86",
     "codeception/module-phpbrowser": "*",
     "codeception/module-asserts": "*",
     "composer/composer": "*",
