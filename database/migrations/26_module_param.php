@@ -11,7 +11,7 @@ return new class implements \Simflex\Core\DB\Migration {
             $c->integer('module_id')->foreignKey('module');
             $c->integer('param_pid');
             $c->string('position', 50);
-            $c->integer('field_id')->foreignKey('struct_field');
+            $c->string('field_type');
             $c->string('name', 50);
             $c->string('label', 50);
             $c->integer('npp')->setDefault(0);

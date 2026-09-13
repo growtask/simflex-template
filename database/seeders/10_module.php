@@ -4,7 +4,6 @@ use Simflex\Admin\Fields\FieldText;
 use Simflex\Core\Models\Module;
 use Simflex\Core\Models\ModuleItem;
 use Simflex\Core\Models\ModuleParam;
-use Simflex\Core\Models\StructField;
 
 return new class implements \Simflex\Core\DB\Seeder {
     public function seed(): void
@@ -62,7 +61,7 @@ return new class implements \Simflex\Core\DB\Seeder {
         ModuleParam::insertStatic([
             'module_id' => $codeModule->module_id,
             'param_pid' => $leftPosition->getId(),
-            'field_id' => StructField::byClass(FieldText::class)->getId(),
+            'field_type' => FieldText::class,
             'name' => 'content',
             'label' => 'Текст',
             'params' => 'a:2:{s:17:"module_param_main";a:1:{s:13:"default_value";s:0:"";}s:4:"main";a:2:{s:11:"editor_mini";s:1:"0";s:11:"editor_full";s:1:"0";}}',
@@ -83,7 +82,7 @@ return new class implements \Simflex\Core\DB\Seeder {
         ModuleParam::insertStatic([
             'module_id' => $codeModule->module_id,
             'param_pid' => $leftPosition->getId(),
-            'field_id' => StructField::byClass(FieldText::class)->getId(),
+            'field_type' => FieldText::class,
             'name' => 'content',
             'label' => 'Текст',
             'params' => 'a:2:{s:17:"module_param_main";a:1:{s:13:"default_value";s:0:"";}s:4:"main";a:2:{s:11:"editor_mini";s:1:"0";s:11:"editor_full";s:1:"1";}}',

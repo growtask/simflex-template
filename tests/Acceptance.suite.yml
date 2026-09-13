@@ -13,6 +13,7 @@ modules:
             port: 4444
             restart: true
             wait: 10
+            window_size: 1920x1080
             capabilities:
                 goog:chromeOptions:
                     args: ["--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage"]

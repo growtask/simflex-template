@@ -19,16 +19,6 @@ function env(string $name, mixed $defaultValue = null): mixed
 }
 
 /**
- * Remove DOCUMENT_ROOT from the path
- * @param string $path Path to process
- * @return string Processed path
- */
-function removeRoot(string $path): string
-{
-    return str_replace(SF_ROOT_PATH, '', $path);
-}
-
-/**
  * Get asset path
  * @param string $path Relative path to the asset
  * @param bool $siteOnly If set to true, returns only site assets
@@ -37,7 +27,7 @@ function removeRoot(string $path): string
 function asset(string $path, bool $siteOnly = false): string
 {
     if (!$siteOnly && SF_LOCATION == SF_LOCATION_ADMIN) {
-        return removeRoot(SF_CORE_ROOT_PATH) . '/Admin/theme/new/' . $path;
+        return '/vendor/growtask/simflex/src/Admin/theme/new/' . $path;
     }
 
     return '/assets/' . $path;

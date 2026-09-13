@@ -119,11 +119,11 @@ abstract class LayoutBase
 
         foreach ($fields as $field) {
             DB::query(
-                'INSERT INTO content_template_param (template_id, param_pid, position, field_id, name, label, npp, params, default_value, group_name) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)',
+                'INSERT INTO content_template_param (template_id, param_pid, position, field_type, name, label, npp, params, default_value, group_name) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
                     $page->template_id,
                     'left', // TODO: allow to change from schema?
-                    self::findFieldId($field['type']),
+                    self::findFieldType($field['type']),
                     self::mangleName($schema, $field),
                     $field['name'],
                     LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
@@ -144,17 +144,12 @@ abstract class LayoutBase
         return $schema['prefix'] . '_' . $field['id'];
     }
 
-    protected static function findFieldId(string $type): int
+    protected static function findFieldType(string $type): string
     {
-        // TODO: optimize this
-
-        $q = DB::query('SELECT field_id, class FROM struct_field');
-        while ($r = DB::fetch($q)) {
-            if (strpos(strtolower($r['class']), $type) !== false) {
-                return $r['field_id'];
-            }
+        if (str_contains($type, '\\')) {
+            return ltrim($type, '\\');
         }
 
-        return 0;
+        return 'Simflex\\Admin\\Fields\\Field' . ucfirst($type);
     }
 }

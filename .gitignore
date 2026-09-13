@@ -7,3 +7,4 @@ vendor
 docker/data
 cache
 .DS_Store
+composer.lock
