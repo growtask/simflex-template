@@ -26,4 +26,17 @@ class AcceptanceTester extends \Codeception\Actor
     /**
      * Define custom actions here
      */
+
+    /**
+     * Logs in to the admin panel with the default seeded admin account
+     */
+    public function loginAsAdmin(): void
+    {
+        $I = $this;
+        $I->amOnPage('/admin/');
+        $I->fillField('login[login]', 'admin');
+        $I->fillField('login[password]', '12345');
+        $I->click('Войти');
+        $I->waitForElement('.sidebar', 10);
+    }
 }
