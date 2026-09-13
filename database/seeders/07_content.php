@@ -8,15 +8,12 @@ return new class implements \Simflex\Core\DB\Seeder
             'template_path' => 'index.tpl'
         ]);
 
-        $stringField = \Simflex\Core\Models\StructField::byClass(\Simflex\Admin\Fields\FieldString::class);
-        $textField = \Simflex\Core\Models\StructField::byClass(\Simflex\Admin\Fields\FieldText::class);
-
         \Simflex\Core\Models\ContentTemplateParam::bulkInsert([
             [
                 'template_id' => $indexTemplate->template_id,
                 'param_pid' => null,
                 'position' => 'left',
-                'field_id' => $stringField->field_id,
+                'field_type' => \Simflex\Admin\Fields\FieldString::class,
                 'name' => 'seo_title_1',
                 'label' => 'SEO заголовок 1',
                 'npp' => 10000,
@@ -29,7 +26,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'template_id' => $indexTemplate->template_id,
                 'param_pid' => null,
                 'position' => 'left',
-                'field_id' => $textField->field_id,
+                'field_type' => \Simflex\Admin\Fields\FieldText::class,
                 'name' => 'seo_text_1',
                 'label' => 'SEO текст 1',
                 'npp' => 10000,
@@ -42,7 +39,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'template_id' => $indexTemplate->template_id,
                 'param_pid' => null,
                 'position' => 'left',
-                'field_id' => $stringField->field_id,
+                'field_type' => \Simflex\Admin\Fields\FieldString::class,
                 'name' => 'seo_title_2',
                 'label' => 'SEO заголовок 2',
                 'npp' => 10000,
@@ -55,7 +52,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'template_id' => $indexTemplate->template_id,
                 'param_pid' => null,
                 'position' => 'left',
-                'field_id' => $textField->field_id,
+                'field_type' => \Simflex\Admin\Fields\FieldText::class,
                 'name' => 'seo_text_2',
                 'label' => 'SEO текст 2',
                 'npp' => 10000,
@@ -68,7 +65,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'template_id' => $indexTemplate->template_id,
                 'param_pid' => null,
                 'position' => 'right',
-                'field_id' => $stringField->field_id,
+                'field_type' => \Simflex\Admin\Fields\FieldString::class,
                 'name' => 'meta_title',
                 'label' => 'Заголовок',
                 'npp' => 11000,
@@ -81,7 +78,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'template_id' => $indexTemplate->template_id,
                 'param_pid' => null,
                 'position' => 'right',
-                'field_id' => $textField->field_id,
+                'field_type' => \Simflex\Admin\Fields\FieldText::class,
                 'name' => 'meta_kw',
                 'label' => 'Ключевые слова',
                 'npp' => 11000,
@@ -94,7 +91,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'template_id' => $indexTemplate->template_id,
                 'param_pid' => null,
                 'position' => 'right',
-                'field_id' => $textField->field_id,
+                'field_type' => \Simflex\Admin\Fields\FieldText::class,
                 'name' => 'meta_de',
                 'label' => 'Описание',
                 'npp' => 11000,
