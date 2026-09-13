@@ -64,6 +64,9 @@ return new class implements \Simflex\Core\DB\Migration {
                 foreach (self::FIELD_TYPES as $id => $class) {
                     DB::query("UPDATE `$table` SET `field_type` = ? WHERE `field_id` = ?", [$class, $id]);
                 }
+                foreach ($this->foreignKeysOnColumn($table, 'field_id') as $fk) {
+                    DB::query("ALTER TABLE `$table` DROP FOREIGN KEY `$fk`");
+                }
                 DB::query("ALTER TABLE `$table` DROP COLUMN `field_id`");
             }
         }
@@ -78,6 +81,16 @@ return new class implements \Simflex\Core\DB\Migration {
         return (bool)DB::result(
             'SELECT COUNT(*) c FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
             'c',
+            [$table, $column]
+        );
+    }
+
+    private function foreignKeysOnColumn(string $table, string $column): array
+    {
+        return DB::arr(
+            "SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE
+             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ? AND REFERENCED_TABLE_NAME IS NOT NULL",
+            'CONSTRAINT_NAME',
             [$table, $column]
         );
     }
