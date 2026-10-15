@@ -104,7 +104,10 @@ class AdminBugfixTest extends Unit
     {
         $db = $this->mockDb();
         $db->expects($this->once())->method('query')
-            ->with($this->stringContains("UPDATE `test_table` SET title = 'New'"))
+            ->with(
+                $this->stringContains('UPDATE `test_table` SET `title` = ? WHERE'),
+                $this->identicalTo(['New', 1, 2])
+            )
             ->willReturn($this->createMock(\PDOStatement::class));
         $_POST = ['group_ids' => '1,2', 'set' => ['title' => 1], 'title' => 'New'];
 
