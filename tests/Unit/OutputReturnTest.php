@@ -128,5 +128,4 @@ class OutputReturnTest extends Unit
         $this->assertNotSame('', $bool->show(['active' => 1]));
         $this->assertSame('', $bool->filter('1'));
     }
-
 }
