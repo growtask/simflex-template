@@ -14,7 +14,7 @@ use Simflex\Core\ModuleBase;
 class Block extends ModuleBase
 {
 
-    protected function content()
+    protected function content(): void
     {
         echo empty($this->params['content']) ? '' : $this->params['content'];
     }

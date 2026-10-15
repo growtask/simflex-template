@@ -6,12 +6,12 @@ use Tests\Support\AcceptanceTester;
 
 class AdminDashboardCest
 {
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
         $I->loginAsAdmin();
     }
 
-    public function tryToSeeDashboard(AcceptanceTester $I)
+    public function tryToSeeDashboard(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/');
         $I->dontSee('Fatal');

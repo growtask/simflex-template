@@ -7,12 +7,12 @@ use Tests\Support\AcceptanceTester;
 
 class InitCest
 {
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
     }
 
     // tests
-    public function tryToTest(AcceptanceTester $I)
+    public function tryToTest(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
         $I->dontSee('Fatal');

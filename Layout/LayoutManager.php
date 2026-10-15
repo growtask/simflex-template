@@ -41,7 +41,6 @@ class LayoutManager
     /**
      * Use layout
      * @param string $class Layout class
-     * @return void
      */
     public static function useLayout(string $class): void
     {
@@ -51,7 +50,6 @@ class LayoutManager
     /**
      * Use style
      * @param string $path Path to css/scss
-     * @return void
      */
     public static function useStyle(string $path): void
     {
@@ -61,7 +59,6 @@ class LayoutManager
     /**
      * Use JS script
      * @param string $path Path to js
-     * @return void
      */
     public static function useScript(string $path): void
     {

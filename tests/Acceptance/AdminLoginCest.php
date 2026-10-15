@@ -6,11 +6,11 @@ use Tests\Support\AcceptanceTester;
 
 class AdminLoginCest
 {
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
     }
 
-    public function tryToSeeLoginForm(AcceptanceTester $I)
+    public function tryToSeeLoginForm(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/');
         $I->dontSee('Fatal');
@@ -26,7 +26,7 @@ class AdminLoginCest
         $I->dontSeeInPageSource('/var/www/');
     }
 
-    public function tryToLoginWithWrongPassword(AcceptanceTester $I)
+    public function tryToLoginWithWrongPassword(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/');
         $I->fillField('login[login]', 'admin');
@@ -38,7 +38,7 @@ class AdminLoginCest
         $I->dontSeeElement('.sidebar');
     }
 
-    public function tryToLoginWithValidCredentials(AcceptanceTester $I)
+    public function tryToLoginWithValidCredentials(AcceptanceTester $I): void
     {
         $I->loginAsAdmin();
 

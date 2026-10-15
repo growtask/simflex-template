@@ -4,7 +4,7 @@ use Simflex\Core\DB;
 use \Simflex\Core\DB\Schema;
 
 return new class implements \Simflex\Core\DB\Migration {
-    public function up(Schema $s)
+    public function up(Schema $s): void
     {
         $s->createTable('module_param', function (Schema\Table $c) {
             $c->id('mp_id');
@@ -20,7 +20,7 @@ return new class implements \Simflex\Core\DB\Migration {
         });
     }
 
-    public function down(Schema $s)
+    public function down(Schema $s): void
     {
         $s->dropTable('module_param');
     }

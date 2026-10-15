@@ -6,13 +6,13 @@ use Tests\Support\AcceptanceTester;
 
 class AdminMenuFormCest
 {
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
         // menu_id=1 ("Управление") is a dev-privileged row, not visible to the plain admin account
         $I->loginAsDev();
     }
 
-    public function tryToSeeMenuForm(AcceptanceTester $I)
+    public function tryToSeeMenuForm(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/admin/menu/?action=form&menu_id=1');
         $I->dontSee('Fatal');
@@ -38,7 +38,7 @@ class AdminMenuFormCest
         $I->dontSeeInThisFile('[warning]');
     }
 
-    public function tryToSaveMenuForm(AcceptanceTester $I)
+    public function tryToSaveMenuForm(AcceptanceTester $I): void
     {
         $value = 'Codeception test menu name';
 

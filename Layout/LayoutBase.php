@@ -16,9 +16,9 @@ abstract class LayoutBase
     public const FIELD_IMAGE = 'image';
     public const FIELD_FILE = 'file';
 
-    public static $extraAssets = [];
+    public static array $extraAssets = [];
 
-    protected static $inputData = [];
+    protected static array $inputData = [];
 
     public static function initAssets(): void
     {
@@ -40,7 +40,7 @@ abstract class LayoutBase
         LayoutManager::useStyle(static::layoutRootDir() . '/style.scss');
     }
 
-    public static function draw(array $data = [])
+    public static function draw(array $data = []): void
     {
         // generate fields if requested.
         if (LayoutManager::$shouldGenerateFields && !$data['__no_gen']) {
@@ -82,7 +82,7 @@ abstract class LayoutBase
         ];
     }
 
-    protected static function generateFields()
+    protected static function generateFields(): void
     {
         $schema = static::getFieldSchema();
         if (self::$inputData['__group'] ?? false) {

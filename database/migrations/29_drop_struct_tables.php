@@ -4,7 +4,7 @@ use Simflex\Core\DB;
 use Simflex\Core\DB\Schema;
 
 return new class implements \Simflex\Core\DB\Migration {
-    public function up(Schema $s)
+    public function up(Schema $s): void
     {
         DB::query('SET FOREIGN_KEY_CHECKS = 0');
         DB::query('DROP TABLE IF EXISTS struct_data');
@@ -16,7 +16,7 @@ return new class implements \Simflex\Core\DB\Migration {
         DB::query('SET FOREIGN_KEY_CHECKS = 1');
     }
 
-    public function down(Schema $s)
+    public function down(Schema $s): void
     {
     }
 };

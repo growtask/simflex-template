@@ -53,7 +53,7 @@ return new class implements \Simflex\Core\DB\Migration {
         23 => FieldColor::class,
     ];
 
-    public function up(Schema $s)
+    public function up(Schema $s): void
     {
         foreach (['component_param', 'content_template_param', 'module_param'] as $table) {
             if (!$this->hasColumn($table, 'field_type')) {
@@ -72,7 +72,7 @@ return new class implements \Simflex\Core\DB\Migration {
         }
     }
 
-    public function down(Schema $s)
+    public function down(Schema $s): void
     {
     }
 

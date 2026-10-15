@@ -5,7 +5,7 @@ use Simflex\Core\DB;
 use \Simflex\Core\DB\Schema;
 
 return new class implements \Simflex\Core\DB\Migration {
-    public function up(Schema $s)
+    public function up(Schema $s): void
     {
         $s->createTable('admin_menu', function (Schema\Table $c) {
             $c->id('menu_id');
@@ -21,7 +21,7 @@ return new class implements \Simflex\Core\DB\Migration {
         // todo: add keys post-factum
     }
 
-    public function down(Schema $s)
+    public function down(Schema $s): void
     {
         $s->dropTable('admin_menu');
     }

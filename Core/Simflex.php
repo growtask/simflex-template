@@ -35,7 +35,6 @@ class Simflex
 
     /**
      * Initializes app
-     * @return void
      * @throws SassException
      */
     public function init(): void
@@ -96,8 +95,6 @@ class Simflex
 
     /**
      * Prepares data for output to the user
-     * @param string $data
-     * @return string
      */
     public function prepareOutput(string $data): string
     {
@@ -133,7 +130,6 @@ class Simflex
 
     /**
      * Initializes authorization mechanisms
-     * @return void
      */
     protected function initAuth(): void
     {
@@ -157,7 +153,6 @@ class Simflex
      * Initializes app core and page
      *
      * Note, that if location is set to CLI - neither will initialize
-     * @return void
      */
     protected function initCore(): void
     {
@@ -177,7 +172,6 @@ class Simflex
 
     /**
      * Initializes config
-     * @return void
      */
     protected function initConfig(): void
     {
@@ -207,7 +201,6 @@ class Simflex
 
     /**
      * Initializes php-specific options
-     * @return void
      */
     protected function initPhp(): void
     {
@@ -217,7 +210,6 @@ class Simflex
 
     /**
      * Initializes PHP CLI environment
-     * @return void
      */
     protected function initPhpCli(): void
     {
@@ -228,7 +220,6 @@ class Simflex
 
     /**
      * Initializes services
-     * @return void
      */
     protected function initServices(): void
     {
@@ -263,7 +254,6 @@ class Simflex
 
     /**
      * Initializes events
-     * @return void
      */
     protected function initEvents(): void
     {
@@ -275,7 +265,6 @@ class Simflex
 
     /**
      * Initializes base logger
-     * @return void
      */
     protected function initLogger(): void
     {

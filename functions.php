@@ -9,9 +9,6 @@ use Simflex\Core\Buffer;
 
 /**
  * Get environment variable
- * @param string $name
- * @param mixed|null $defaultValue
- * @return mixed|null
  */
 function env(string $name, mixed $defaultValue = null): mixed
 {

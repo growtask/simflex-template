@@ -6,12 +6,12 @@ use Tests\Support\AcceptanceTester;
 
 class AdminContentCest
 {
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
         $I->loginAsAdmin();
     }
 
-    public function tryToSeeContentList(AcceptanceTester $I)
+    public function tryToSeeContentList(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/content/');
         $I->dontSee('Fatal');

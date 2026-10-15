@@ -9,7 +9,7 @@ use Simflex\Core\Time;
 
 class Callback extends Base
 {
-    public function save()
+    public function save(): string|int|false
     {
         $id = parent::save();
         if ($id) {

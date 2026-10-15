@@ -6,12 +6,12 @@ use Tests\Support\AcceptanceTester;
 
 class AdminContentFormCest
 {
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
         $I->loginAsAdmin();
     }
 
-    public function tryToSeeContentForm(AcceptanceTester $I)
+    public function tryToSeeContentForm(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/content/?action=form&content_id=1');
         $I->dontSee('Fatal');
@@ -37,7 +37,7 @@ class AdminContentFormCest
         $I->dontSeeInThisFile('[warning]');
     }
 
-    public function tryToSaveContentForm(AcceptanceTester $I)
+    public function tryToSaveContentForm(AcceptanceTester $I): void
     {
         $value = 'Codeception test ' . time();
 

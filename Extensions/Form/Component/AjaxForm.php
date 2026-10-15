@@ -15,10 +15,10 @@ use function Sodium\compare;
 
 class AjaxForm extends ComponentBase
 {
-    protected $errors = [];
-    protected $data = [];
+    protected array $errors = [];
+    protected array $data = [];
 
-    protected function content()
+    protected function content(): string|false
     {
         if (!ReCaptcha::checkResponse()) {
             return json_encode(['success' => false]);
@@ -59,7 +59,7 @@ class AjaxForm extends ComponentBase
         return json_encode(['success' => $this->sendMail() && $this->sendTelegram(), 'errors' => $this->errors]);
     }
 
-    protected function sendMail()
+    protected function sendMail(): mixed
     {
         $m = new MailAssist(Core::siteParam('form_email'), 'Новая заявка с сайта');
 
@@ -78,7 +78,7 @@ HTML;
         return $m->send();
     }
 
-    protected function sendTelegram()
+    protected function sendTelegram(): bool
     {
         $patch = function ($i) {
             return str_replace(
