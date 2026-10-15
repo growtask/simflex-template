@@ -72,6 +72,9 @@ class AcceptanceTester extends \Codeception\Actor
     public function submitAndWaitForReload(string $button, string $waitFor): void
     {
         $I = $this;
+        // the form scripts must be initialised before the click, otherwise the submit may be lost
+        $I->waitForJS('return document.readyState === "complete";', 10);
+        $I->waitForElementClickable($button, 10);
         $I->executeJS('window.__beforeSubmit = true;');
         $I->click($button);
         $I->waitForJS('return !window.__beforeSubmit && document.readyState === "complete";', 10);
