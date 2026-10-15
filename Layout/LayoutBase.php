@@ -4,7 +4,7 @@ namespace App\Layout;
 
 use Simflex\Core\Buffer;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
+use Simflex\Core\Models\ContentTemplateParam;
 use Simflex\Core\Path;
 use Simflex\Extensions\Content\Model\ModelContent;
 
@@ -103,10 +103,7 @@ abstract class LayoutBase
 
         // delete the entire group.
         if ($schema['group']) {
-            DB::query(
-                'DELETE FROM content_template_param WHERE group_name = ? AND template_id = ?',
-                [$schema['group'], $page->template_id]
-            );
+            ContentTemplateParam::bulkDelete(['group_name' => $schema['group'], 'template_id' => $page->template_id]);
         }
 
         // create new fields.
@@ -118,23 +115,22 @@ abstract class LayoutBase
         }
 
         foreach ($fields as $field) {
-            DB::query(
-                'INSERT INTO content_template_param (template_id, param_pid, position, field_type, name, label, npp, params, default_value, group_name) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    $page->template_id,
-                    'left', // TODO: allow to change from schema?
-                    self::findFieldType($field['type']),
-                    self::mangleName($schema, $field),
-                    $field['name'],
-                    LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
-                    serialize(['main' => $field['params'] ?? []]),
-                    $field['default'] ?? '',
-                    $field['group'] ?? $schema['group'],
-                ]
-            );
+            $param = new ContentTemplateParam();
+            $inserted = $param->insert([
+                'template_id' => $page->template_id,
+                'param_pid' => null,
+                'position' => 'left', // TODO: allow to change from schema?
+                'field_type' => self::findFieldType($field['type']),
+                'name' => self::mangleName($schema, $field),
+                'label' => $field['name'],
+                'npp' => LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
+                'params' => serialize(['main' => $field['params'] ?? []]),
+                'default_value' => $field['default'] ?? '',
+                'group_name' => $field['group'] ?? $schema['group'],
+            ]);
 
-            if (DB::error()) {
-                throw new \Exception(DB::error());
+            if (!$inserted) {
+                throw new \Exception($param->getLastError()['text']);
             }
         }
     }

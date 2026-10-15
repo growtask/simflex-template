@@ -289,13 +289,20 @@ class AdminBugfixTest extends Unit
     {
         $_SERVER['REMOTE_ADDR'] = "1.2.3.4'";
         $_SERVER['HTTP_USER_AGENT'] = "agent', data='x";
+        $hadEvents = Container::isSet('events');
+        $oldEvents = $hadEvents ? Container::get('events') : null;
+        Container::set('events', new \Simflex\Core\EventManager());
         $this->mockDb()->expects($this->once())->method('query')
             ->with(
-                'INSERT INTO log (action, ip, browser, data) VALUES (?, ?, ?, ?)',
+                $this->stringContains('into `log` (`action`, `ip`, `browser`, `data`) values (?, ?, ?, ?)'),
                 ['login_attempt', "1.2.3.4'", "agent', data='x", "Логин: a' OR 1=1"]
             )
             ->willReturn(false);
-        Log::a('login_attempt', "Логин: a' OR 1=1");
+        try {
+            Log::a('login_attempt', "Логин: a' OR 1=1");
+        } finally {
+            Container::set('events', $oldEvents);
+        }
     }
 
     // 14. Account - текущий пользователь из Container, вывод экранируется

@@ -2,11 +2,13 @@
 
 namespace App\Extensions\Form\Component;
 
+use App\Extensions\Form\Model\ModelCallback;
+use App\Extensions\Form\Model\ModelCallbackEmail;
+use App\Extensions\Form\Model\ModelCatalogProduct;
 use Simflex\Core\Api\JsonResponse;
 use Simflex\Core\ComponentBase;
 use Simflex\Core\Container;
 use Simflex\Core\Core;
-use Simflex\Core\DB;
 use Simflex\Core\Mail\Mailer;
 use Simflex\Core\Mail\Transport\PhpMailer;
 use Simflex\Core\Time;
@@ -47,7 +49,7 @@ class AjaxForm extends ComponentBase
         // fix type
         if ($type == 'available') {
             $type = 'Сообщить о поступлении';
-            $message = DB::result('select name from catalog_product where product_id = ?', 'name', [$message]);
+            $message = ModelCatalogProduct::findOne(['product_id' => $message])?->name;
         } elseif ($type == 'callback') {
             $type = 'Остались вопросы';
         }
@@ -56,15 +58,9 @@ class AjaxForm extends ComponentBase
 
         // insert to db
         if (!$email) {
-            DB::query(
-                'INSERT INTO callback (name, phone, message, date) VALUES (?, ?, ?, ?)',
-                [$name, $phone, $message, $date]
-            );
-        } else {
-            DB::query(
-                'insert into callback_email (email, is_subscribed) select ?, 1 where not exists(select 1 from callback_email where email = ?)',
-                [$email, $email]
-            );
+            ModelCallback::insertStatic(['name' => $name, 'phone' => $phone, 'message' => $message, 'date' => $date]);
+        } elseif (!ModelCallbackEmail::findOne(['email' => $email])) {
+            ModelCallbackEmail::insertStatic(['email' => $email, 'is_subscribed' => 1]);
         }
 
         // run both channels, even if the first one fails
