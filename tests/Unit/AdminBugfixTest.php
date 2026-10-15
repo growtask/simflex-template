@@ -135,9 +135,9 @@ class AdminBugfixTest extends Unit
         $this->assertFalse($this->makeBase([
             'first' => $this->makeField('first', true),
             'second' => $this->makeField('second', true),
-        ])->validate());
-        $this->assertTrue($this->makeBase(['second' => $this->makeField('second', true)])->validate());
-        $this->assertTrue($this->makeBase()->validate());
+        ])->isValid());
+        $this->assertTrue($this->makeBase(['second' => $this->makeField('second', true)])->isValid());
+        $this->assertTrue($this->makeBase()->isValid());
     }
 
     // 3. showDetailGetRow без динамического свойства
@@ -191,9 +191,9 @@ class AdminBugfixTest extends Unit
     {
         $this->assertTrue(class_exists(WidgetBase::class));
         $widget = new class (['widget_id' => '7', 'name' => 'Sales']) extends WidgetBase {
-            protected function content(): void
+            protected function content(): string
             {
-                echo 'widget-body';
+                return 'widget-body';
             }
         };
         AdminCore::$ajax = true;
@@ -320,9 +320,7 @@ class AdminBugfixTest extends Unit
         $_POST = [];
         try {
             $account = new Account(['item_id' => 0, 'class' => Account::class, 'name' => '', 'posname' => '', 'params' => '']);
-            ob_start();
-            (new \ReflectionMethod($account, 'content'))->invoke($account);
-            $html = ob_get_clean();
+            $html = $account->content();
         } finally {
             Container::set('user', $oldUser);
         }

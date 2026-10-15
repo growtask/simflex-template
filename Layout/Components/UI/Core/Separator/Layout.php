@@ -11,8 +11,8 @@ class Layout extends LayoutBase
         SeparatorOrientation $orientation = SeparatorOrientation::Horizontal,
         SeparatorTheme       $theme = SeparatorTheme::Light,
         array                $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'attributes'

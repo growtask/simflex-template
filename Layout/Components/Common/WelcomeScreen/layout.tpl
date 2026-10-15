@@ -40,7 +40,7 @@
                 <p class="welcome-screen__card-desc">
                     Подробные руководства и API-документация помогут вам создавать потрясающие приложения.
                 </p>
-                <?php App\Layout\Components\UI\Core\Buttons\Button\Layout::drawButton(
+                <?= App\Layout\Components\UI\Core\Buttons\Button\Layout::drawButton(
                     text: 'Читать',
                     link: 'http://sf.master.et9.ru:10580/home.html',
                     icon: 'arrow-right',
@@ -49,7 +49,7 @@
                     attributes: [
                         'target' => '_blank'
                     ]
-                ); ?>
+                ) ?>
             </div>
         </div>
 

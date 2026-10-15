@@ -12,8 +12,8 @@ class Layout extends LayoutBase
         BadgeStockStyle $style = BadgeStockStyle::Many,
         BadgeStockSize  $size = BadgeStockSize::ExtraSmall,
         array           $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'text',

@@ -13,8 +13,8 @@ class Layout extends LayoutBase
         TagSize  $size = TagSize::Small,
         TagTheme $theme = TagTheme::Light,
         array       $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'text',

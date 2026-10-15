@@ -1,1 +1,1 @@
-<?php $this->tree($pid) ?>
+<?= $this->tree($pid) ?>

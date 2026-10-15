@@ -18,8 +18,8 @@ class Layout extends LayoutBase
         bool              $reset = true,
         string            $id = '',
         array             $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'placeholder',
