@@ -37,7 +37,7 @@ class AdminBugfixTest extends Unit
         $this->setAlerts([]);
         // Session::set() пытается стартовать сессию, а в CLI заголовки уже отправлены - глушим только это
         set_error_handler(
-            static fn (int $no, string $msg) => str_contains($msg, 'ession') || str_contains($msg, 'headers'),
+            static fn(int $no, string $msg) => str_contains($msg, 'ession') || str_contains($msg, 'headers'),
             E_WARNING | E_NOTICE
         );
     }

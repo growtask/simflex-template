@@ -31,6 +31,9 @@ return (new Config())
             ],
         ],
         'control_structure_braces' => true,
+        'function_declaration' => [
+            'closure_fn_spacing' => 'none',
+        ],
         'lowercase_cast' => true,
         'no_blank_lines_after_class_opening' => true,
         'no_extra_blank_lines' => [

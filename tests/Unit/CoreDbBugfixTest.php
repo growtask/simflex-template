@@ -71,7 +71,7 @@ class CoreDbBugfixTest extends Unit
 
     public function testColumnDefaults(): void
     {
-        $sql = static fn ($default) => (new Column('c'))->dataType('int')->setDefault($default)->autoIncrement()->toString();
+        $sql = static fn($default) => (new Column('c'))->dataType('int')->setDefault($default)->autoIncrement()->toString();
         $this->assertStringContainsString('DEFAULT NULL AUTO_INCREMENT', $sql(null));
         $this->assertStringContainsString('DEFAULT 0 AUTO_INCREMENT', $sql(false));
         $this->assertStringContainsString('DEFAULT 1 AUTO_INCREMENT', $sql(true));

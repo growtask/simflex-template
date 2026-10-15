@@ -187,7 +187,7 @@ class Config extends \Simflex\Core\ConfigBase
             $logPath = $rootDir . '/' . date('Y-m-d') . '.log';
             file_put_contents(
                 $logPath,
-                str_replace(array_map(fn (string $k) => '{' . $k . '}', array_keys($i)), array_values($i), $msg) . "\n",
+                str_replace(array_map(fn(string $k) => '{' . $k . '}', array_keys($i)), array_values($i), $msg) . "\n",
                 FILE_APPEND
             );
         }

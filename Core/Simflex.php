@@ -130,7 +130,7 @@ class Simflex
         $params['year'] = date('Y');
 
         $data = str_replace(
-            array_map(fn (int|string $key) => '{' . $key . '}', array_keys($params)),
+            array_map(fn(int|string $key) => '{' . $key . '}', array_keys($params)),
             array_map('strval', array_values($params)),
             $data
         );

@@ -22,7 +22,7 @@ class PropertyInitializationTest extends Unit
         try {
             $_GET['ids'] = '1,0,2,invalid,3';
             unset($_POST['group_ids']);
-            $make = static fn () => new class () extends Base {
+            $make = static fn() => new class () extends Base {
                 protected function initTableName(): void
                 {
                 }
