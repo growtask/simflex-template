@@ -1,6 +1,5 @@
 <?php
 
-use Simflex\Core\DB;
 use Simflex\Core\DB\Schema;
 
 return new class () implements \Simflex\Core\DB\Migration {
