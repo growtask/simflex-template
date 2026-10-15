@@ -28,5 +28,5 @@ return [
     'dev' => [
         \Simflex\Core\Wrapper\DebugBar::class,
         \Simflex\Core\Wrapper\Whoops::class,
-    ]
+    ],
 ];

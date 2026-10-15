@@ -1,11 +1,11 @@
 <?php
-return new class implements \Simflex\Core\DB\Seeder
-{
+
+return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
         $indexTemplate = \Simflex\Core\Models\ContentTemplate::insertStatic([
             'template_name' => 'Главная',
-            'template_path' => 'index.tpl'
+            'template_path' => 'index.tpl',
         ]);
 
         \Simflex\Core\Models\ContentTemplateParam::bulkInsert([
@@ -20,7 +20,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'help' => '',
                 'params' => serialize([]),
                 'default_value' => '',
-                'group_name' => 'SEO'
+                'group_name' => 'SEO',
             ],
             [
                 'template_id' => $indexTemplate->template_id,
@@ -33,7 +33,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'help' => '',
                 'params' => serialize(['main' => ['editor_mini' => 0, 'editor_full' => 1]]),
                 'default_value' => '',
-                'group_name' => 'SEO'
+                'group_name' => 'SEO',
             ],
             [
                 'template_id' => $indexTemplate->template_id,
@@ -46,7 +46,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'help' => '',
                 'params' => serialize([]),
                 'default_value' => '',
-                'group_name' => 'SEO'
+                'group_name' => 'SEO',
             ],
             [
                 'template_id' => $indexTemplate->template_id,
@@ -59,7 +59,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'help' => '',
                 'params' => serialize(['main' => ['editor_mini' => 0, 'editor_full' => 1]]),
                 'default_value' => '',
-                'group_name' => 'SEO'
+                'group_name' => 'SEO',
             ],
             [
                 'template_id' => $indexTemplate->template_id,
@@ -72,7 +72,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'help' => '',
                 'params' => serialize([]),
                 'default_value' => '',
-                'group_name' => 'Мета'
+                'group_name' => 'Мета',
             ],
             [
                 'template_id' => $indexTemplate->template_id,
@@ -85,7 +85,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'help' => '',
                 'params' => serialize(['main' => ['editor_mini' => 0, 'editor_full' => 0]]),
                 'default_value' => '',
-                'group_name' => 'Мета'
+                'group_name' => 'Мета',
             ],
             [
                 'template_id' => $indexTemplate->template_id,
@@ -98,8 +98,8 @@ return new class implements \Simflex\Core\DB\Seeder
                 'help' => '',
                 'params' => serialize(['main' => ['editor_mini' => 0, 'editor_full' => 0]]),
                 'default_value' => '',
-                'group_name' => 'Мета'
-            ]
+                'group_name' => 'Мета',
+            ],
         ]);
 
         \Simflex\Extensions\Content\Model\ModelContent::bulkInsert([
@@ -116,8 +116,8 @@ return new class implements \Simflex\Core\DB\Seeder
                 'file' => '',
                 'photo' => '',
                 'template_id' => $indexTemplate->template_id,
-                'npp' => 10
-            ]
+                'npp' => 10,
+            ],
         ]);
     }
 };

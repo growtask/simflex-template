@@ -18,13 +18,12 @@ class Layout extends LayoutBase
         AccordionSize  $size = AccordionSize::Small,
         AccordionTheme $theme = AccordionTheme::Light,
         array          $attributes = []
-    ): void
-    {
-        static::draw(compact(
+    ): void {
+        static::draw(
+            compact(
                 'className',
                 'title',
                 'subtitle',
-
                 'comment',
                 'badge',
                 'icon',

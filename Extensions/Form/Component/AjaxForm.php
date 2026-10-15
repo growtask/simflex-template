@@ -95,7 +95,7 @@ class AjaxForm extends ComponentBase
 
     protected function buildMailBody(): string
     {
-        $d = array_map(fn($v) => htmlspecialchars((string)$v, ENT_QUOTES), $this->data);
+        $d = array_map(fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES), $this->data);
 
         return <<<HTML
 <p><b>Форма: </b> {$d['type']}</p>
@@ -154,7 +154,7 @@ HTML;
                     '\\{',
                     '\\}',
                     '\\.',
-                    '\\!'
+                    '\\!',
                 ],
                 $i
             );
@@ -190,7 +190,7 @@ MD;
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
             'chat_id' => Core::siteParam('form_tg_chat_id'),
             'parse_mode' => 'MarkdownV2',
-            'text' => $md
+            'text' => $md,
         ]));
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

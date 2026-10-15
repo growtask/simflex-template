@@ -66,7 +66,7 @@ class PublicRootCest
                 'public/cache/assets',
                 \FilesystemIterator::SKIP_DOTS
             ))),
-            fn(\SplFileInfo $f) => preg_match('/\.(php\d?|phtml|tpl|scss|json|md)$/i', $f->getFilename())
+            fn (\SplFileInfo $f) => preg_match('/\.(php\d?|phtml|tpl|scss|json|md)$/i', $f->getFilename())
         ));
     }
 

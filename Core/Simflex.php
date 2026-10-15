@@ -129,9 +129,11 @@ class Simflex
         $params = is_array($params) ? $params : [];
         $params['year'] = date('Y');
 
-        $data = str_replace(array_map(fn(int|string $key) => '{' . $key . '}', array_keys($params)),
+        $data = str_replace(
+            array_map(fn (int|string $key) => '{' . $key . '}', array_keys($params)),
             array_map('strval', array_values($params)),
-            $data);
+            $data
+        );
 
         // strip unnecessary stuff
         if (!$this->cfg->devMode) {
@@ -139,12 +141,12 @@ class Simflex
                 '/>[^\S ]+/', // strip whitespaces after tags, except space
                 '/[^\S ]+</', // strip whitespaces before tags, except space
                 '/(\s)+/', // shorten multiple whitespace sequences
-                '/<!--(.|\s)*?-->/' // strip HTML comments
+                '/<!--(.|\s)*?-->/', // strip HTML comments
             ], [
                 '>',
                 '<',
                 '\\1',
-                ''
+                '',
             ], $data);
         }
 

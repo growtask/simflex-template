@@ -49,7 +49,7 @@ class Installer extends ConsoleBase
             'c',
             [
                 'migration',
-                $config->db['name']
+                $config->db['name'],
             ]
         );
 
@@ -84,7 +84,7 @@ class Installer extends ConsoleBase
                 "DB_USER={$config->db['user']}",
                 "DB_PASS={$config->db['password']}",
                 "DB_NAME={$config->db['name']}",
-                "DEVELOPER=1", // enabled by default
+                'DEVELOPER=1', // enabled by default
             ])
         );
     }

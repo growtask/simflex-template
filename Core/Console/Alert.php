@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core\Console;
 
 use JetBrains\PhpStorm\Deprecated;

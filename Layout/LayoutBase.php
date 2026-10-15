@@ -129,7 +129,7 @@ abstract class LayoutBase
                     LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
                     serialize(['main' => $field['params'] ?? []]),
                     $field['default'] ?? '',
-                    $field['group'] ?? $schema['group']
+                    $field['group'] ?? $schema['group'],
                 ]
             );
 

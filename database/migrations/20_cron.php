@@ -1,8 +1,9 @@
 <?php
-use Simflex\Admin\Migration\Struct;
-use \Simflex\Core\DB\Schema;
 
-return new class implements \Simflex\Core\DB\Migration {
+use Simflex\Admin\Migration\Struct;
+use Simflex\Core\DB\Schema;
+
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('cron', function (Schema\Table $c) {

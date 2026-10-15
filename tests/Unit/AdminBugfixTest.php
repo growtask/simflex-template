@@ -76,13 +76,15 @@ class AdminBugfixTest extends Unit
 
     private function makeBase(array $fields = []): Base
     {
-        $base = new class extends Base {
+        $base = new class () extends Base {
             protected function initTableName(): void
             {
                 $this->table = 'test_table';
             }
 
-            protected function initTableData(): void {}
+            protected function initTableData(): void
+            {
+            }
         };
         $set = function (array $fields) {
             $this->fields = $fields;
@@ -188,7 +190,7 @@ class AdminBugfixTest extends Unit
     public function testWidgetBaseIsLoadableAndRenders(): void
     {
         $this->assertTrue(class_exists(WidgetBase::class));
-        $widget = new class(['widget_id' => '7', 'name' => 'Sales']) extends WidgetBase {
+        $widget = new class (['widget_id' => '7', 'name' => 'Sales']) extends WidgetBase {
             protected function content(): void
             {
                 echo 'widget-body';

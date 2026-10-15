@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Layout\Components\UI\Core\Buttons\Button;
 
 enum ButtonSize: string

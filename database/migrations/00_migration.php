@@ -1,9 +1,9 @@
 <?php
 
 use Simflex\Admin\Migration\Struct;
-use \Simflex\Core\DB\Schema;
+use Simflex\Core\DB\Schema;
 
-return new class implements \Simflex\Core\DB\Migration {
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('migration', function (Schema\Table $c) {

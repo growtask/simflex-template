@@ -1,7 +1,6 @@
 <?php
 
-return new class implements \Simflex\Core\DB\Seeder
-{
+return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
         $devPriv = \Simflex\Core\Models\UserPriv::byName('dev');
@@ -15,7 +14,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'link' => '/admin/',
             'model' => '',
             'icon' => 'home',
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         \Simflex\Core\Models\AdminMenu::bulkInsert([
@@ -27,7 +26,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/admin/menu/',
                 'model' => 'admin_menu',
                 'icon' => 'settings-mini',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => $adminMenu->menu_id,
@@ -37,7 +36,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/admin/role/',
                 'model' => 'user_role',
                 'icon' => 'users-mini',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => $adminMenu->menu_id,
@@ -47,7 +46,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/admin/priv/',
                 'model' => 'user_priv',
                 'icon' => 'fingerprint-mini',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => $adminMenu->menu_id,
@@ -57,7 +56,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/admin/user/',
                 'model' => 'user',
                 'icon' => 'user-mini',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => $adminMenu->menu_id,
@@ -67,8 +66,8 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/cron/',
                 'model' => 'cron',
                 'icon' => 'calendar-mini',
-                'hidden' => false
-            ]
+                'hidden' => false,
+            ],
         ]);
 
         $siteMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
@@ -79,7 +78,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'link' => '/site/',
             'model' => '',
             'icon' => 'settings',
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         \Simflex\Core\Models\AdminMenu::bulkInsert([
@@ -91,7 +90,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/site/menu/',
                 'model' => 'menu',
                 'icon' => 'user-mini',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => $siteMenu->menu_id,
@@ -101,7 +100,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/site/module/',
                 'model' => 'module_item',
                 'icon' => 'puzzle-mini',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => $siteMenu->menu_id,
@@ -111,7 +110,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/site/settings/',
                 'model' => 'settings',
                 'icon' => 'settings-mini',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => $siteMenu->menu_id,
@@ -121,8 +120,8 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/site/seo/',
                 'model' => 'seo',
                 'icon' => 'chart-mini',
-                'hidden' => false
-            ]
+                'hidden' => false,
+            ],
         ]);
 
         $modulesMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
@@ -133,20 +132,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'link' => '/admin/module/',
             'model' => 'module',
             'icon' => 'puzzle-mini',
-            'hidden' => false
-        ]);
-
-        \Simflex\Core\Models\AdminMenu::bulkInsert([
-            [
-                'menu_pid' => $modulesMenu->menu_id,
-                'priv_id' => $devPriv->priv_id,
-                'npp' => 5,
-                'name' => 'Параметры модулей',
-                'link' => '/admin/module/param/',
-                'model' => 'module_param',
-                'icon' => '',
-                'hidden' => false
-            ]
+            'hidden' => false,
         ]);
 
         $componentsMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
@@ -157,20 +143,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'link' => '/admin/component/',
             'model' => 'component',
             'icon' => 'container-mini',
-            'hidden' => false
-        ]);
-
-        \Simflex\Core\Models\AdminMenu::bulkInsert([
-            [
-                'menu_pid' => $componentsMenu->menu_id,
-                'priv_id' => $devPriv->priv_id,
-                'npp' => 4,
-                'name' => 'Параметры компонентов',
-                'link' => '/admin/component_param/',
-                'model' => 'component_param',
-                'icon' => '',
-                'hidden' => false
-            ]
+            'hidden' => false,
         ]);
 
         $permissionsMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
@@ -181,7 +154,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'link' => '/admin/priv/',
             'model' => 'user_priv',
             'icon' => 'fingerprint-mini',
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         \Simflex\Core\Models\AdminMenu::bulkInsert([
@@ -193,8 +166,8 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/user_priv_personal/',
                 'model' => 'user_priv_personal',
                 'icon' => '',
-                'hidden' => false
-            ]
+                'hidden' => false,
+            ],
         ]);
 
         $templatesMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
@@ -205,7 +178,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'link' => '/admin/content_template/',
             'model' => 'content_template',
             'icon' => 'layout-mini',
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         \Simflex\Core\Models\AdminMenu::bulkInsert([
@@ -217,8 +190,8 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/admin/content_template_param/',
                 'model' => 'content_template_param',
                 'icon' => '',
-                'hidden' => false
-            ]
+                'hidden' => false,
+            ],
         ]);
 
         \Simflex\Core\Models\AdminMenu::bulkInsert([
@@ -230,7 +203,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/content/',
                 'model' => 'content',
                 'icon' => 'edit',
-                'hidden' => false
+                'hidden' => false,
             ],
             [
                 'menu_pid' => null,
@@ -240,7 +213,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'link' => '/account/',
                 'model' => '',
                 'icon' => 'user',
-                'hidden' => true
+                'hidden' => true,
             ],
         ]);
     }

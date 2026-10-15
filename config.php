@@ -94,7 +94,7 @@ class Config extends \Simflex\Core\ConfigBase
             'routes' => $routes,
             'events' => $events,
             'services' => $services,
-            'commands' => $commands
+            'commands' => $commands,
         ];
 
         if (!$this->devMode) {
@@ -130,7 +130,9 @@ class Config extends \Simflex\Core\ConfigBase
             try {
                 $ref = new \ReflectionClass($class);
                 if (!$ref->isSubclassOf(ExtensionConfig::class)) {
-                    $this->log('Extension {file} does not extend Simflex\Core\ExtensionConfig class', ['file' => $file]
+                    $this->log(
+                        'Extension {file} does not extend Simflex\Core\ExtensionConfig class',
+                        ['file' => $file]
                     );
                     continue;
                 }
@@ -185,7 +187,7 @@ class Config extends \Simflex\Core\ConfigBase
             $logPath = $rootDir . '/' . date('Y-m-d') . '.log';
             file_put_contents(
                 $logPath,
-                str_replace(array_map(fn(string $k) => '{' . $k . '}', array_keys($i)), array_values($i), $msg) . "\n",
+                str_replace(array_map(fn (string $k) => '{' . $k . '}', array_keys($i)), array_values($i), $msg) . "\n",
                 FILE_APPEND
             );
         }

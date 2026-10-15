@@ -12,7 +12,6 @@ use Simflex\Core\ModuleBase;
  */
 class Menu extends ModuleBase
 {
-
     private array|false $menu = false;
 
     protected function content(): void
@@ -61,5 +60,4 @@ class Menu extends ModuleBase
 
         include 'tpl/treenode.tpl';
     }
-
 }

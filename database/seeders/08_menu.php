@@ -1,6 +1,6 @@
 <?php
 
-return new class implements \Simflex\Core\DB\Seeder {
+return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
         $contentComponent = \Simflex\Core\Models\Component::byClass(\App\Extensions\Content\Content::class);
@@ -13,8 +13,8 @@ return new class implements \Simflex\Core\DB\Seeder {
                 'hidden' => false,
                 'npp' => 1,
                 'name' => 'Главная',
-                'link' => '/'
-            ]
+                'link' => '/',
+            ],
         ]);
     }
 };

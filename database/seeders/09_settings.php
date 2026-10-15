@@ -1,6 +1,6 @@
 <?php
-return new class implements \Simflex\Core\DB\Seeder
-{
+
+return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
         \Simflex\Core\Models\ModelSettings::bulkInsert([
@@ -10,7 +10,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'site_name',
                 'value' => 'Simflex',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -18,7 +18,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'email',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 12,
@@ -26,7 +26,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'phone',
                 'value' => '8 800 555 35 35',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 11,
@@ -34,7 +34,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'workhours',
                 'value' => 'Пн-пт, с 10:00 до 19:00 ',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 14,
@@ -42,7 +42,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'form_email',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -50,7 +50,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'address',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -58,7 +58,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'vk',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -66,7 +66,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'tg',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -74,7 +74,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'inst',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 13,
@@ -82,7 +82,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'whats_app',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 1,
@@ -90,7 +90,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'company',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 1,
@@ -98,7 +98,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'form_tg_token',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 1,
@@ -106,7 +106,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'form_tg_chat_id',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -114,7 +114,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'ok',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -122,7 +122,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'office_address',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
             [
                 'npp' => 0,
@@ -130,7 +130,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'alias' => 'map',
                 'value' => '',
                 'type' => 'string',
-                'enum_values' => ''
+                'enum_values' => '',
             ],
         ]);
     }

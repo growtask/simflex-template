@@ -11,3 +11,4 @@ docker/data
 .agents/local.md
 .DS_Store
 composer.lock
+/.php-cs-fixer.cache

@@ -24,7 +24,7 @@ if (!$request->arg()) {
 $isHelp = strtolower($request->arg(0)) == 'help';
 
 // get command data
-$cmd = array_map(fn(string $part) => strtolower($part), explode('/', $request->arg($isHelp ? 1 : 0)));
+$cmd = array_map(fn (string $part) => strtolower($part), explode('/', $request->arg($isHelp ? 1 : 0)));
 if (count($cmd) != 2) {
     Log::error('Usage: ./sf provider/method [args]');
     exit;

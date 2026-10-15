@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Simplex Framework core functions
  * Loaded automatically from the bootstrap
@@ -86,7 +87,7 @@ function buildAttrs(array $attributes = []): string
     return implode(
         ' ',
         array_map(
-            fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
+            fn ($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
             array_keys($attributes),
             $attributes
         )

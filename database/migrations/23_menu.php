@@ -1,8 +1,9 @@
 <?php
-use Simflex\Core\DB;
-use \Simflex\Core\DB\Schema;
 
-return new class implements \Simflex\Core\DB\Migration {
+use Simflex\Core\DB;
+use Simflex\Core\DB\Schema;
+
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('menu', function (Schema\Table $c) {
