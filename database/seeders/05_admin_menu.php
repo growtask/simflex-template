@@ -124,28 +124,6 @@ return new class () implements \Simflex\Core\DB\Seeder {
             ],
         ]);
 
-        $modulesMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
-            'menu_pid' => $adminMenu->menu_id,
-            'priv_id' => $devPriv->priv_id,
-            'npp' => 3,
-            'name' => 'Модули',
-            'link' => '/admin/module/',
-            'model' => 'module',
-            'icon' => 'puzzle-mini',
-            'hidden' => false,
-        ]);
-
-        $componentsMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
-            'menu_pid' => $adminMenu->menu_id,
-            'priv_id' => $devPriv->priv_id,
-            'npp' => 4,
-            'name' => 'Компоненты',
-            'link' => '/admin/component/',
-            'model' => 'component',
-            'icon' => 'container-mini',
-            'hidden' => false,
-        ]);
-
         $permissionsMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
             'menu_pid' => $adminMenu->menu_id,
             'priv_id' => $devPriv->priv_id,

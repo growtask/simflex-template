@@ -10,8 +10,6 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->boolean('active')->setDefault(1);
             $c->string('timing', 30);
             $c->string('name');
-            $c->integer('ext_id');
-            $c->integer('module_id');
             $c->string('plugin_name', 50);
             $c->string('action');
             $c->string('cparams', 1023);

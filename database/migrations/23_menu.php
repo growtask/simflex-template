@@ -8,7 +8,7 @@ return new class () implements \Simflex\Core\DB\Migration {
         $s->createTable('menu', function (Schema\Table $c) {
             $c->id('menu_id');
             $c->integer('menu_pid');
-            $c->integer('component_id')->foreignKey('component');
+            $c->string('component');
             $c->boolean('active')->setDefault(0);
             $c->boolean('hidden')->setDefault(0);
             $c->integer('npp')->setDefault(0);

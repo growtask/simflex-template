@@ -7,7 +7,7 @@ return new class () implements \Simflex\Core\DB\Migration {
     {
         $s->createTable('module_item', function (Schema\Table $c) {
             $c->id('item_id');
-            $c->integer('module_id')->foreignKey('module');
+            $c->string('module');
             $c->integer('menu_id');
             $c->string('posname')->index();
             $c->boolean('active')->setDefault(0);
