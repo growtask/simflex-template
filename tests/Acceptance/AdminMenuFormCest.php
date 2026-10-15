@@ -44,8 +44,7 @@ class AdminMenuFormCest
 
         $I->amOnPage('/admin/admin/menu/?action=form&menu_id=1');
         $I->fillField('input[name="name"].form-control__input', $value);
-        $I->click('.content__btns button[name="submit_apply"]');
-        $I->waitForElement('input[name="name"].form-control__input', 10);
+        $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', 'input[name="name"].form-control__input');
 
         $I->dontSee('Fatal');
         $I->dontSee('error');

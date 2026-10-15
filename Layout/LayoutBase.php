@@ -43,7 +43,7 @@ abstract class LayoutBase
     public static function draw(array $data = []): void
     {
         // generate fields if requested.
-        if (LayoutManager::$shouldGenerateFields && !$data['__no_gen']) {
+        if (LayoutManager::$shouldGenerateFields && empty($data['__no_gen'])) {
             self::$inputData = $data;
             self::generateFields();
         }

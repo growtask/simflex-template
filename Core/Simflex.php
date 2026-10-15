@@ -102,11 +102,14 @@ class Simflex
         $ev->dispatch(new Event(Events::PrePrepareOutput, static::class, $data));
 
         // replace params
-        $params = Container::getCore()::siteParam();
+        // site params are always taken from the site core: Admin\Core::siteParam() requires a key
+        // and can't return the full list
+        $params = \Simflex\Core\Core::siteParam();
+        $params = is_array($params) ? $params : [];
         $params['year'] = date('Y');
 
-        $data = str_replace(array_map(fn(string $key) => '{' . $key . '}', array_keys($params)),
-            array_values($params),
+        $data = str_replace(array_map(fn(int|string $key) => '{' . $key . '}', array_keys($params)),
+            array_map('strval', array_values($params)),
             $data);
 
         // strip unnecessary stuff

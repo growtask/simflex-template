@@ -43,6 +43,19 @@ class AcceptanceTester extends \Codeception\Actor
         $this->loginAs('dev');
     }
 
+    /**
+     * Clicks a form submit button and waits until the reloaded page is ready,
+     * so that later checks don't hit elements of the page being unloaded
+     */
+    public function submitAndWaitForReload(string $button, string $waitFor): void
+    {
+        $I = $this;
+        $I->executeJS('window.__beforeSubmit = true;');
+        $I->click($button);
+        $I->waitForJS('return !window.__beforeSubmit && document.readyState === "complete";', 10);
+        $I->waitForElement($waitFor, 10);
+    }
+
     private function loginAs(string $login): void
     {
         $I = $this;

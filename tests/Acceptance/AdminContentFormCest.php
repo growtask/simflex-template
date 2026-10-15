@@ -43,8 +43,7 @@ class AdminContentFormCest
 
         $I->amOnPage('/admin/content/?action=form&content_id=1');
         $I->fillField('meta_title', $value);
-        $I->click('.content__btns button[name="submit_apply"]');
-        $I->waitForElement('input[name="meta_title"]', 10);
+        $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', 'input[name="meta_title"]');
 
         $I->dontSee('Fatal');
         $I->dontSee('error');
@@ -59,8 +58,7 @@ class AdminContentFormCest
 
         // reset back to the original state so the test is repeatable
         $I->fillField('meta_title', '');
-        $I->click('.content__btns button[name="submit_apply"]');
-        $I->waitForElement('input[name="meta_title"]', 10);
+        $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', 'input[name="meta_title"]');
         $I->seeInField('meta_title', '');
 
         $date = date('Y-m-d');
