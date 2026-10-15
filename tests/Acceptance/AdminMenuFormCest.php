@@ -33,6 +33,20 @@ class AdminMenuFormCest
         $I->dontSeeLogProblems();
     }
 
+    public function tryToSeeModelSelect(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/admin/admin/menu/?action=form&menu_id=1');
+        $I->dontSee('Fatal');
+
+        // "Модель" is a choice from the admin tables registry, not a free-text input
+        $I->seeElementInDOM('select[name="model"]');
+        $I->dontSeeElementInDOM('input[name="model"]');
+        $I->seeElementInDOM('select[name="model"] option[value="admin_menu"]');
+        $I->seeElementInDOM('select[name="model"] option[value="seo"]');
+
+        $I->dontSeeLogProblems();
+    }
+
     public function tryToSaveMenuForm(AcceptanceTester $I): void
     {
         $value = 'Codeception test menu name';
