@@ -20,7 +20,7 @@ class MailSmsBugfixTest extends Unit
 
     protected function _before(): void
     {
-        $prop = new \ReflectionProperty(Core::class, 'site_params');
+        $prop = new \ReflectionProperty(Core::class, 'siteParams');
         $this->siteParamsBackup = $prop->getValue();
         // Чтобы Core::siteParam() не ходил в БД
         $prop->setValue(null, ['site_name' => 'Test site', 'send_deny_email' => '', 'sender' => '']);
@@ -35,7 +35,7 @@ class MailSmsBugfixTest extends Unit
 
     protected function _after(): void
     {
-        (new \ReflectionProperty(Core::class, 'site_params'))->setValue(null, $this->siteParamsBackup);
+        (new \ReflectionProperty(Core::class, 'siteParams'))->setValue(null, $this->siteParamsBackup);
         Container::set('config', $this->configBackup);
         $_SERVER = $this->serverBackup;
         exec('rm -rf ' . escapeshellarg($this->tmpRoot));

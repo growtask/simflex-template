@@ -263,7 +263,7 @@ class AdminBugfixTest extends Unit
     // 12. Admin\Core::siteParam
     public function testAdminSiteParamReturnsStoredOrEmpty(): void
     {
-        $prop = new \ReflectionProperty(AdminCore::class, 'site_params');
+        $prop = new \ReflectionProperty(AdminCore::class, 'siteParams');
         $backup = $prop->getValue();
         try {
             $prop->setValue(null, ['error404' => 'Not found']);

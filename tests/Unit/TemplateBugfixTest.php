@@ -30,13 +30,13 @@ class TemplateBugfixTest extends Unit
 
     private function getSiteParams(): array
     {
-        $prop = new \ReflectionProperty(Core::class, 'site_params');
+        $prop = new \ReflectionProperty(Core::class, 'siteParams');
         return $prop->getValue();
     }
 
     private function setSiteParams(array $params): void
     {
-        $prop = new \ReflectionProperty(Core::class, 'site_params');
+        $prop = new \ReflectionProperty(Core::class, 'siteParams');
         $prop->setValue(null, $params);
     }
 

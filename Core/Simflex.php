@@ -311,8 +311,10 @@ class Simflex
 
         Log::addLogger(new StdLogger());
 
-        // file logger
-        Log::addLogger(new FileLogger());
+        // file logger, opt-in (IS_LOG_TO_FILE=1); by default the log goes to stdout only
+        if ($this->cfg->logToFile) {
+            Log::addLogger(new FileLogger());
+        }
 
         // fire logging init event
         $ev->dispatch(new Event(Events::PostLoggerInit, static::class));
