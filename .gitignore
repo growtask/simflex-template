@@ -12,3 +12,4 @@ docker/data
 .DS_Store
 composer.lock
 /.php-cs-fixer.cache
+CLAUDE.local.md
