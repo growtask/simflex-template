@@ -312,7 +312,6 @@ class Simflex
         Log::addLogger(new StdLogger());
 
         // file logger
-        $this->cfg->extra['logPath'] = SF_ROOT_PATH . '/log';
         Log::addLogger(new FileLogger());
 
         // fire logging init event

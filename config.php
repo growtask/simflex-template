@@ -37,18 +37,14 @@ class Config extends \Simflex\Core\ConfigBase
     {
         $this->defaultComponent = Content::class;
 
-        // configure database
-        $this->db['host'] = env('DB_HOST', '127.0.0.1');
-        $this->db['user'] = env('DB_USER', 'simflex');
-        $this->db['password'] = env('DB_PASS', 'simflex');
-        $this->db['name'] = env('DB_NAME', 'simflex');
-
-        // admin panel URL prefix (default is declared in ConfigBase)
+        // settings from the environment. Defaults are declared in ConfigBase only
+        $this->db['host'] = env('DB_HOST', $this->db['host']);
+        $this->db['user'] = env('DB_USER', $this->db['user']);
+        $this->db['password'] = env('DB_PASS', $this->db['password']);
+        $this->db['name'] = env('DB_NAME', $this->db['name']);
         $this->adminPath = env('ADMIN_PATH', $this->adminPath);
-
-        // developer options
-        $this->devMode = env('DEVELOPER', true);
-        $this->enableLogging = env('LOGGING', false);
+        $this->devMode = env('DEVELOPER', $this->devMode);
+        $this->enableLogging = env('LOGGING', $this->enableLogging);
 
         // default files
         $this->files['routes'] = SF_ROOT_PATH . '/provider/routes.php';
