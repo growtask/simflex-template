@@ -23,10 +23,10 @@ class AjaxForm extends ComponentBase
     protected array $data = [];
 
     /**
-     * ComponentBase::execute() ignores the return value of content() and returns only the
-     * buffered output, so the JSON is sent directly via JsonResponse (like Api\Json does).
+     * The JSON response is sent directly via JsonResponse (like Api\Json does),
+     * bypassing the page layout.
      */
-    protected function content(): void
+    protected function content(): string
     {
         $this->sendJson($this->process());
     }

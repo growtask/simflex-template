@@ -16,8 +16,8 @@ class Layout extends LayoutBase
         ButtonMenuSize  $size = ButtonMenuSize::Medium,
         ButtonMenuTheme $theme = ButtonMenuTheme::Light,
         array           $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'text',

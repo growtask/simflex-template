@@ -19,8 +19,8 @@ class Layout extends LayoutBase
         DropdownTabTheme     $theme = DropdownTabTheme::Light,
         array                $options = [],
         array                $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'text',

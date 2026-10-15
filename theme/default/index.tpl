@@ -39,8 +39,8 @@
     }
     $description = Simflex\Core\Page::$override['description'] ?? $content['params']['meta_de'] ?? '';
     $keywords = Simflex\Core\Page::$override['keywords'] ?? $content['params']['meta_kw'] ?? '';
-
-    Simflex\Core\Page::meta(); ?>
+    ?>
+    <?= Simflex\Core\Page::meta() ?>
     <meta name="description" content="<?= $description ?>"/>
     <meta name="keywords" content="<?= $keywords ?>"/>
     <meta name="robots" content="index, follow">
@@ -82,8 +82,8 @@
 
 </head>
 <body>
-<?php \Simflex\Core\Page::content() ?>
+<?= \Simflex\Core\Page::content() ?>
 
-<?php \Simflex\Core\Page::metaJS() ?>
+<?= \Simflex\Core\Page::metaJS() ?>
 </body>
 </html>

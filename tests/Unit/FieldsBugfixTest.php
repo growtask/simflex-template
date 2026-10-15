@@ -58,9 +58,7 @@ class FieldsBugfixTest extends Unit
     public function testCheckboxUsesFormName(): void
     {
         $_POST['feedback']['agree'] = 'on';
-        ob_start();
-        (new FieldCheckbox($this->form(), 'agree', 'Agree', ''))->html();
-        $html = ob_get_clean();
+        $html = (new FieldCheckbox($this->form(), 'agree', 'Agree', ''))->html();
         $this->assertStringContainsString('name="feedback[agree]"', $html);
         $this->assertStringContainsString('checked="checked"', $html);
     }
@@ -68,9 +66,7 @@ class FieldsBugfixTest extends Unit
     public function testPasswordUsesFormName(): void
     {
         $_POST['feedback']['pass'] = 'a"b';
-        ob_start();
-        (new FieldPassword($this->form(), 'pass', 'Pass', ''))->html();
-        $html = ob_get_clean();
+        $html = (new FieldPassword($this->form(), 'pass', 'Pass', ''))->html();
         $this->assertStringContainsString('name="feedback[pass]"', $html);
         $this->assertStringContainsString('value="a&quot;b"', $html);
     }

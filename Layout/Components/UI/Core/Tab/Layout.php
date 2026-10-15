@@ -17,8 +17,8 @@ class Layout extends LayoutBase
         TabSize    $size = TabSize::Medium,
         TabTheme   $theme = TabTheme::Light,
         array      $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'text',

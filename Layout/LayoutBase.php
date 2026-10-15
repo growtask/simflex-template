@@ -6,6 +6,7 @@ use Simflex\Core\Buffer;
 use Simflex\Core\Container;
 use Simflex\Core\Models\ContentTemplateParam;
 use Simflex\Core\Path;
+use Simflex\Core\View;
 use Simflex\Extensions\Content\Model\ModelContent;
 
 abstract class LayoutBase
@@ -40,7 +41,10 @@ abstract class LayoutBase
         LayoutManager::useStyle(static::layoutRootDir() . '/style.scss');
     }
 
-    public static function draw(array $data = []): void
+    /**
+     * Returns the component HTML
+     */
+    public static function draw(array $data = []): string
     {
         // generate fields if requested.
         if (LayoutManager::$shouldGenerateFields && empty($data['__no_gen'])) {
@@ -49,7 +53,7 @@ abstract class LayoutBase
         }
 
         LayoutManager::useLayout(static::class);
-        include static::layoutRootDir() . '/layout.tpl';
+        return View::render(static::layoutRootDir() . '/layout.tpl', ['data' => $data], static::class);
     }
 
     protected static function layoutRootDir(): string

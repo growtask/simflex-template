@@ -14,7 +14,7 @@ class Menu extends ModuleBase
 {
     private array|false $menu = false;
 
-    protected function content(): void
+    protected function content(): string
     {
         $this->menu = Core::menu();
 
@@ -35,13 +35,13 @@ class Menu extends ModuleBase
             }
         }
 
-        include 'tpl/index.tpl';
+        return $this->render(__DIR__ . '/tpl/index.tpl', ['pid' => $pid]);
     }
 
-    private function tree(int|string $pid = 0, int $lvl = 0): void
+    private function tree(int|string $pid = 0, int $lvl = 0): string
     {
         if (!isset($this->menu[$pid])) {
-            return;
+            return '';
         }
 
         foreach ($this->menu[$pid] as $id => $item) {
@@ -58,6 +58,6 @@ class Menu extends ModuleBase
             $this->menu[$pid][$id]['class-a'] = $c;
         }
 
-        include 'tpl/treenode.tpl';
+        return $this->render(__DIR__ . '/tpl/treenode.tpl', ['pid' => $pid, 'lvl' => $lvl]);
     }
 }

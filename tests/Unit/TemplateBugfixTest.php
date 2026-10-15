@@ -53,9 +53,7 @@ class TemplateBugfixTest extends Unit
             throw new \ErrorException($str, 0, $no);
         });
         try {
-            ob_start();
-            TemplateBugfixTestLayout::draw(['x' => 'ok']);
-            $this->assertSame('layout:ok', ob_get_clean());
+            $this->assertSame('layout:ok', TemplateBugfixTestLayout::draw(['x' => 'ok']));
         } finally {
             restore_error_handler();
             LayoutManager::$shouldGenerateFields = $prev;

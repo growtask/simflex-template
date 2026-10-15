@@ -11,8 +11,8 @@ class Layout extends LayoutBase
         string     $icon = 'true',
         MarkerSize $size = MarkerSize::Medium,
         array      $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'icon',

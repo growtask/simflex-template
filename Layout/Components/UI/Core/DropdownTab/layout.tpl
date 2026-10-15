@@ -47,7 +47,7 @@ $menuTabTheme = $data['menuTheme'] === 'light' ? App\Layout\Components\UI\Core\T
     <ul class="dropdown-tab__menu <?= $menuTheme ?>" role="menu" data-pointer="center">
         <?php foreach ($data['options'] as $option): ?>
             <li class="dropdown-tab__option" role="menuitem" data-value="<?= $option['value'] ?>">
-                <?php App\Layout\Components\UI\Core\Tab\Layout::drawTab(
+                <?= App\Layout\Components\UI\Core\Tab\Layout::drawTab(
                     className: 'dropdown-tab__link',
                     text: $option['text'],
                     link: $option['link'] ?? '',
@@ -60,7 +60,7 @@ $menuTabTheme = $data['menuTheme'] === 'light' ? App\Layout\Components\UI\Core\T
                     attributes: [
 
                     ]
-                ); ?>
+                ) ?>
             </li>
         <?php endforeach; ?>
     </ul>

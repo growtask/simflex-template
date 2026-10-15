@@ -8,5 +8,4 @@ class Content extends \Simflex\Extensions\Content\Content
     {
         return 'Материалы';
     }
-
 }

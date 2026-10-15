@@ -14,8 +14,8 @@ class Layout extends LayoutBase
         ToggleTheme    $theme = ToggleTheme::Light,
         TogglePosition $position = TogglePosition::Left,
         array          $attributes = []
-    ): void {
-        static::draw(
+    ): string {
+        return static::draw(
             compact(
                 'className',
                 'text',
