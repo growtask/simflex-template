@@ -7,7 +7,7 @@ return new class () implements \Simflex\Core\DB\Migration {
     {
         $s->createTable('cron_log', function (Schema\Table $c) {
             $c->id('id');
-            $c->integer('cron_id');
+            $c->string('job', 100)->index();
             $c->dateTime('datetime');
             $c->string('result', 2047);
         });

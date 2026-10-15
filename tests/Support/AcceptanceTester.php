@@ -94,11 +94,25 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function runSql(string $sql, array $params = []): void
     {
-        $pdo = new \PDO(
+        $this->pdo()->prepare($sql)->execute($params);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function grabRowsFromSql(string $sql, array $params = []): array
+    {
+        $stmt = $this->pdo()->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    private function pdo(): \PDO
+    {
+        return new \PDO(
             'mysql:host=' . (getenv('DB_HOST') ?: 'db') . ';dbname=' . (getenv('DB_NAME') ?: 'simflex') . ';charset=utf8mb4',
             getenv('DB_USER') ?: 'simflex',
             getenv('DB_PASS') ?: 'simflex'
         );
-        $pdo->prepare($sql)->execute($params);
     }
 }
