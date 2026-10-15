@@ -12,7 +12,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'priv_id' => $devPriv->priv_id,
             'npp' => 1,
             'name' => 'Управление',
-            'link' => '/admin/admin/',
+            'link' => '/admin/',
             'model' => '',
             'icon' => 'home',
             'hidden' => false
@@ -24,7 +24,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 1,
                 'name' => 'Меню',
-                'link' => '/admin/admin/menu/',
+                'link' => '/admin/menu/',
                 'model' => 'admin_menu',
                 'icon' => 'settings-mini',
                 'hidden' => false
@@ -34,7 +34,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 3,
                 'name' => 'Роли',
-                'link' => '/admin/admin/role/',
+                'link' => '/admin/role/',
                 'model' => 'user_role',
                 'icon' => 'users-mini',
                 'hidden' => false
@@ -44,7 +44,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 6,
                 'name' => 'Привилегии',
-                'link' => '/admin/admin/priv/',
+                'link' => '/admin/priv/',
                 'model' => 'user_priv',
                 'icon' => 'fingerprint-mini',
                 'hidden' => false
@@ -54,7 +54,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 2,
                 'name' => 'Пользователи',
-                'link' => '/admin/admin/user/',
+                'link' => '/admin/user/',
                 'model' => 'user',
                 'icon' => 'user-mini',
                 'hidden' => false
@@ -64,7 +64,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 7,
                 'name' => 'Cron',
-                'link' => '/admin/cron/',
+                'link' => '/cron/',
                 'model' => 'cron',
                 'icon' => 'calendar-mini',
                 'hidden' => false
@@ -76,7 +76,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'priv_id' => $adminPriv->priv_id,
             'npp' => 2,
             'name' => 'Настройки сайта',
-            'link' => '/admin/site/',
+            'link' => '/site/',
             'model' => '',
             'icon' => 'settings',
             'hidden' => false
@@ -88,7 +88,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 1,
                 'name' => 'Меню',
-                'link' => '/admin/site/menu/',
+                'link' => '/site/menu/',
                 'model' => 'menu',
                 'icon' => 'user-mini',
                 'hidden' => false
@@ -98,7 +98,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 2,
                 'name' => 'Модули',
-                'link' => '/admin/site/module/',
+                'link' => '/site/module/',
                 'model' => 'module_item',
                 'icon' => 'puzzle-mini',
                 'hidden' => false
@@ -108,7 +108,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 8,
                 'name' => 'Настройки',
-                'link' => '/admin/site/settings/',
+                'link' => '/site/settings/',
                 'model' => 'settings',
                 'icon' => 'settings-mini',
                 'hidden' => false
@@ -118,7 +118,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 9,
                 'name' => 'SEO',
-                'link' => '/admin/site/seo/',
+                'link' => '/site/seo/',
                 'model' => 'seo',
                 'icon' => 'chart-mini',
                 'hidden' => false
@@ -130,7 +130,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'priv_id' => $devPriv->priv_id,
             'npp' => 3,
             'name' => 'Модули',
-            'link' => '/admin/admin/module/',
+            'link' => '/admin/module/',
             'model' => 'module',
             'icon' => 'puzzle-mini',
             'hidden' => false
@@ -142,7 +142,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $devPriv->priv_id,
                 'npp' => 5,
                 'name' => 'Параметры модулей',
-                'link' => '/admin/admin/module/param/',
+                'link' => '/admin/module/param/',
                 'model' => 'module_param',
                 'icon' => '',
                 'hidden' => false
@@ -154,7 +154,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'priv_id' => $devPriv->priv_id,
             'npp' => 4,
             'name' => 'Компоненты',
-            'link' => '/admin/admin/component/',
+            'link' => '/admin/component/',
             'model' => 'component',
             'icon' => 'container-mini',
             'hidden' => false
@@ -166,7 +166,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $devPriv->priv_id,
                 'npp' => 4,
                 'name' => 'Параметры компонентов',
-                'link' => '/admin/admin/component_param/',
+                'link' => '/admin/component_param/',
                 'model' => 'component_param',
                 'icon' => '',
                 'hidden' => false
@@ -178,7 +178,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'priv_id' => $devPriv->priv_id,
             'npp' => 6,
             'name' => 'Привилегии',
-            'link' => '/admin/admin/priv/',
+            'link' => '/admin/priv/',
             'model' => 'user_priv',
             'icon' => 'fingerprint-mini',
             'hidden' => false
@@ -190,7 +190,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $devPriv->priv_id,
                 'npp' => 1,
                 'name' => 'Персональные права',
-                'link' => '/admin/user_priv_personal/',
+                'link' => '/user_priv_personal/',
                 'model' => 'user_priv_personal',
                 'icon' => '',
                 'hidden' => false
@@ -202,7 +202,7 @@ return new class implements \Simflex\Core\DB\Seeder
             'priv_id' => $devPriv->priv_id,
             'npp' => 7,
             'name' => 'Шаблоны страниц',
-            'link' => '/admin/admin/content_template/',
+            'link' => '/admin/content_template/',
             'model' => 'content_template',
             'icon' => 'layout-mini',
             'hidden' => false
@@ -214,7 +214,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $devPriv->priv_id,
                 'npp' => 1,
                 'name' => 'Параметры шаблонов',
-                'link' => '/admin/admin/content_template_param/',
+                'link' => '/admin/content_template_param/',
                 'model' => 'content_template_param',
                 'icon' => '',
                 'hidden' => false
@@ -227,7 +227,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 3,
                 'name' => 'Редактор страниц',
-                'link' => '/admin/content/',
+                'link' => '/content/',
                 'model' => 'content',
                 'icon' => 'edit',
                 'hidden' => false
@@ -237,7 +237,7 @@ return new class implements \Simflex\Core\DB\Seeder
                 'priv_id' => $adminPriv->priv_id,
                 'npp' => 0,
                 'name' => 'Аккаунт',
-                'link' => '/admin/account/',
+                'link' => '/account/',
                 'model' => '',
                 'icon' => 'user',
                 'hidden' => true

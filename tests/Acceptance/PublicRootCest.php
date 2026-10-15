@@ -9,28 +9,19 @@ use Tests\Support\AcceptanceTester;
  */
 class PublicRootCest
 {
-    private string $log;
-    private int $logSize;
-
     public function _before(AcceptanceTester $I): void
     {
-        $this->log = 'log/' . date('Y-m-d') . '.log';
-        clearstatcache();
-        $this->logSize = is_file($this->log) ? filesize($this->log) : 0;
+        $I->rememberLogSize();
     }
 
-    /**
-     * Запросы к несуществующим путям пишут в лог [warning] "active content not found",
-     * а остальные тесты проверяют, что в логе за сегодня нет предупреждений
-     */
     public function _after(AcceptanceTester $I): void
     {
-        clearstatcache();
-        if (is_file($this->log) && filesize($this->log) > $this->logSize) {
-            $fp = fopen($this->log, 'r+');
-            ftruncate($fp, $this->logSize);
-            fclose($fp);
-        }
+        $I->rollbackLog();
+    }
+
+    public function _failed(AcceptanceTester $I): void
+    {
+        $I->rollbackLog();
     }
 
     public function codeAndConfigsAreNotServed(AcceptanceTester $I): void
@@ -48,10 +39,10 @@ class PublicRootCest
             '/vendor/growtask/simflex/src/Core/Core.php' => 'namespace Simflex',
             '/provider/routes.php' => '<?php',
             '/theme/default/index.tpl' => '<?php',
-            '/' . $this->log => 'CODECEPT_LOG_MARKER',
+            '/' . $I->logFile() => 'CODECEPT_LOG_MARKER',
         ];
         // маркер, которого нет нигде, кроме файла лога (откатывается в _after)
-        file_put_contents($this->log, "CODECEPT_LOG_MARKER\n", FILE_APPEND);
+        file_put_contents($I->logFile(), "CODECEPT_LOG_MARKER\n", FILE_APPEND);
         foreach ($files as $url => $marker) {
             $body = $this->fetch($I, $url)['body'];
             $I->assertStringNotContainsString($marker, $body, "$url must not be served");

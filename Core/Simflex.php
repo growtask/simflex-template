@@ -34,6 +34,15 @@ class Simflex
     }
 
     /**
+     * Checks if the request path belongs to the admin panel (its URL prefix is set in config: adminPath)
+     */
+    public function isAdminPath(string $path): bool
+    {
+        $this->initConfig();
+        return \Simflex\Admin\Core::isAdminPath($path);
+    }
+
+    /**
      * Initializes app
      * @throws SassException
      */
@@ -190,6 +199,10 @@ class Simflex
      */
     protected function initConfig(): void
     {
+        if (isset($this->cfg)) {
+            return;
+        }
+
         Dotenv::createImmutable(SF_ROOT_PATH)->safeLoad();
 
         require_once SF_ROOT_PATH . '/config.php';

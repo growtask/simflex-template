@@ -27,12 +27,44 @@ class AcceptanceTester extends \Codeception\Actor
      * Define custom actions here
      */
 
+    private static ?int $logSize = null;
+
     /**
      * Logs in to the admin panel with the default seeded admin account
      */
-    public function loginAsAdmin(): void
+    public function loginAsAdmin(string $adminPath = '/admin'): void
     {
-        $this->loginAs('admin');
+        $this->loginAs('admin', $adminPath);
+    }
+
+    /**
+     * Today's log file, relative to the project root
+     */
+    public function logFile(): string
+    {
+        return 'log/' . date('Y-m-d') . '.log';
+    }
+
+    /**
+     * Remembers the log size; rollbackLog() cuts off everything written after this point.
+     * Requests to missing paths write [warning] "active content not found",
+     * while other tests check that today's log has no warnings
+     */
+    public function rememberLogSize(): void
+    {
+        clearstatcache();
+        self::$logSize = is_file($this->logFile()) ? filesize($this->logFile()) : 0;
+    }
+
+    public function rollbackLog(): void
+    {
+        clearstatcache();
+        if (self::$logSize !== null && is_file($this->logFile()) && filesize($this->logFile()) > self::$logSize) {
+            $fp = fopen($this->logFile(), 'r+');
+            ftruncate($fp, self::$logSize);
+            fclose($fp);
+        }
+        self::$logSize = null;
     }
 
     /**
@@ -56,10 +88,10 @@ class AcceptanceTester extends \Codeception\Actor
         $I->waitForElement($waitFor, 10);
     }
 
-    private function loginAs(string $login): void
+    private function loginAs(string $login, string $adminPath = '/admin'): void
     {
         $I = $this;
-        $I->amOnPage('/admin/');
+        $I->amOnPage($adminPath . '/');
         $I->fillField('login[login]', $login);
         $I->fillField('login[password]', '12345');
         $I->click('Войти');
