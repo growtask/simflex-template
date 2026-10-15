@@ -43,8 +43,8 @@ class Config extends \Simflex\Core\ConfigBase
         $this->db['password'] = env('DB_PASS', 'simflex');
         $this->db['name'] = env('DB_NAME', 'simflex');
 
-        // admin panel URL prefix
-        $this->adminPath = env('ADMIN_PATH', '/admin');
+        // admin panel URL prefix (default is declared in ConfigBase)
+        $this->adminPath = env('ADMIN_PATH', $this->adminPath);
 
         // developer options
         $this->devMode = env('DEVELOPER', true);
