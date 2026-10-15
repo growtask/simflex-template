@@ -17,8 +17,7 @@ class AdminGroupSaveCest
             $I->seeInField('group_ids', '1,1');
             $I->executeJS('document.querySelector(\'input[name="set[title]"]\').checked = true;');
             $I->fillField('title', $value);
-            $I->click('.content__btns button[name="submit_apply"]');
-            $I->waitForElement('.sidebar', 10);
+            $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
             $I->dontSee('Fatal');
             $I->see('успешно сохранены');
 
