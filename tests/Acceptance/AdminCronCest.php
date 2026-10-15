@@ -22,7 +22,7 @@ class AdminCronCest
         $I->runSql('DELETE FROM cron');
         $I->runSql("INSERT INTO cron SET job = 'removed_job', active = 1, timing = '* * * * *'");
 
-        $I->amOnPage('/admin/cron/');
+        $I->amOnPage('/admin/cron');
         $I->dontSee('Fatal');
         $I->dontSee('Warning');
         $I->see('Очистка журнала cron');
@@ -38,7 +38,7 @@ class AdminCronCest
 
     public function tryToEditSchedule(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/cron/');
+        $I->amOnPage('/admin/cron');
         $id = $I->grabRowsFromSql('SELECT id FROM cron WHERE job = ?', [self::JOB])[0]['id'];
         try {
             $I->amOnPage("/admin/cron/?action=form&id=$id");

@@ -34,11 +34,11 @@ class AdminPathCest
         $I->loginAsAdmin(self::PATH);
 
         // меню и шапка строятся от настроенного адреса
-        $I->seeElementInDOM('a[href="' . self::PATH . '/content/"]');
-        $I->seeElementInDOM('a[href="' . self::PATH . '/logout/"]');
-        $I->dontSeeElementInDOM('a[href^="/admin/"]');
+        $I->seeElementInDOM('a[href="' . self::PATH . '/content"]');
+        $I->seeElementInDOM('a[href="' . self::PATH . '/logout"]');
+        $I->dontSeeElementInDOM('a[href^="/admin"]');
 
-        $I->amOnPage(self::PATH . '/content/');
+        $I->amOnPage(self::PATH . '/content');
         $I->seeElement('.sidebar');
         $I->seeInTitle('Редактор страниц');
 
@@ -49,13 +49,17 @@ class AdminPathCest
         );
         $I->assertTrue($fm['success'] ?? false, json_encode($fm));
 
+        // адрес со слэшем на конце редиректит на адрес без него
+        $I->amOnPage(self::PATH . '/content/');
+        $I->seeCurrentUrlEquals(self::PATH . '/content');
+
         // старый адрес больше не ведёт в админку
-        $I->amOnPage('/admin/');
+        $I->amOnPage('/admin');
         $I->dontSeeElement('input[name="login[login]"]');
         $I->dontSeeElementInDOM('.sidebar');
 
-        $I->amOnPage(self::PATH . '/logout/');
-        $I->seeInCurrentUrl(self::PATH . '/');
+        $I->amOnPage(self::PATH . '/logout');
+        $I->seeInCurrentUrl(self::PATH);
         $I->seeElement('input[name="login[login]"]');
     }
 

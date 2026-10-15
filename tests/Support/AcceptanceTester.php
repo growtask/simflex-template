@@ -84,7 +84,7 @@ class AcceptanceTester extends \Codeception\Actor
     private function loginAs(string $login, string $adminPath = '/admin'): void
     {
         $I = $this;
-        $I->amOnPage($adminPath . '/');
+        $I->amOnPage($adminPath);
         $I->fillField('login[login]', $login);
         $I->fillField('login[password]', '12345');
         $I->click('Войти');

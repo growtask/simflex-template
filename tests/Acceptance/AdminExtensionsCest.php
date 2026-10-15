@@ -16,7 +16,7 @@ class AdminExtensionsCest
 
     public function tryToSeeModuleItemsList(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/site/module/');
+        $I->amOnPage('/admin/site/module');
         $I->dontSee('Fatal');
         $I->dontSee('Warning');
         $I->dontSee('Notice');
@@ -56,8 +56,8 @@ class AdminExtensionsCest
 
     public function tryToSeeNoDbManagedExtensions(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/admin/');
+        $I->amOnPage('/admin/admin');
         $I->dontSeeLink('Компоненты');
-        $I->dontSeeLink('Модули', '/admin/admin/module/');
+        $I->dontSeeLink('Модули', '/admin/admin/module');
     }
 }

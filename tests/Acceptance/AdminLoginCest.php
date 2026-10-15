@@ -12,7 +12,7 @@ class AdminLoginCest
 
     public function tryToSeeLoginForm(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/');
+        $I->amOnPage('/admin');
         $I->dontSee('Fatal');
         $I->dontSee('error');
         $I->dontSee('Warning');
@@ -28,7 +28,7 @@ class AdminLoginCest
 
     public function tryToLoginWithWrongPassword(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/');
+        $I->amOnPage('/admin');
         $I->fillField('login[login]', 'admin');
         $I->fillField('login[password]', 'wrong-password');
         $I->click('Войти');
@@ -48,7 +48,7 @@ class AdminLoginCest
         $I->dontSee('Notice');
         $I->dontSeeElement('input[name="login[password]"]');
         $I->see('admin', '.btn-user__title');
-        $I->seeElementInDOM('a[href="/admin/logout/"]');
+        $I->seeElementInDOM('a[href="/admin/logout"]');
 
         $I->dontSeeLogProblems();
     }

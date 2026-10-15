@@ -39,13 +39,13 @@ class AdminAccessDeniedCest
             [$token, self::LOGIN]
         );
 
-        $I->amOnPage('/admin/');
+        $I->amOnPage('/admin');
         $I->setCookie('asft', $token);
-        $I->amOnPage('/admin/');
+        $I->amOnPage('/admin');
 
         $I->see('Недостаточно прав для входа в панель управления');
         $I->dontSeeElement('.sidebar');
-        $I->seeElement('a[href="/admin/logout/"]');
+        $I->seeElement('a[href="/admin/logout"]');
 
         $I->dontSeeLogProblems();
     }

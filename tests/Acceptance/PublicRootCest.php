@@ -56,7 +56,7 @@ class PublicRootCest
 
     public function adminAssetsArePublished(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/');
+        $I->amOnPage('/admin');
         $I->seeElementInDOM('link[href^="/cache/assets/"]');
         $this->seeAllAssetsServed($I);
 

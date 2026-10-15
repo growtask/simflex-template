@@ -33,7 +33,7 @@ class TypedPropertiesCest
         $I->seeElementInDOM('input[name="group_ids"]');
         $I->seeInField('group_ids', '1,1');
         $I->dontSee('TypeError');
-        $I->amOnPage('/admin/content/');
+        $I->amOnPage('/admin/content');
         $I->seeElement('.sidebar');
         $I->see('Главная');
         $I->dontSee('TypeError');

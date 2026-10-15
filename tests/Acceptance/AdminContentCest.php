@@ -13,7 +13,7 @@ class AdminContentCest
 
     public function tryToSeeContentList(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/content/');
+        $I->amOnPage('/admin/content');
         $I->dontSee('Fatal');
         $I->dontSee('error');
         $I->dontSee('Warning');
