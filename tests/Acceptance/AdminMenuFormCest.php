@@ -31,7 +31,7 @@ class AdminMenuFormCest
         $I->seeElementInDOM('input[name="menu_pid"]');
 
         $date = date('Y-m-d');
-        $I->openFile('uf/log/' . $date . '.log');
+        $I->openFile('log/' . $date . '.log');
         $I->dontSeeInThisFile('[error]');
         $I->dontSeeInThisFile('[critical]');
         $I->dontSeeInThisFile('[emergency]');
@@ -64,7 +64,7 @@ class AdminMenuFormCest
         $I->seeInField('input[name="name"].form-control__input', 'Управление');
 
         $date = date('Y-m-d');
-        $I->openFile('uf/log/' . $date . '.log');
+        $I->openFile('log/' . $date . '.log');
         $I->dontSeeInThisFile('[error]');
         $I->dontSeeInThisFile('[critical]');
         $I->dontSeeInThisFile('[emergency]');

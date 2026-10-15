@@ -23,6 +23,10 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath intl 
 RUN docker-php-ext-configure gd --with-webp --with-jpeg && docker-php-ext-install gd zip
 RUN a2enmod rewrite
 
+# Document root is public/: only index.php and static files are reachable from the web
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+
 # Install composer. Usage: docker-compose exec php composer install
 RUN curl https://getcomposer.org/download/latest-stable/composer.phar > /usr/local/bin/composer && chmod +x /usr/local/bin/composer
 RUN mkdir /.composer && chmod -R a+rwX /.composer

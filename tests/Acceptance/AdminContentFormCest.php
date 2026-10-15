@@ -30,7 +30,7 @@ class AdminContentFormCest
         $I->seeElement('input[name="meta_title"]');
 
         $date = date('Y-m-d');
-        $I->openFile('uf/log/' . $date . '.log');
+        $I->openFile('log/' . $date . '.log');
         $I->dontSeeInThisFile('[error]');
         $I->dontSeeInThisFile('[critical]');
         $I->dontSeeInThisFile('[emergency]');
@@ -62,7 +62,7 @@ class AdminContentFormCest
         $I->seeInField('meta_title', '');
 
         $date = date('Y-m-d');
-        $I->openFile('uf/log/' . $date . '.log');
+        $I->openFile('log/' . $date . '.log');
         $I->dontSeeInThisFile('[error]');
         $I->dontSeeInThisFile('[critical]');
         $I->dontSeeInThisFile('[emergency]');

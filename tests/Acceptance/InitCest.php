@@ -21,7 +21,7 @@ class InitCest
         $I->dontSee('Notice');
 
         $date = date('Y-m-d');
-        $I->openFile('uf/log/' . $date . '.log');
+        $I->openFile('log/' . $date . '.log');
         $I->dontSeeInThisFile('[error]');
         $I->dontSeeInThisFile('[critical]');
         $I->dontSeeInThisFile('[emergency]');

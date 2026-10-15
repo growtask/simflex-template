@@ -14,16 +14,16 @@ class Installer extends ConsoleBase
 {
     protected const DIRECTORIES = [
         'cache',
-        'cache/css',
-        'uf/files',
-        'uf/images',
+        'public/cache',
+        'public/uf/files',
+        'public/uf/images',
     ];
 
     #[Command('Installs the framework')]
     public function install(): void
     {
-        $this->initDir('uf', false);
-        $this->initDir('uf/log', false);
+        $this->initDir('public/uf', false);
+        $this->initDir('log', false);
 
         $config = Container::getConfig();
         Log::info('Testing database connection');

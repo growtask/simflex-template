@@ -94,6 +94,18 @@ class Simflex
     }
 
     /**
+     * Handles admin file manager API request. Available to admin panel users only
+     */
+    public function executeFileManager(): void
+    {
+        $mgr = new \Simflex\FileManager\Manager(SF_PUBLIC_PATH . '/uf', function () {
+            return (bool)Container::getUser()?->ican(\Simflex\Admin\Auth::LOGIN_PRIV);
+        });
+
+        $mgr->handleRequest();
+    }
+
+    /**
      * Prepares data for output to the user
      */
     public function prepareOutput(string $data): string
@@ -287,7 +299,7 @@ class Simflex
         Log::addLogger(new StdLogger());
 
         // file logger
-        $this->cfg->extra['logPath'] = SF_ROOT_PATH . '/uf/log';
+        $this->cfg->extra['logPath'] = SF_ROOT_PATH . '/log';
         Log::addLogger(new FileLogger());
 
         // fire logging init event

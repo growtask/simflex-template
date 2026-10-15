@@ -18,6 +18,7 @@ modules:
                 goog:chromeOptions:
                     args: ["--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage"]
         - Filesystem
+        - Asserts
 # Add Codeception\Step\Retry trait to AcceptanceTester to enable retries
 step_decorators:
     - Codeception\Step\ConditionalAssertion

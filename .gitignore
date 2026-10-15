@@ -1,11 +1,13 @@
 /.idea/*
 !/.idea/
 !/.idea/icon.svg
-/uf/*
-!/uf/.gitkeep
-vendor
+/public/uf/*
+!/public/uf/.gitkeep
+/public/cache
+/vendor
 docker/data
-cache
+/cache
+/log
 .agents/local.md
 .DS_Store
 composer.lock
