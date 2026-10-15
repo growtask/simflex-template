@@ -19,6 +19,16 @@ function env(string $name, mixed $defaultValue = null): mixed
 }
 
 /**
+ * Remove DOCUMENT_ROOT from the path
+ * @param string $path Path to process
+ * @return string Processed path
+ */
+function removeRoot(string $path): string
+{
+    return str_replace(SF_ROOT_PATH, '', $path);
+}
+
+/**
  * Get asset path
  * @param string $path Relative path to the asset
  * @param bool $siteOnly If set to true, returns only site assets
@@ -66,7 +76,8 @@ function getSimflexVersion(): string
  * @param string $className Optional CSS classes to apply
  * @return string The SVG HTML with sprite reference
  */
-function renderIcon(string $iconName, string $className = ''): string {
+function renderIcon(string $iconName, string $className = ''): string
+{
     return sprintf(
         '<svg class="%s" aria-hidden="true"><use href="/assets/icons/icons.svg#icon-%s"></use></svg>',
         htmlspecialchars($className),
@@ -85,9 +96,12 @@ function buildAttrs(array $attributes = []): string
         return '';
     }
 
-    return implode(' ', array_map(
-        fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
-        array_keys($attributes),
-        $attributes
-    ));
+    return implode(
+        ' ',
+        array_map(
+            fn($key, $value) => sprintf('%s="%s"', $key, htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
+            array_keys($attributes),
+            $attributes
+        )
+    );
 }
