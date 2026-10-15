@@ -9,21 +9,6 @@ use Tests\Support\AcceptanceTester;
  */
 class PublicRootCest
 {
-    public function _before(AcceptanceTester $I): void
-    {
-        $I->rememberLogSize();
-    }
-
-    public function _after(AcceptanceTester $I): void
-    {
-        $I->rollbackLog();
-    }
-
-    public function _failed(AcceptanceTester $I): void
-    {
-        $I->rollbackLog();
-    }
-
     public function codeAndConfigsAreNotServed(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
@@ -41,7 +26,7 @@ class PublicRootCest
             '/theme/default/index.tpl' => '<?php',
             '/' . $I->logFile() => 'CODECEPT_LOG_MARKER',
         ];
-        // маркер, которого нет нигде, кроме файла лога (откатывается в _after)
+        // маркер, которого нет нигде, кроме файла лога (лог очищается перед каждым тестом)
         file_put_contents($I->logFile(), "CODECEPT_LOG_MARKER\n", FILE_APPEND);
         foreach ($files as $url => $marker) {
             $body = $this->fetch($I, $url)['body'];

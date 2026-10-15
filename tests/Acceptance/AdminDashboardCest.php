@@ -29,11 +29,6 @@ class AdminDashboardCest
         // assets must be served from an actual URL, not a leaked filesystem path
         $I->dontSeeInPageSource('/var/www/');
 
-        $date = date('Y-m-d');
-        $I->openFile('log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 }

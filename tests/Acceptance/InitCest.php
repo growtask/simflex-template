@@ -20,11 +20,6 @@ class InitCest
         $I->dontSee('Warning');
         $I->dontSee('Notice');
 
-        $date = date('Y-m-d');
-        $I->openFile('log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 }

@@ -30,12 +30,7 @@ class AdminMenuFormCest
         // self-referencing FK field (menu_pid -> admin_menu.menu_id) must render without a SQL error
         $I->seeElementInDOM('input[name="menu_pid"]');
 
-        $date = date('Y-m-d');
-        $I->openFile('log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 
     public function tryToSaveMenuForm(AcceptanceTester $I): void
@@ -63,11 +58,6 @@ class AdminMenuFormCest
         $I->amOnPage('/admin/admin/menu/?action=form&menu_id=1');
         $I->seeInField('input[name="name"].form-control__input', 'Управление');
 
-        $date = date('Y-m-d');
-        $I->openFile('log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 }

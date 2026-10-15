@@ -50,11 +50,6 @@ class AdminLoginCest
         $I->see('admin', '.btn-user__title');
         $I->seeElementInDOM('a[href="/admin/logout/"]');
 
-        $date = date('Y-m-d');
-        $I->openFile('log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 }

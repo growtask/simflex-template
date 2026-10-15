@@ -47,10 +47,7 @@ class AdminAccessDeniedCest
         $I->dontSeeElement('.sidebar');
         $I->seeElement('a[href="/admin/logout/"]');
 
-        $I->openFile('log/' . date('Y-m-d') . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 
     private function cleanup(AcceptanceTester $I): void

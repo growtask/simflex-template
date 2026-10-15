@@ -27,9 +27,6 @@ class AdminGroupSaveCest
             $I->runSql('UPDATE content SET title = ? WHERE content_id = 1', ['Главная']);
         }
 
-        $I->openFile('log/' . date('Y-m-d') . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 }

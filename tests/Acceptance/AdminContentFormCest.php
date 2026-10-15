@@ -29,12 +29,7 @@ class AdminContentFormCest
         // dynamic content-template params (content_template_param) must render too
         $I->seeElement('input[name="meta_title"]');
 
-        $date = date('Y-m-d');
-        $I->openFile('log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 
     public function tryToSaveContentForm(AcceptanceTester $I): void
@@ -61,11 +56,6 @@ class AdminContentFormCest
         $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', 'input[name="meta_title"]');
         $I->seeInField('meta_title', '');
 
-        $date = date('Y-m-d');
-        $I->openFile('log/' . $date . '.log');
-        $I->dontSeeInThisFile('[error]');
-        $I->dontSeeInThisFile('[critical]');
-        $I->dontSeeInThisFile('[emergency]');
-        $I->dontSeeInThisFile('[warning]');
+        $I->dontSeeLogProblems();
     }
 }

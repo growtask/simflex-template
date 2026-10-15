@@ -27,8 +27,6 @@ class AcceptanceTester extends \Codeception\Actor
      * Define custom actions here
      */
 
-    private static ?int $logSize = null;
-
     /**
      * Logs in to the admin panel with the default seeded admin account
      */
@@ -46,25 +44,17 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Remembers the log size; rollbackLog() cuts off everything written after this point.
-     * Requests to missing paths write [warning] "active content not found",
-     * while other tests check that today's log has no warnings
+     * Checks that nothing at warning level or above was logged during this test (the log is cleared before each test)
      */
-    public function rememberLogSize(): void
+    public function dontSeeLogProblems(): void
     {
         clearstatcache();
-        self::$logSize = is_file($this->logFile()) ? filesize($this->logFile()) : 0;
-    }
+        $file = $this->logFile();
+        $log = is_file($file) ? (string)file_get_contents($file) : '';
 
-    public function rollbackLog(): void
-    {
-        clearstatcache();
-        if (self::$logSize !== null && is_file($this->logFile()) && filesize($this->logFile()) > self::$logSize) {
-            $fp = fopen($this->logFile(), 'r+');
-            ftruncate($fp, self::$logSize);
-            fclose($fp);
+        foreach (['[error]', '[critical]', '[emergency]', '[warning]'] as $level) {
+            $this->assertStringNotContainsString($level, $log, "Found $level in $file");
         }
-        self::$logSize = null;
     }
 
     /**

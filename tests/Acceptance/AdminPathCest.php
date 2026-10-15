@@ -15,7 +15,6 @@ class AdminPathCest
 
     public function _before(AcceptanceTester $I): void
     {
-        $I->rememberLogSize();
         $this->env = file_get_contents('.env');
         file_put_contents('.env', preg_replace('/^ADMIN_PATH=.*$/m', '', $this->env) . "\nADMIN_PATH=" . self::PATH . "\n");
     }
@@ -66,6 +65,5 @@ class AdminPathCest
             file_put_contents('.env', $this->env);
             $this->env = null;
         }
-        $I->rollbackLog();
     }
 }
