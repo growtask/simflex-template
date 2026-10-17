@@ -39,10 +39,9 @@ class AdminMenuFormCest
         $I->dontSee('Fatal');
 
         // "Модель" is a choice from the admin tables registry, not a free-text input
-        $I->seeElementInDOM('select[name="model"]');
-        $I->dontSeeElementInDOM('input[name="model"]');
-        $I->seeElementInDOM('select[name="model"] option[value="admin_menu"]');
-        $I->seeElementInDOM('select[name="model"] option[value="seo"]');
+        $I->dontSeeElementInDOM('input[name="model"][type="text"]');
+        $I->seeElementInDOM($I->dropdownItem('model', 'admin_menu'));
+        $I->seeElementInDOM($I->dropdownItem('model', 'seo'));
 
         $I->dontSeeLogProblems();
     }
@@ -53,11 +52,12 @@ class AdminMenuFormCest
         $I->dontSee('Fatal');
 
         // "Привилегия" is a choice from the privileges declared in code, the row keeps the name
-        $I->seeElementInDOM('select[name="privilege"] option[value="dev"]');
-        $I->seeElementInDOM('select[name="privilege"] option[value="manager"]');
-        $I->seeElementInDOM('select[name="privilege"] option[value="admin"][selected]');
+        $I->seeElementInDOM($I->dropdownItem('privilege', 'dev'));
+        $I->seeElementInDOM($I->dropdownItem('privilege', 'manager'));
+        $I->seeInField('input[name="privilege"]', 'admin');
+        $I->see('admin — Привилегия администратора', $I->dropdown('privilege'));
         try {
-            $I->selectOption('select[name="privilege"]', 'manager');
+            $I->chooseInDropdown('privilege', 'manager');
             $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
             $I->dontSee('Fatal');
             $I->assertSame([['privilege' => 'manager']], $I->grabRowsFromSql('SELECT privilege FROM admin_menu WHERE menu_id = 2'));

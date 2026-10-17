@@ -81,6 +81,33 @@ class AcceptanceTester extends \Codeception\Actor
         $I->waitForElement($waitFor, 10);
     }
 
+    /**
+     * XPath of the admin panel's custom dropdown (foreign keys, registry selects) by the name of its hidden input
+     */
+    public function dropdown(string $name): string
+    {
+        return '//input[@name="' . $name . '"]/ancestor::div[contains(concat(" ", @class, " "), " form-control__dropdown ")][1]';
+    }
+
+    /**
+     * XPath of an item of the custom dropdown by its value
+     */
+    public function dropdownItem(string $name, string $value): string
+    {
+        return $this->dropdown($name) . '//div[contains(@class, "form-control__dropdown-item") and @data-value="' . $value . '"]';
+    }
+
+    /**
+     * Chooses a value in the admin panel's custom dropdown
+     */
+    public function chooseInDropdown(string $name, int|string $value): void
+    {
+        $I = $this;
+        $I->click($I->dropdown($name) . '//div[contains(@class, "form-control__dropdown-top")]');
+        $I->click($I->dropdownItem($name, (string)$value));
+        $I->seeInField('input[name="' . $name . '"]', (string)$value);
+    }
+
     private function loginAs(string $login, string $adminPath = '/admin'): void
     {
         $I = $this;

@@ -30,15 +30,15 @@ class AdminExtensionsCest
         $I->dontSee('Fatal');
         $I->dontSee('Warning');
         $I->dontSee('Notice');
-        $I->seeElement('select[name="module"]');
-        $I->seeElement('select[name="module"] option', ['value' => 'Simflex\Extensions\Block\Block']);
+        $I->seeElement($I->dropdown('module'));
+        $I->seeElementInDOM($I->dropdownItem('module', 'Simflex\Extensions\Block\Block'));
         $I->dontSeeLogProblems();
     }
 
     public function tryToLoadModuleParams(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/site/module/?action=form');
-        $I->selectOption('select[name="module"]', 'Simflex\Extensions\Block\Block');
+        $I->chooseInDropdown('module', 'Simflex\Extensions\Block\Block');
         $I->waitForElement('.ajax-params', 5);
         $I->dontSee('Fatal');
         $I->dontSeeLogProblems();
@@ -50,7 +50,7 @@ class AdminExtensionsCest
         $I->dontSee('Fatal');
         $I->dontSee('Warning');
         $I->dontSee('Notice');
-        $I->seeElement('select[name="component"] option', ['value' => 'App\Extensions\Content\Content']);
+        $I->seeElementInDOM($I->dropdownItem('component', 'App\Extensions\Content\Content'));
         $I->dontSeeLogProblems();
     }
 

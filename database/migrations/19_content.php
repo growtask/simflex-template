@@ -18,7 +18,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->longText('params');
             $c->string('file');
             $c->string('photo');
-            $c->integer('template_id')->foreignKey('content_template');
+            $c->string('template', 64);
             $c->integer('npp');
         });
     }

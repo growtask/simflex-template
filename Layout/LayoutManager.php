@@ -30,14 +30,15 @@ class LayoutManager
     public static array $usedScripts = [];
 
     /**
-     * @var bool If set to true, will dry run to update ACP fields
+     * @var bool If set to true, the drawn layouts collect the fields of their schemas, see ./sf layout/generate
      */
     public static bool $shouldGenerateFields = false;
 
     /**
-     * @var array Used internally for template ordering
+     * @var array<string, list<array{name: string, label: string, class: string, default: string, params: array}>>
+     *      Fields collected from the layouts' schemas: block label => fields
      */
-    public static array $templateOrdering = [];
+    public static array $generatedFields = [];
 
     /**
      * Use layout

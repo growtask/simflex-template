@@ -24,7 +24,7 @@ return new class () implements \Simflex\Core\DB\Seeder {
                 'name' => 'Меню',
                 'link' => '/admin/menu',
                 'model' => 'admin_menu',
-                'icon' => 'settings-mini',
+                'icon' => 'container-mini',
                 'hidden' => false,
             ],
             [
@@ -40,17 +40,17 @@ return new class () implements \Simflex\Core\DB\Seeder {
             [
                 'menu_pid' => $adminMenu->menu_id,
                 'privilege' => Privilege::ADMIN,
-                'npp' => 6,
+                'npp' => 2,
                 'name' => 'Привилегии',
                 'link' => '/admin/privilege',
                 'model' => 'user_privilege',
-                'icon' => 'fingerprint-mini',
+                'icon' => 'lock-mini',
                 'hidden' => false,
             ],
             [
                 'menu_pid' => $adminMenu->menu_id,
                 'privilege' => Privilege::ADMIN,
-                'npp' => 2,
+                'npp' => 5,
                 'name' => 'Пользователи',
                 'link' => '/admin/user',
                 'model' => 'user',
@@ -88,7 +88,7 @@ return new class () implements \Simflex\Core\DB\Seeder {
                 'name' => 'Меню',
                 'link' => '/site/menu',
                 'model' => 'menu',
-                'icon' => 'user-mini',
+                'icon' => 'container-mini',
                 'hidden' => false,
             ],
             [
@@ -127,56 +127,21 @@ return new class () implements \Simflex\Core\DB\Seeder {
             [
                 'menu_pid' => $adminMenu->menu_id,
                 'privilege' => Privilege::DEV,
-                'npp' => 6,
+                'npp' => 4,
                 'name' => 'Привилегии ролей',
                 'link' => '/admin/role_privilege',
                 'model' => 'user_role_privilege',
-                'icon' => 'fingerprint-mini',
+                'icon' => 'file-shield-mini',
                 'hidden' => false,
             ],
             [
                 'menu_pid' => $adminMenu->menu_id,
                 'privilege' => Privilege::DEV,
                 'npp' => 6,
-                'name' => 'Персональные права',
+                'name' => 'Персональные привилегии',
                 'link' => '/admin/privilege_personal',
                 'model' => 'user_privilege_personal',
                 'icon' => 'fingerprint-mini',
-                'hidden' => false,
-            ],
-        ]);
-
-        $templatesMenu = \Simflex\Core\Models\AdminMenu::insertStatic([
-            'menu_pid' => $adminMenu->menu_id,
-            'privilege' => Privilege::DEV,
-            'npp' => 7,
-            'name' => 'Шаблоны страниц',
-            'link' => '/admin/templates',
-            'model' => '',
-            'icon' => 'layout-mini',
-            'hidden' => false,
-        ]);
-
-        // a menu item having subitems only opens them: the section itself is the first subitem
-        \Simflex\Core\Models\AdminMenu::bulkInsert([
-            [
-                'menu_pid' => $templatesMenu->menu_id,
-                'privilege' => Privilege::DEV,
-                'npp' => 0,
-                'name' => 'Шаблоны страниц',
-                'link' => '/admin/content_template',
-                'model' => 'content_template',
-                'icon' => '',
-                'hidden' => false,
-            ],
-            [
-                'menu_pid' => $templatesMenu->menu_id,
-                'privilege' => Privilege::DEV,
-                'npp' => 1,
-                'name' => 'Параметры шаблонов',
-                'link' => '/admin/content_template_param',
-                'model' => 'content_template_param',
-                'icon' => '',
                 'hidden' => false,
             ],
         ]);

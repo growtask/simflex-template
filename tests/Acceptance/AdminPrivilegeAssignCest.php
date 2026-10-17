@@ -5,7 +5,7 @@ namespace Tests\Acceptance;
 use Tests\Support\AcceptanceTester;
 
 /**
- * "Привилегии ролей" and "Персональные права": the developer gives the privileges (by name) to roles and users
+ * "Привилегии ролей" and "Персональные привилегии": the developer gives the privileges (by name) to roles and users
  */
 class AdminPrivilegeAssignCest
 {
@@ -25,12 +25,12 @@ class AdminPrivilegeAssignCest
         // the management section page lists its subsections
         $I->amOnPage('/admin/admin');
         $I->see('Привилегии ролей');
-        $I->see('Персональные права');
+        $I->see('Персональные привилегии');
 
         $I->amOnPage('/admin/logout');
         $I->loginAsAdmin();
         $I->dontSee('Привилегии ролей');
-        $I->dontSee('Персональные права');
+        $I->dontSee('Персональные привилегии');
         $I->dontSeeLogProblems();
     }
 
@@ -61,8 +61,8 @@ class AdminPrivilegeAssignCest
         $I->loginAsDev();
         $I->amOnPage('/admin/admin/role_privilege/?action=form');
         $I->dontSee('Fatal');
-        $this->chooseInDropdown($I, 'role_id', $roleId);
-        $I->selectOption('select[name="privilege"]', 'manager');
+        $I->chooseInDropdown('role_id', $roleId);
+        $I->chooseInDropdown('privilege', 'manager');
         $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
         $I->dontSee('Fatal');
 
@@ -82,8 +82,8 @@ class AdminPrivilegeAssignCest
         // the user is a choice from the existing users, not a text
         $I->dontSeeElementInDOM('input[name="user_id"][type="text"]');
         $I->seeElementInDOM('.form-control__dropdown-item[data-value="' . $userId . '"]');
-        $this->chooseInDropdown($I, 'user_id', $userId);
-        $I->selectOption('select[name="privilege"]', 'dev');
+        $I->chooseInDropdown('user_id', $userId);
+        $I->chooseInDropdown('privilege', 'dev');
         $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
         $I->dontSee('Fatal');
         $I->assertSame(
@@ -101,14 +101,6 @@ class AdminPrivilegeAssignCest
         $I->amOnPage('/admin/admin');
         $I->see('Привилегии ролей');
         $I->dontSeeLogProblems();
-    }
-
-    private function chooseInDropdown(AcceptanceTester $I, string $name, int|string $value): void
-    {
-        $dropdown = '//input[@name="' . $name . '"]/ancestor::div[contains(concat(" ", @class, " "), " form-control__dropdown ")][1]';
-        $I->click($dropdown . '//div[contains(@class, "form-control__dropdown-top")]');
-        $I->click($dropdown . '//div[contains(@class, "form-control__dropdown-item") and @data-value="' . $value . '"]');
-        $I->seeInField('input[name="' . $name . '"]', (string)$value);
     }
 
     private function cleanup(AcceptanceTester $I): void
