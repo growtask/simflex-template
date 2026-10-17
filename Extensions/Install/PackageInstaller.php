@@ -4,7 +4,7 @@ namespace App\Extensions\Install;
 
 use Composer\Installer\PackageEvent;
 
-class ыуPackageInstaller
+class PackageInstaller
 {
     public static function onPackageEvent(PackageEvent $event): void
     {
