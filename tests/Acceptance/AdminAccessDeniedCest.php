@@ -21,11 +21,14 @@ class AdminAccessDeniedCest
 
     public function tryToOpenAdminWithoutAdminPrivilege(AcceptanceTester $I): void
     {
-        // a signed-in user without the simplex_admin privilege (e.g. a site user)
+        // a signed-in user without the admin privilege (e.g. a site user)
         $token = md5(uniqid('', true));
         $I->runSql(
-            "INSERT INTO user_role (priv_id, active, npp, name, alias)
-             SELECT priv_id, 1, 99, 'Codecept no admin', ? FROM user_priv WHERE name = 'manager'",
+            "INSERT INTO user_role SET privilege = 'manager', active = 1, name = 'Codecept no admin', alias = ?",
+            [self::ROLE_ALIAS]
+        );
+        $I->runSql(
+            "INSERT INTO user_role_privilege (role_id, privilege) SELECT role_id, 'manager' FROM user_role WHERE alias = ?",
             [self::ROLE_ALIAS]
         );
         $I->runSql(
@@ -54,6 +57,7 @@ class AdminAccessDeniedCest
     {
         $I->runSql('DELETE a FROM user_auth a JOIN user u ON u.user_id = a.user_id WHERE u.login = ?', [self::LOGIN]);
         $I->runSql('DELETE FROM user WHERE login = ?', [self::LOGIN]);
+        $I->runSql('DELETE p FROM user_role_privilege p JOIN user_role r USING(role_id) WHERE r.alias = ?', [self::ROLE_ALIAS]);
         $I->runSql('DELETE FROM user_role WHERE alias = ?', [self::ROLE_ALIAS]);
     }
 }

@@ -1,59 +1,46 @@
 <?php
 
-use Simflex\Core\Models\UserPriv;
+use App\Core\Privilege;
 use Simflex\Core\Models\UserRole;
 
 return new class () implements \Simflex\Core\DB\Seeder {
     public function seed(): void
     {
-        $devPriv = UserPriv::byName('dev');
-        $adminPriv = UserPriv::byName('admin');
-        $simplexAdminPriv = UserPriv::byName('simplex_admin');
-        $debugPriv = UserPriv::byName('debug');
-        $managerPriv = UserPriv::byName('manager');
-
         $devRole = UserRole::insertStatic([
-            'priv_id' => $devPriv->priv_id,
+            'privilege' => Privilege::DEV,
             'active' => true,
-            'npp' => 1,
             'name' => 'Разработчик',
             'alias' => 'dev',
         ]);
 
-        $devRole->addPriv($devPriv);
-        $devRole->addPriv($adminPriv);
-        $devRole->addPriv($simplexAdminPriv);
-        $devRole->addPriv($debugPriv);
+        $devRole->addPrivilege(Privilege::DEV);
+        $devRole->addPrivilege(Privilege::ADMIN);
 
         $adminRole = UserRole::insertStatic([
-            'priv_id' => $adminPriv->priv_id,
+            'privilege' => Privilege::ADMIN,
             'active' => true,
-            'npp' => 2,
             'name' => 'Администратор',
             'alias' => 'admin',
         ]);
 
-        $adminRole->addPriv($adminPriv);
-        $adminRole->addPriv($simplexAdminPriv);
-        $adminRole->addPriv($managerPriv);
+        $adminRole->addPrivilege(Privilege::ADMIN);
+        $adminRole->addPrivilege(Privilege::MANAGER);
 
         UserRole::insertStatic([
-            'priv_id' => $adminPriv->priv_id,
+            'privilege' => Privilege::ADMIN,
             'active' => true,
-            'npp' => 3,
             'name' => 'Пользователь',
             'alias' => 'user',
         ]);
 
         $managerRole = UserRole::insertStatic([
-            'priv_id' => $adminPriv->priv_id,
+            'privilege' => Privilege::ADMIN,
             'active' => true,
-            'npp' => 4,
             'name' => 'Менеджер',
             'alias' => 'manager',
         ]);
 
-        $managerRole->addPriv($simplexAdminPriv);
-        $managerRole->addPriv($managerPriv);
+        $managerRole->addPrivilege(Privilege::ADMIN);
+        $managerRole->addPrivilege(Privilege::MANAGER);
     }
 };

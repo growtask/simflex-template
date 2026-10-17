@@ -36,6 +36,7 @@ class Config extends \Simflex\Core\ConfigBase
     public function load(): void
     {
         $this->defaultComponent = Content::class;
+        $this->privilegeClass = \App\Core\Privilege::class;
 
         // settings from the environment. Defaults are declared in ConfigBase only
         $this->db['host'] = env('DB_HOST', $this->db['host']);

@@ -47,6 +47,27 @@ class AdminMenuFormCest
         $I->dontSeeLogProblems();
     }
 
+    public function tryToChoosePrivilegeByName(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/admin/admin/menu/?action=form&menu_id=2');
+        $I->dontSee('Fatal');
+
+        // "Привилегия" is a choice from the privileges declared in code, the row keeps the name
+        $I->seeElementInDOM('select[name="privilege"] option[value="dev"]');
+        $I->seeElementInDOM('select[name="privilege"] option[value="manager"]');
+        $I->seeElementInDOM('select[name="privilege"] option[value="admin"][selected]');
+        try {
+            $I->selectOption('select[name="privilege"]', 'manager');
+            $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+            $I->dontSee('Fatal');
+            $I->assertSame([['privilege' => 'manager']], $I->grabRowsFromSql('SELECT privilege FROM admin_menu WHERE menu_id = 2'));
+        } finally {
+            $I->runSql("UPDATE admin_menu SET privilege = 'admin' WHERE menu_id = 2");
+        }
+
+        $I->dontSeeLogProblems();
+    }
+
     public function tryToSaveMenuForm(AcceptanceTester $I): void
     {
         $value = 'Codeception test menu name';

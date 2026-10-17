@@ -7,9 +7,8 @@ return new class () implements \Simflex\Core\DB\Migration {
     {
         $s->createTable('user_role', function (Schema\Table $c) {
             $c->id('role_id');
-            $c->integer('priv_id')->foreignKey('user_priv');
+            $c->string('privilege', 64);
             $c->boolean('active');
-            $c->integer('npp');
             $c->string('alias');
             $c->string('name');
         });
