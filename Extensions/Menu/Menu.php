@@ -2,6 +2,7 @@
 
 namespace App\Extensions\Menu;
 
+use Simflex\Core\Container;
 use Simflex\Core\Core;
 use Simflex\Core\ModuleBase;
 
@@ -28,7 +29,7 @@ class Menu extends ModuleBase
             $pid = -1;
             if (isset($this->menu[$start_id])) {
                 foreach ($this->menu[$start_id] as $id => $item) {
-                    if ($item['link'] === mb_substr(Core::path(), 0, mb_strlen($item['link']))) {
+                    if ($item['link'] === mb_substr(Container::getRequest()->getPath(), 0, mb_strlen($item['link']))) {
                         $pid = $item['menu_id'];
                     }
                 }
@@ -47,8 +48,8 @@ class Menu extends ModuleBase
         foreach ($this->menu[$pid] as $id => $item) {
             $c = [];
             if (empty($item['hidden'])) {
-                $isActive = $item['link'] === '/' && Core::path() === '/';
-                $isActive |= $item['link'] !== '/' && $item['link'] === mb_substr(Core::path(), 0, mb_strlen($item['link']));
+                $isActive = $item['link'] === '/' && Container::getRequest()->getPath() === '/';
+                $isActive |= $item['link'] !== '/' && $item['link'] === mb_substr(Container::getRequest()->getPath(), 0, mb_strlen($item['link']));
                 $isActive ? $c[] = 'active' : null;
 
                 if ($lvl < $this->params['max_level'] && isset($this->menu[$id])) {
