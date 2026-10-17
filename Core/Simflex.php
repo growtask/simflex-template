@@ -108,7 +108,7 @@ class Simflex
     public function executeFileManager(): void
     {
         $mgr = new \Simflex\FileManager\Manager(SF_PUBLIC_PATH . '/uf', function () {
-            return (bool)Container::getUser()?->ican(\Simflex\Admin\Auth::LOGIN_PRIV);
+            return (bool)Container::getUser()?->ican(\Simflex\Core\Privilege::ADMIN);
         });
 
         $mgr->handleRequest();

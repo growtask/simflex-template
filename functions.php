@@ -20,15 +20,21 @@ function env(string $name, mixed $defaultValue = null): mixed
  * Get asset path
  * @param string $path Relative path to the asset
  * @param bool $siteOnly If set to true, returns only site assets
- * @return string Full path to the asset
+ * @return string Full path to the asset, with the file's mtime as the version (?v=...): the browser doesn't keep
+ *                an outdated copy after the file is changed
  */
 function asset(string $path, bool $siteOnly = false): string
 {
     if (!$siteOnly && SF_LOCATION == SF_LOCATION_ADMIN) {
-        return \Simflex\Admin\Core::webVendorPath() . '/theme/new/' . $path;
+        $url = \Simflex\Admin\Core::webVendorPath() . '/theme/new/' . $path;
+        $file = \Simflex\Admin\Core::vendorPath() . '/theme/new/' . $path;
+    } else {
+        $url = '/assets/' . $path;
+        $file = SF_PUBLIC_PATH . '/assets/' . $path;
     }
 
-    return '/assets/' . $path;
+    $mtime = is_file($file) ? filemtime($file) : false;
+    return $mtime ? $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . $mtime : $url;
 }
 
 /**

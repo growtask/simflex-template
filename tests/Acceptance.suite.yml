@@ -16,7 +16,13 @@ modules:
             window_size: 1920x1080
             capabilities:
                 goog:chromeOptions:
-                    args: ["--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage"]
+                    args: ["--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage", "--disable-features=PasswordLeakDetection,PasswordManagerOnboarding"]
+                    # the test accounts' password is a leaked one: Chrome's native "change your password" dialog
+                    # would swallow the clicks after the login
+                    prefs:
+                        credentials_enable_service: false
+                        profile.password_manager_enabled: false
+                        profile.password_manager_leak_detection: false
         - Filesystem
         - Asserts
 # Add Codeception\Step\Retry trait to AcceptanceTester to enable retries

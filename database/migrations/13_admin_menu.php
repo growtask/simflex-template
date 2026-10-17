@@ -8,7 +8,7 @@ return new class () implements \Simflex\Core\DB\Migration {
         $s->createTable('admin_menu', function (Schema\Table $c) {
             $c->id('menu_id');
             $c->integer('menu_pid');
-            $c->integer('priv_id')->foreignKey('user_priv');
+            $c->string('privilege', 64);
             $c->integer('npp')->setDefault(0);
             $c->string('name');
             $c->string('link');
