@@ -26,8 +26,13 @@ class AdminContentFormCest
         $I->seeElement('.sidebar');
         $I->seeInField('title', 'Главная');
 
-        // dynamic content-template params (content_template_param) must render too
+        // the fields of the page template, declared in code (provider/templates.php), in their blocks
+        $I->seeInField('input[name="template"]', 'index');
+        $I->see('Главная', $I->dropdown('template'));
         $I->seeElement('input[name="meta_title"]');
+        $I->seeElement('input[name="seo_title_1"]');
+        $I->see('SEO', '.data2__title');
+        $I->see('Мета', '.data3__title');
 
         $I->dontSeeLogProblems();
     }
@@ -50,6 +55,9 @@ class AdminContentFormCest
         // reload from scratch to make sure the value was actually persisted, not just left in the DOM
         $I->amOnPage('/admin/content/?action=form&content_id=1');
         $I->seeInField('meta_title', $value);
+        // kept in content.params by the field name
+        $params = unserialize($I->grabRowsFromSql('SELECT params FROM content WHERE content_id = 1')[0]['params']);
+        $I->assertSame($value, $params['meta_title']);
 
         // reset back to the original state so the test is repeatable
         $I->fillField('meta_title', '');

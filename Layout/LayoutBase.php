@@ -4,10 +4,8 @@ namespace App\Layout;
 
 use Simflex\Core\Buffer;
 use Simflex\Core\Container;
-use Simflex\Core\Models\ContentTemplateParam;
 use Simflex\Core\Path;
 use Simflex\Core\View;
-use Simflex\Extensions\Content\Model\ModelContent;
 
 abstract class LayoutBase
 {
@@ -86,6 +84,10 @@ abstract class LayoutBase
         ];
     }
 
+    /**
+     * Collects the fields of the layout's schema into LayoutManager::$generatedFields: the page template's fields
+     * are declared in code (provider/templates.php), ./sf layout/generate prints them as code to put there
+     */
     protected static function generateFields(): void
     {
         $schema = static::getFieldSchema();
@@ -97,45 +99,15 @@ abstract class LayoutBase
             $schema['prefix'] = self::$inputData['__prefix'];
         }
 
-        $fields = $schema['items'];
-        if (!$fields) {
-            return;
-        }
-
-        // get current page.
-        $page = ModelContent::findOne(['path' => Container::getRequest()->getPath()]);
-
-        // delete the entire group.
-        if ($schema['group']) {
-            ContentTemplateParam::bulkDelete(['group_name' => $schema['group'], 'template_id' => $page->template_id]);
-        }
-
-        // create new fields.
-        // set correct order - by counter on that particular template.
-        // set the default name from schema.
-
-        if (!isset(LayoutManager::$templateOrdering[$page->template_id])) {
-            LayoutManager::$templateOrdering[$page->template_id] = 0;
-        }
-
-        foreach ($fields as $field) {
-            $param = new ContentTemplateParam();
-            $inserted = $param->insert([
-                'template_id' => $page->template_id,
-                'param_pid' => null,
-                'position' => 'left', // TODO: allow to change from schema?
-                'field_type' => self::findFieldType($field['type']),
+        foreach ($schema['items'] as $field) {
+            $group = (string)($field['group'] ?? $schema['group']);
+            LayoutManager::$generatedFields[$group][] = [
                 'name' => self::mangleName($schema, $field),
-                'label' => $field['name'],
-                'npp' => LayoutManager::$templateOrdering[$page->template_id] += 10, // give up some space, just in case.
-                'params' => serialize(['main' => $field['params'] ?? []]),
-                'default_value' => $field['default'] ?? '',
-                'group_name' => $field['group'] ?? $schema['group'],
-            ]);
-
-            if (!$inserted) {
-                throw new \Exception($param->getLastError()['text']);
-            }
+                'label' => (string)$field['name'],
+                'class' => self::findFieldType($field['type']),
+                'default' => (string)($field['default'] ?? ''),
+                'params' => $field['params'] ?? [],
+            ];
         }
     }
 

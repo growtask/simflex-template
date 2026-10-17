@@ -5,7 +5,7 @@ namespace Tests\Acceptance;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Admin panel fixes: the record info modal, the search dropdown, a not saved form, the menu of a section with subitems,
+ * Admin panel fixes: the record info modal, the search dropdown, a not saved form, the management menu,
  * the roles section
  */
 class AdminUiFixesCest
@@ -44,29 +44,40 @@ class AdminUiFixesCest
         $I->seeInField('input[name="user_id"]', '');
 
         // not saved: the form is shown again with the error, not an empty page
-        $I->selectOption('select[name="privilege"]', 'dev');
+        $I->chooseInDropdown('privilege', 'dev');
         $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
         $I->see('Пользователь');
-        $I->seeElement('select[name="privilege"]');
+        $I->seeElementInDOM('input[name="privilege"]');
         $I->seeElement('.content__btns button[name="submit_apply"]');
         $I->assertSame([], $I->grabRowsFromSql('SELECT id FROM user_privilege_personal'));
         $I->dontSeeLogProblems();
     }
 
-    public function tryToOpenSectionHavingSubitems(AcceptanceTester $I): void
+    public function tryToSeeNoPageTemplateSections(AcceptanceTester $I): void
     {
-        // "Шаблоны страниц" has subitems, so its menu item only opens them: the section is the first subitem
-        $I->amOnPage('/admin/admin/templates');
-        $I->dontSee('Fatal');
-        $I->see('Шаблоны страниц', '.content');
-        $I->see('Параметры шаблонов', '.content');
-        $I->seeElementInDOM('.sidebar a[href="/admin/admin/content_template"]');
+        // page templates and their fields are declared in code (provider/templates.php)
+        $I->amOnPage('/admin/admin');
+        $I->dontSee('Шаблоны страниц');
+        $I->dontSee('Параметры шаблонов');
+        $I->assertSame([], $I->grabRowsFromSql("SHOW TABLES LIKE 'content_template%'"));
+    }
 
-        $I->amOnPage('/admin/admin/content_template');
-        $I->dontSee('Fatal');
-        $I->see('Шаблоны страниц', '.content__title');
-        $I->seeElement('.table__body-row');
-        $I->dontSeeLogProblems();
+    public function tryToSeeManagementSectionsInOrder(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/admin');
+        $links = $I->executeJS(
+            "return [...document.querySelectorAll('.sidebar a')].map(a => a.getAttribute('href'))"
+            . ".filter(h => h && (h.startsWith('/admin/admin/') || h === '/admin/cron'))"
+        );
+        $I->assertSame([
+            '/admin/admin/menu',
+            '/admin/admin/privilege',
+            '/admin/admin/role',
+            '/admin/admin/role_privilege',
+            '/admin/admin/user',
+            '/admin/admin/privilege_personal',
+            '/admin/cron',
+        ], array_values(array_unique($links)));
     }
 
     public function tryToSeeRolesSection(AcceptanceTester $I): void

@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use Codeception\Test\Unit;
 use Simflex\Admin\Base;
-use Simflex\Admin\Base\Struct;
 use Simflex\Admin\Core as AdminCore;
 use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
@@ -216,7 +215,7 @@ class AdminBugfixTest extends Unit
     // 9, 10. Все типы в сигнатурах указывают на существующие классы
     public function testAdminSignaturesReferenceExistingClasses(): void
     {
-        foreach ([Base::class, Struct::class, WidgetBase::class, Page::class, AdminCore::class, Alert::class] as $class) {
+        foreach ([Base::class, WidgetBase::class, Page::class, AdminCore::class, Alert::class] as $class) {
             foreach ((new \ReflectionClass($class))->getMethods() as $method) {
                 $types = [$method->getReturnType()];
                 foreach ($method->getParameters() as $param) {
@@ -235,31 +234,6 @@ class AdminBugfixTest extends Unit
                 }
             }
         }
-    }
-
-    // 9. Struct::imagesRebuild пересобирает размеры через Simflex\Core\Image
-    public function testStructImagesRebuildUsesCoreImage(): void
-    {
-        $root = sys_get_temp_dir() . '/admin_bugfix_' . uniqid();
-        mkdir("$root/uf/images/news/source", 0777, true);
-        $src = imagecreatetruecolor(400, 200);
-        imagepng($src, "$root/uf/images/news/source/pic.png");
-        $_SERVER['DOCUMENT_ROOT'] = $root;
-
-        $db = $this->mockDb();
-        $db->method('query')->willReturnCallback(function (string $q) {
-            $this->assertSame('SELECT `image` FROM `news`', $q);
-            return false;
-        });
-        $db->method('assoc')->willReturn([['image' => 'pic.png'], ['image' => ''], ['image' => 'missing.png']]);
-
-        $struct = (new \ReflectionClass(Struct::class))->newInstanceWithoutConstructor();
-        (new \ReflectionMethod($struct, 'imagesRebuild'))->invoke($struct, 'news', 'image', '/news/', ['small' => '100x100']);
-
-        $this->assertFileExists("$root/uf/images/news/small/pic.png");
-        $this->assertSame(100, getimagesize("$root/uf/images/news/small/pic.png")[0]);
-        $this->assertFileExists("$root/uf/images/news/raw/pic.png");
-        exec('rm -rf ' . escapeshellarg($root));
     }
 
     // 12. Admin\Core::siteParam
