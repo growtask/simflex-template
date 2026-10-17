@@ -79,6 +79,17 @@ class ContentTemplatesTest extends Unit
             $code
         );
     }
+
+    /**
+     * The command draws the page with the component created like the router does (with its dependencies)
+     */
+    public function testLayoutGenerateCommandDrawsPage(): void
+    {
+        $output = (string)shell_exec('cd ' . escapeshellarg(SF_ROOT_PATH) . ' && php console.php layout/generate / 2>&1');
+
+        $this->assertStringNotContainsString('error', $output);
+        $this->assertStringContainsString('The layouts of the page declare no fields', $output);
+    }
 }
 
 class ContentTemplatesTestLayout extends LayoutBase
