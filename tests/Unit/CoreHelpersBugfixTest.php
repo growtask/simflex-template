@@ -10,6 +10,15 @@ use Simflex\Core\Time;
 
 class CoreHelpersBugfixTest extends Unit
 {
+    public function testTransliteMakesUrlSlug(): void
+    {
+        $this->assertSame('vtoraya-zapis', Str::translite('Вторая запись'));
+        $this->assertSame('zhuk-chaschi-shum-yula-tsaplya-hleb', Str::translite('Жук чащи шум юла цапля хлеб'));
+        $this->assertSame('obem-dene-yozh-elka-eho', Str::translite('Объём деньё йож ёлка эхо'));
+        $this->assertSame('privet-mir-2', Str::translite('  Привет,  мир — 2! '));
+        $this->assertSame('cafe-strasse', Str::translite('Café Straße'));
+    }
+
     public function testFormDatesByQuarters(): void
     {
         $ret = Time::form_dates('2020-01-01', '2020-06-30', 2);
