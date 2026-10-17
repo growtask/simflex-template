@@ -44,6 +44,16 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
+     * Checks that the page shows no PHP errors
+     */
+    public function dontSeeErrors(): void
+    {
+        foreach (['Fatal', 'error', 'Warning', 'Notice'] as $text) {
+            $this->dontSee($text);
+        }
+    }
+
+    /**
      * Checks that nothing at warning level or above was logged during this test (the log is cleared before each test)
      */
     public function dontSeeLogProblems(): void
