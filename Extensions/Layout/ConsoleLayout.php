@@ -8,6 +8,7 @@ use Simflex\Core\Console\Command;
 use Simflex\Core\Console\Help;
 use Simflex\Core\ConsoleBase;
 use Simflex\Core\Container;
+use Simflex\Core\DI\Injector;
 use Simflex\Core\Html\HtmlRequest;
 use Simflex\Core\Log;
 
@@ -29,9 +30,9 @@ class ConsoleLayout extends ConsoleBase
         LayoutManager::$generatedFields = [];
 
         try {
-            $content = new Content();
+            $content = new Content(...Injector::resolveClass(Content::class));
             $content->execute();
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             Log::error($ex->getMessage());
         }
 
