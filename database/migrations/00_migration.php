@@ -9,16 +9,10 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->id('id');
             $c->string('file');
         });
-
-        $s->createTable('seeder', function (Schema\Table $c) {
-            $c->id('id');
-            $c->string('file');
-        });
     }
 
     public function down(Schema $s): void
     {
-        $s->dropTable('seeder');
         $s->dropTable('migration');
     }
 };

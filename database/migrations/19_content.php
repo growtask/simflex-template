@@ -21,6 +21,26 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->string('template', 64);
             $c->integer('npp');
         });
+
+        $s->seed(function () {
+            \Simflex\Extensions\Content\Model\ModelContent::bulkInsert([
+                [
+                    'pid' => null,
+                    'active' => 1,
+                    'date' => '2023-09-01',
+                    'title' => 'Главная',
+                    'alias' => '/',
+                    'path' => '/',
+                    'short' => '<p>test</p>',
+                    'text' => '',
+                    'params' => '',
+                    'file' => '',
+                    'photo' => '',
+                    'template' => 'index', // provider/templates.php
+                    'npp' => 10,
+                ],
+            ]);
+        });
     }
 
     public function down(Schema $s): void

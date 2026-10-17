@@ -44,6 +44,27 @@ class AdminExtensionsCest
         $I->dontSeeLogProblems();
     }
 
+    public function tryToSaveModuleWithoutChanges(AcceptanceTester $I): void
+    {
+        // the form shows the module's real defaults: saving it unchanged doesn't add a title and a wrapper
+        $id = $I->grabRowsFromSql("SELECT item_id FROM module_item WHERE posname = 'breadcrumbs'")[0]['item_id'];
+        $params = $I->grabRowsFromSql('SELECT params FROM module_item WHERE item_id = ?', [$id])[0]['params'];
+        try {
+            $I->amOnPage("/admin/site/module/?action=form&item_id=$id");
+            $I->dontSeeCheckboxIsChecked('is_title');
+            $I->dontSeeCheckboxIsChecked('is_wrap');
+            $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+            $I->dontSee('Fatal');
+
+            $I->amOnPage('/admin/site/module');
+            $I->seeElement('.breadcrumbs__list > .breadcrumbs__item');
+            $I->dontSee('Admin - Хлебные крошки', '.header__breadcrumbs');
+        } finally {
+            $I->runSql('UPDATE module_item SET params = ? WHERE item_id = ?', [$params, $id]);
+        }
+        $I->dontSeeLogProblems();
+    }
+
     public function tryToSeeMenuFormComponents(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/site/menu/?action=form');

@@ -15,6 +15,20 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->string('name');
             $c->string('link');
         });
+
+        $s->seed(function () {
+            \Simflex\Core\Models\Menu::bulkInsert([
+                [
+                    'menu_pid' => null,
+                    'component' => \App\Extensions\Content\Content::class,
+                    'active' => true,
+                    'hidden' => false,
+                    'npp' => 1,
+                    'name' => 'Главная',
+                    'link' => '/',
+                ],
+            ]);
+        });
     }
 
     public function down(Schema $s): void

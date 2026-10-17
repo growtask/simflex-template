@@ -1,6 +1,8 @@
 <?php
 
+use App\Core\Privilege;
 use Simflex\Core\DB\Schema;
+use Simflex\Core\Models\UserRole;
 
 return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
@@ -9,6 +11,20 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->id('id');
             $c->integer('role_id')->foreignKey('user_role');
             $c->string('privilege', 64);
+        });
+
+        $s->seed(function () {
+            $privileges = [
+                'dev' => [Privilege::DEV, Privilege::ADMIN],
+                'admin' => [Privilege::ADMIN, Privilege::MANAGER],
+                'manager' => [Privilege::ADMIN, Privilege::MANAGER],
+            ];
+            foreach ($privileges as $alias => $names) {
+                $role = UserRole::byAlias($alias);
+                foreach ($names as $name) {
+                    $role->addPrivilege($name);
+                }
+            }
         });
     }
 

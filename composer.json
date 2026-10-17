@@ -55,8 +55,7 @@
       "./codecept run --steps"
     ],
     "post-update-cmd": [
-      "php console.php migrate/up",
-      "php console.php seed/run"
+      "php console.php migrate/up"
     ]
   },
   "autoload": {
