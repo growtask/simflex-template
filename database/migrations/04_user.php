@@ -13,8 +13,6 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->boolean('active')->setDefault(1);
             $c->string('login')->unique(true);
             $c->string('password');
-            $c->string('hash'); // deprecated
-            $c->string('hash_admin'); // deprecated
             $c->string('email')->unique(true);
             $c->string('name');
             $c->string('code');
@@ -31,8 +29,6 @@ return new class () implements \Simflex\Core\DB\Migration {
                     'active' => true,
                     'login' => 'dev',
                     'password' => '827ccb0eea8a706c4c34a16891f84e7b', // 12345
-                    'hash' => '',
-                    'hash_admin' => '',
                     'email' => 'dev@simflex',
                     'name' => 'Developer',
                     'code' => '',
@@ -42,8 +38,6 @@ return new class () implements \Simflex\Core\DB\Migration {
                     'active' => true,
                     'login' => 'admin',
                     'password' => '827ccb0eea8a706c4c34a16891f84e7b', // 12345
-                    'hash' => '',
-                    'hash_admin' => '',
                     'email' => 'admin@simflex',
                     'name' => 'Administrator',
                     'code' => '',

@@ -26,8 +26,8 @@ function env(string $name, mixed $defaultValue = null): mixed
 function asset(string $path, bool $siteOnly = false): string
 {
     if (!$siteOnly && SF_LOCATION == SF_LOCATION_ADMIN) {
-        $url = \Simflex\Admin\Core::webVendorPath() . '/theme/new/' . $path;
-        $file = \Simflex\Admin\Core::vendorPath() . '/theme/new/' . $path;
+        $url = \Simflex\Admin\Core::webVendorPath() . '/theme/' . $path;
+        $file = \Simflex\Admin\Core::vendorPath() . '/theme/' . $path;
     } else {
         $url = '/assets/' . $path;
         $file = SF_PUBLIC_PATH . '/assets/' . $path;

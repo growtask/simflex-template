@@ -32,8 +32,8 @@ class AdminAccessDeniedCest
             [self::ROLE_ALIAS]
         );
         $I->runSql(
-            "INSERT INTO user (role_id, active, login, password, hash, hash_admin, email, name, code)
-             SELECT role_id, 1, ?, '', '', '', 'noadmin@simflex', 'No admin', '' FROM user_role WHERE alias = ?",
+            "INSERT INTO user (role_id, active, login, password, email, name, code)
+             SELECT role_id, 1, ?, '', 'noadmin@simflex', 'No admin', '' FROM user_role WHERE alias = ?",
             [self::LOGIN, self::ROLE_ALIAS]
         );
         $I->runSql(
