@@ -120,13 +120,9 @@ class Installer extends ConsoleBase
                 'file' => '00_migration',
             ]);
 
-            // run migrations normally
+            // run migrations normally, they write the initial data too
             $migrator = new DB\Cli\Migrator();
             $migrator->up();
-
-            // run seeders as well
-            $seeder = new DB\Cli\Seeder();
-            $seeder->run();
         } catch (Exception $e) {
             Log::critical('Failed to initialize database ({ex})', ['ex' => $e->getMessage()]);
             exit;
