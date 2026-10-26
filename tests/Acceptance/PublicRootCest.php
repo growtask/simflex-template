@@ -9,7 +9,7 @@ use Tests\Support\AcceptanceTester;
  */
 class PublicRootCest
 {
-    public function codeAndConfigsAreNotServed(AcceptanceTester $I): void
+    public function tryToGetCodeAndConfigs(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
 
@@ -34,7 +34,7 @@ class PublicRootCest
         }
     }
 
-    public function scriptsOtherThanIndexAreNotExecuted(AcceptanceTester $I): void
+    public function tryToRunScriptsOtherThanIndex(AcceptanceTester $I): void
     {
         $file = 'public/uf/files/codecept_probe.php';
         $I->writeToFile($file, '<?php echo "PROBE_" . "EXECUTED";');
@@ -48,13 +48,13 @@ class PublicRootCest
         }
     }
 
-    public function siteAssetsAreServed(AcceptanceTester $I): void
+    public function tryToGetSiteAssets(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
         $this->seeAllAssetsServed($I);
     }
 
-    public function adminAssetsArePublished(AcceptanceTester $I): void
+    public function tryToGetPublishedAdminAssets(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin');
         $I->seeElementInDOM('link[href^="/cache/assets/"]');
@@ -70,7 +70,7 @@ class PublicRootCest
         ));
     }
 
-    public function fileManagerIsForAdminsOnly(AcceptanceTester $I): void
+    public function tryToOpenFileManager(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
         $I->assertStringContainsString('not_authenticated', $this->fetch($I, '/admin/fm?method=getTree')['body']);

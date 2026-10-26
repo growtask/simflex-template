@@ -48,6 +48,17 @@ class UsersCest
         $I->dontSeeErrors();
         $I->see('Данные пользователя', '.content__title');
         $I->seeInField('input[name="email"]', 'dev@simflex');
+
+        // сохранение своих данных
+        $before = $I->grabRowsFromSql('SELECT name FROM user WHERE user_id = 1')[0]['name'];
+        try {
+            $I->fillField('input[name="name"]', 'Codecept dev');
+            $I->click('.content__btns button[type="submit"]');
+            $I->waitForText('Данные успешно обновлены', 10);
+            $I->assertSame([['name' => 'Codecept dev', 'email' => 'dev@simflex']], $I->grabRowsFromSql('SELECT name, email FROM user WHERE user_id = 1'));
+        } finally {
+            $I->runSql('UPDATE user SET name = ? WHERE user_id = 1', [$before]);
+        }
         $I->dontSeeLogProblems();
     }
 

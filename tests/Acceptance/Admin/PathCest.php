@@ -29,7 +29,7 @@ class PathCest
         $this->restore($I);
     }
 
-    public function adminWorksOnConfiguredPath(AcceptanceTester $I): void
+    public function tryToOpenAdminOnConfiguredPath(AcceptanceTester $I): void
     {
         $I->loginAsAdmin(self::PATH);
 

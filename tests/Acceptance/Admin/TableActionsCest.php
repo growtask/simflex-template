@@ -6,7 +6,7 @@ use Tests\Support\AcceptanceTester;
 
 /**
  * Действия раздела-таблицы (Table\Table), идущие через модель и построитель запросов таблицы:
- * копирование, порядок, удаление (на меню сайта: его записи не нужны другим тестам), фильтры списка,
+ * копирование и порядок (на меню сайта: его записи не нужны другим тестам), сортировка и страницы, фильтры списка,
  * путь страницы
  */
 class TableActionsCest
@@ -18,7 +18,7 @@ class TableActionsCest
         $I->loginAsDev();
     }
 
-    public function tryToCopyReorderAndDelete(AcceptanceTester $I): void
+    public function tryToCopyAndReorder(AcceptanceTester $I): void
     {
         $I->amOnPage(self::SECTION);
         $source = $I->grabRowsFromSql('SELECT menu_id, name, npp FROM menu ORDER BY menu_id LIMIT 1')[0];
@@ -33,10 +33,6 @@ class TableActionsCest
             $I->assertSame([['npp' => 10]], $I->grabRowsFromSql('SELECT npp FROM menu WHERE menu_id = ?', [$id]));
             $this->fetch($I, self::SECTION . "?action=change_npp&field=npp&menu_id=$id&up=1");
             $I->assertSame([['npp' => 9]], $I->grabRowsFromSql('SELECT npp FROM menu WHERE menu_id = ?', [$id]));
-
-            $this->fetch($I, self::SECTION . "?action=delete&rows[]=$id");
-            $I->assertSame([], $I->grabRowsFromSql('SELECT menu_id FROM menu WHERE menu_id = ?', [$id]));
-            $I->assertCount(1, $I->grabRowsFromSql('SELECT menu_id FROM menu WHERE menu_id = ?', [$source['menu_id']]));
         } finally {
             $I->runSql('DELETE FROM menu WHERE menu_id > ?', [$source['menu_id']]);
         }

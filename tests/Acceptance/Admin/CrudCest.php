@@ -24,7 +24,7 @@ class CrudCest
         $I->runSql('DELETE FROM seo WHERE link = ?', [self::LINK]);
     }
 
-    public function tryCrud(AcceptanceTester $I): void
+    public function tryToCreateReadUpdateDelete(AcceptanceTester $I): void
     {
         // создание: «Добавить» в списке, форма, «Сохранить и выйти» обратно в список
         $I->amOnPage(self::SECTION);

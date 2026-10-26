@@ -135,6 +135,14 @@ class ContentCest
             $I->assertSame([['photo' => $name]], $I->grabRowsFromSql('SELECT photo FROM content WHERE content_id = 1'));
             $I->assertNotEmpty($this->uploaded($name), "$name is not saved");
             $I->seeElement("img.form-control__file-img[src*='$name']");
+
+            // «Удалить» у изображения: поле очищается в записи (?action=deleteField), файлы удаляются
+            $I->click("//input[@name='photo']/ancestor::div[contains(@class, 'form-control__file')][1]//button[contains(@class, 'btn-file-reset')]");
+            for ($i = 0; $i < 20 && $I->grabRowsFromSql('SELECT photo FROM content WHERE content_id = 1')[0]['photo'] !== ''; $i++) {
+                usleep(250000);
+            }
+            $I->assertSame([['photo' => '']], $I->grabRowsFromSql('SELECT photo FROM content WHERE content_id = 1'));
+            $I->assertSame([], $this->uploaded($name), 'файлы удалённого изображения остались');
         } finally {
             $I->runSql('UPDATE content SET photo = ? WHERE content_id = 1', [$before]);
             foreach ($name ? $this->uploaded($name) : [] as $file) {

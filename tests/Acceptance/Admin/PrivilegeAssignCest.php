@@ -21,13 +21,7 @@ class PrivilegeAssignCest
 
     public function tryToSeeSectionsInManagementMenu(AcceptanceTester $I): void
     {
-        $I->loginAsDev();
-        // страница раздела «Управление» показывает его подразделы
-        $I->amOnPage('/admin/admin');
-        $I->see('Привилегии ролей');
-        $I->see('Персональные привилегии');
-
-        $I->amOnPage('/admin/logout');
+        // разработчик видит эти разделы (MenuCest), администратор — нет
         $I->loginAsAdmin();
         $I->dontSee('Привилегии ролей');
         $I->dontSee('Персональные привилегии');
