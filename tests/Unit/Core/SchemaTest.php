@@ -9,7 +9,7 @@ use Simflex\Core\DB\Schema\Table;
 use Tests\Support\MockDb;
 
 /**
- * The schema builder of the migrations; the initial data is written by the migration itself (Schema::seed())
+ * Построитель схемы миграций; начальные данные пишет сама миграция (Schema::seed())
  */
 class SchemaTest extends Unit
 {
@@ -46,7 +46,7 @@ class SchemaTest extends Unit
         $this->assertTrue($s->commit());
         $this->assertSame(['CREATE', 'seed'], $queries);
 
-        // the data is written once
+        // данные пишутся один раз
         $this->assertTrue($s->commit());
         $this->assertSame(['CREATE', 'seed'], $queries);
     }
@@ -69,7 +69,7 @@ class SchemaTest extends Unit
             return true;
         });
 
-        // without reload(): the existing tables don't matter here
+        // без reload(): существующие таблицы здесь не важны
         return (new \ReflectionClass(Schema::class))->newInstanceWithoutConstructor();
     }
 }

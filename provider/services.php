@@ -1,12 +1,12 @@
 <?php
 
 /*
- * Fill the required services
- * - 'all' => will load for all environments
- * - 'web' => will load only for site/admin environments
- * - 'api' => will load only for api environment
- * - 'cli' => will load only for cli/cron environments
- * - 'dev' => will load only if devMode is enabled
+ * Нужные сервисы
+ * - 'all' => загружаются во всех окружениях
+ * - 'web' => только в окружениях сайта и админки
+ * - 'api' => только в окружении api
+ * - 'cli' => только в окружениях cli/cron
+ * - 'dev' => только при включённом devMode
  */
 
 return [

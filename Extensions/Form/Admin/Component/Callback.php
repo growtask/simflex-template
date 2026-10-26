@@ -3,16 +3,23 @@
 namespace App\Extensions\Form\Admin\Component;
 
 use App\Extensions\Form\Model\ModelCallback;
-use Simflex\Admin\Base;
+use Simflex\Admin\Table\Table;
 use Simflex\Core\Container;
 use Simflex\Core\Time;
 
 /**
- * @todo Incomplete: there are no migrations for the callback table, so this code fails on SQL
- *       in a real environment. To be moved to a separate composer package.
+ * @todo Incomplete: для таблицы callback нет миграций, поэтому в реальном окружении этот код падает
+ *       на SQL. Будет вынесено в отдельный composer-пакет.
  */
-class Callback extends Base
+class Callback extends Table
 {
+    protected static string $model = ModelCallback::class;
+
+    public static function getFields(): array
+    {
+        return [];
+    }
+
     public function save(): string|int|false
     {
         $id = parent::save();

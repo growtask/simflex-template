@@ -11,7 +11,7 @@ use Simflex\Extensions\Form\ModuleForm;
 use Tests\Support\MockDb;
 
 /**
- * The fields of the site form module: the values are posted under the form's name
+ * Поля модуля форм сайта: значения отправляются под именем формы
  */
 class FormFieldsTest extends Unit
 {

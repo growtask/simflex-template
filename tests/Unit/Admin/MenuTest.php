@@ -7,13 +7,13 @@ use Codeception\Test\Unit;
 use Simflex\Admin\Core as AdminCore;
 use Simflex\Admin\Menu;
 use Simflex\Admin\MenuItem;
-use Simflex\Admin\Structure\Handlers;
+use Simflex\Admin\Handlers;
 use Simflex\Core\Container;
 use Simflex\Core\Models\User;
 use Tests\Support\MockDb;
 
 /**
- * The admin panel menu declared in code (\Simflex\Admin\Menu, App\Admin\Menu)
+ * Меню админки, объявленное в коде (\Simflex\Admin\Menu, App\Admin\Menu)
  */
 class MenuTest extends Unit
 {
@@ -56,37 +56,41 @@ class MenuTest extends Unit
             '/site/settings' => '/site',
             '/site/seo' => '/site',
             '/content' => '',
-        ], array_map(fn($link) => Menu::parent($link), array_combine(array_keys(Menu::all()), array_keys(Menu::all()))));
+        ], array_map(fn($link) => Menu::getParent($link), array_combine(array_keys(Menu::getItems()), array_keys(Menu::getItems()))));
 
         $this->assertSame(\App\Admin\Menu::class, Menu::registryClass());
-        $this->assertSame(Handlers\UserRole::class, Menu::all()['/admin/role']->handler);
-        $this->assertSame(Privilege::DEV, Menu::all()['/admin']->privilege);
-        $this->assertSame(Privilege::ADMIN, Menu::all()['/admin/role']->privilege);
-        $this->assertTrue(Menu::all()['/account']->hidden);
+        $this->assertSame(Handlers\UserRole::class, Menu::getItems()['/admin/role']->handler);
+        $this->assertSame(Privilege::DEV, Menu::getItems()['/admin']->privilege);
+        $this->assertSame(Privilege::ADMIN, Menu::getItems()['/admin/role']->privilege);
+        $this->assertTrue(Menu::getItems()['/account']->hidden);
     }
 
     public function testAppAddsAndRemovesItems(): void
     {
         Container::getConfig()->adminMenuClass = TestMenu::class;
 
-        $all = Menu::all();
+        $all = Menu::getItems();
         $this->assertSame(
             ['/account', '/admin', '/site', '/blog', '/content', '/shop'],
-            array_keys(array_filter($all, fn($item) => Menu::parent($item->link) === ''))
+            array_keys(array_filter($all, fn($item) => Menu::getParent($item->link) === ''))
         );
         $this->assertArrayNotHasKey('/site/seo', $all);
         $this->assertArrayNotHasKey('/cron', $all);
-        $this->assertSame('/site', Menu::parent('/site/redirect'));
-        $this->assertSame('/shop', Menu::parent('/shop/order'));
-        // replaced in place
+        $this->assertSame('/site', Menu::getParent('/site/redirect'));
+        $this->assertSame('/shop', Menu::getParent('/shop/order'));
+        // заменён на месте
         $this->assertSame('Страницы', $all['/content']->name);
+        // другой обработчик, остальное в пункте и его место сохраняются
+        $this->assertSame(TestMenuHandler::class, $all['/site/menu']->handler);
+        $this->assertSame('Меню', $all['/site/menu']->name);
+        $this->assertSame('/site', Menu::getParent('/site/menu'));
     }
 
     public function testUnknownParent(): void
     {
         Container::getConfig()->adminMenuClass = BrokenMenu::class;
         $this->expectException(\LogicException::class);
-        Menu::all();
+        Menu::getItems();
     }
 
     public function testPanelShowsItemsOfUserPrivileges(): void
@@ -107,15 +111,13 @@ class MenuTest extends Unit
         AdminCore::init();
 
         $menu = AdminCore::menu();
-        // the dev group and the manager section aren't shown
+        // группа dev и раздел manager не показываются
         $this->assertSame(['/account', '/site', '/blog', '/content'], array_keys($menu['']));
         $this->assertArrayNotHasKey('/shop/order', $menu['/shop'] ?? []);
-        // the subitems of the dev group are, as before: the sections are open by their links
+        // подпункты группы dev — как раньше: разделы открываются по своим ссылкам
         $this->assertArrayHasKey('/admin/user', $menu['/admin']);
         $this->assertSame('/admin/site/redirect', AdminCore::menuCurItem('link'));
-        // a table section gets the table name from the registry, a section class has none
-        $this->assertSame('content', $menu['']['/content']['table']);
-        $this->assertSame('', $menu['']['/account']['table']);
+        $this->assertSame(Handlers\Content::class, $menu['']['/content']['handler']);
         $this->assertSame([
             ['link' => '/admin/site', 'name' => 'Настройки сайта'],
             ['link' => '/admin/site/redirect', 'name' => 'Редиректы'],
@@ -141,6 +143,7 @@ class TestMenu extends \App\Admin\Menu
         static::add(new MenuItem('Блог', '/blog', handler: 'App\\Admin\\Blog'), before: '/content');
         static::add(new MenuItem('Редиректы', '/site/redirect', handler: 'App\\Admin\\Redirect'), parent: '/site');
         static::add(new MenuItem('Страницы', '/content', handler: Handlers\Content::class));
+        static::setHandler('/site/menu', TestMenuHandler::class);
         static::remove('/site/seo');
         static::remove('/cron');
     }
@@ -152,4 +155,8 @@ class BrokenMenu extends Menu
     {
         static::add(new MenuItem('Блог', '/blog/post'), parent: '/blog');
     }
+}
+
+class TestMenuHandler extends \Simflex\Admin\Handlers\Menu
+{
 }

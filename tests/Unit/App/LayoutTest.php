@@ -9,7 +9,7 @@ use Codeception\Test\Unit;
 use Simflex\Admin\Fields\FieldText;
 
 /**
- * Layouts: the parts of the page with their template and the fields they declare (console.php layout/generate)
+ * Макеты: части страницы со своим шаблоном и объявленными полями (console.php layout/generate)
  */
 class LayoutTest extends Unit
 {
@@ -58,14 +58,14 @@ class LayoutTest extends Unit
         $this->assertStringContainsString("new ContentTemplateBlock('Hero', [", $code);
         $this->assertStringContainsString(
             "new FieldDefinition(name: 'top_title', class: \\Simflex\\Admin\\Fields\\FieldString::class, label: 'Заголовок', "
-            . "params: ['main' => new FieldParams(defaultValue: 'Привет')]),",
+            . "defaultValue: 'Привет'),",
             $code
         );
-        $this->assertStringContainsString("params: ['main' => new FieldParams(editorFull: true)]", $code);
+        $this->assertStringContainsString(', editorFull: true)', $code);
     }
 
     /**
-     * The command draws the page with the component created like the router does (with its dependencies)
+     * Команда рисует страницу с компонентом, созданным так же, как это делает роутер (с зависимостями)
      */
     public function testGenerateCommandDrawsPage(): void
     {

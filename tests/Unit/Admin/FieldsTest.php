@@ -14,7 +14,7 @@ use Simflex\Admin\Fields\FieldTable;
 use Simflex\Admin\Fields\FieldTime;
 
 /**
- * The admin panel fields
+ * Поля админки
  */
 class FieldsTest extends Unit
 {

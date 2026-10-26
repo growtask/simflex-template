@@ -5,8 +5,8 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Components and modules are declared in code (provider/components.php, provider/modules.php), not in the DB.
- * module_item places the site modules only, the admin panel ones are declared in \Simflex\Admin\AdminModules
+ * Компоненты и модули объявлены в коде (provider/components.php, provider/modules.php), а не в БД.
+ * module_item размещает только модули сайта, модули админки объявлены в \Simflex\Admin\AdminModules
  */
 class ExtensionsCest
 {
@@ -38,7 +38,8 @@ class ExtensionsCest
 
     public function tryToSaveModuleWithoutChanges(AcceptanceTester $I): void
     {
-        // the form shows the module's real defaults: saving it unchanged doesn't add a title and a wrapper
+        // форма показывает настоящие значения модуля по умолчанию:
+        // сохранение без изменений не добавляет заголовок и обёртку
         $I->runSql(
             "INSERT INTO module_item SET module = ?, menu_id = NULL, posname = 'codecept', active = 0, npp = 0, name = 'Codecept block', params = ''",
             ['Simflex\\Extensions\\Block\\Block']

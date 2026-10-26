@@ -10,39 +10,39 @@ use Simflex\Core\Profiler;
 use tubalmartin\CssMin\Minifier;
 
 /**
- * Layout manager
+ * Менеджер макетов
  */
 class LayoutManager
 {
     /**
-     * @var LayoutBase[] All used layouts
+     * @var LayoutBase[] Все используемые макеты
      */
     protected static array $usedLayouts = [];
 
     /**
-     * @var array All used styles
+     * @var array Все используемые стили
      */
     protected static array $usedStyles = [];
 
     /**
-     * @var array All used scripts
+     * @var array Все используемые скрипты
      */
     public static array $usedScripts = [];
 
     /**
-     * @var bool If set to true, the drawn layouts collect the fields of their schemas, see ./sf layout/generate
+     * @var bool Если true, отрисованные макеты собирают поля своих схем, см. ./sf layout/generate
      */
     public static bool $shouldGenerateFields = false;
 
     /**
      * @var array<string, list<array{name: string, label: string, class: string, default: string, params: array}>>
-     *      Fields collected from the layouts' schemas: block label => fields
+     *      Поля, собранные из схем макетов: название блока => поля
      */
     public static array $generatedFields = [];
 
     /**
-     * Use layout
-     * @param string $class Layout class
+     * Подключает макет
+     * @param string $class Класс макета
      */
     public static function useLayout(string $class): void
     {
@@ -50,8 +50,8 @@ class LayoutManager
     }
 
     /**
-     * Use style
-     * @param string $path Path to css/scss
+     * Подключает стиль
+     * @param string $path Путь к css/scss
      */
     public static function useStyle(string $path): void
     {
@@ -59,8 +59,8 @@ class LayoutManager
     }
 
     /**
-     * Use JS script
-     * @param string $path Path to js
+     * Подключает JS-скрипт
+     * @param string $path Путь к js
      */
     public static function useScript(string $path): void
     {
@@ -68,8 +68,8 @@ class LayoutManager
     }
 
     /**
-     * Initializes layout system
-     * @return string Path to generated CSS file
+     * Инициализирует систему макетов
+     * @return string Путь к сгенерированному CSS-файлу
      * @throws SassException
      */
     public static function init(): string
@@ -88,7 +88,7 @@ class LayoutManager
         static::$usedStyles = array_unique(static::$usedStyles);
         $config = Container::getConfig();
 
-        // compose cache path.
+        // путь к кэшу.
         if (!$config->devMode) {
             $cachePath = '';
             foreach (static::$usedStyles as $style) {
@@ -102,17 +102,17 @@ class LayoutManager
 
         $imports = [SF_ROOT_PATH . '/Layout/assetsGlobal'];
 
-        // check if cache file exists.
+        // проверяем, есть ли файл кэша.
         $compiler = new Compiler();
         if ($config->devMode || !is_file(SF_PUBLIC_PATH . $cachePath)) {
-            // force add root style implicitly.
+            // неявно добавляем корневой стиль.
             $implicitPath = SF_ROOT_PATH . '/Layout/assetsGlobal/style.scss';
             $implicit = '';
             if (is_file($implicitPath)) {
                 $implicit = file_get_contents($implicitPath);
             }
 
-            // cache styles.
+            // кэшируем стили.
             $styleString = '';
 
             $compileString = '';
@@ -134,25 +134,25 @@ class LayoutManager
                 }
             }
 
-            // compile what should be compiled
+            // компилируем то, что нужно
             $compiler->setImportPaths($imports);
             $compileString = $compiler->compileString($compileString)->getCss();
             $styleString = $compileString . $styleString;
 
-            // minify resulting css.
+            // минифицируем итоговый css.
             if (!$config->devMode) {
                 $min = new Minifier();
                 $styleString = $min->run($styleString);
             }
 
-            // write new style.
+            // записываем новый стиль.
             if (!is_dir(dirname(SF_PUBLIC_PATH . $cachePath))) {
                 mkdir(dirname(SF_PUBLIC_PATH . $cachePath), 0777, true);
             }
             file_put_contents(SF_PUBLIC_PATH . $cachePath, $styleString);
         }
 
-        // use cached style.
+        // используем стиль из кэша.
         Container::getPage()::css($cachePath . ($config->devMode ? ('?v=' . md5(microtime())) : ''));
         Profiler::traceEnd(__CLASS__, __FUNCTION__);
         return $cachePath;

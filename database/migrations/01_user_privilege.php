@@ -6,7 +6,7 @@ return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('user_privilege', function (Schema\Table $c) {
-            // optional: the activity switched in the admin panel, the privileges are declared in code (Privilege)
+            // необязательная: активность, переключённая в админке, сами привилегии объявлены в коде (Privilege)
             $c->id('privilege_id');
             $c->string('name', 64)->unique();
             $c->boolean('active')->setDefault(1);

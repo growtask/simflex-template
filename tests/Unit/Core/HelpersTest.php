@@ -12,7 +12,7 @@ use Simflex\Core\Time;
 use Simflex\Core\TimeDiff;
 
 /**
- * Strings, dates, the request, the cookies, the cache
+ * Строки, даты, запрос, cookies, кэш
  */
 class HelpersTest extends Unit
 {

@@ -11,7 +11,7 @@ use Simflex\Core\Mail\Mailer;
 use Simflex\Core\Mail\Transport;
 
 /**
- * The site's request form: the request is sent by e-mail (and to Telegram when it's configured)
+ * Форма заявки сайта: заявка отправляется на e-mail (и в Telegram, если он настроен)
  */
 class AjaxFormTest extends Unit
 {

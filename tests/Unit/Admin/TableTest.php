@@ -3,18 +3,19 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Base;
 use Simflex\Admin\Core as AdminCore;
 use Simflex\Admin\Fields\FieldInt;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Plugins\Alert\Alert;
+use Simflex\Admin\Table\Table;
+use Simflex\Core\ModelBase;
 use Tests\Support\AlertState;
 use Tests\Support\MockDb;
 
 /**
- * The admin section handler: group saving, validation, the record info
+ * Раздел-таблица (Table\Table): групповое сохранение, валидация, сведения о записи
  */
-class BaseTest extends Unit
+class TableTest extends Unit
 {
     use MockDb;
 
@@ -28,7 +29,7 @@ class BaseTest extends Unit
         $this->getBackup = $_GET;
         $this->postBackup = $_POST;
         AlertState::set([]);
-        // Session::set() tries to start a session, but the headers are sent already in CLI: silence only that
+        // Session::set() пытается начать сессию, но в CLI заголовки уже отправлены: глушим только это
         set_error_handler(
             static fn(int $no, string $msg) => str_contains($msg, 'ession') || str_contains($msg, 'headers'),
             E_WARNING | E_NOTICE
@@ -48,11 +49,11 @@ class BaseTest extends Unit
     {
         $_GET['ids'] = '1,0,2,invalid,3';
         unset($_POST['group_ids']);
-        $this->assertSame('1,2,3', $this->makeBase()->ids);
+        $this->assertSame('1,2,3', $this->makeTable()->ids);
         $_POST['group_ids'] = '4,5';
-        $this->assertSame('4,5', $this->makeBase()->ids);
+        $this->assertSame('4,5', $this->makeTable()->ids);
         unset($_GET['ids'], $_POST['group_ids']);
-        $this->assertSame('', $this->makeBase()->ids);
+        $this->assertSame('', $this->makeTable()->ids);
     }
 
     public function testSaveGroup(): void
@@ -60,13 +61,14 @@ class BaseTest extends Unit
         $db = $this->mockDb();
         $db->expects($this->once())->method('query')
             ->with(
-                $this->stringContains('UPDATE `test_table` SET `title` = ? WHERE'),
-                $this->identicalTo(['New', 1, 2])
+                // через модель: одно обновление всех выбранных записей, значения — параметрами запроса
+                $this->stringContains('update `test_table` set `title` = :set_0 WHERE `id` IN ('),
+                $this->callback(fn(array $binds) => array_values($binds) === ['New', 1, 2])
             )
             ->willReturn($this->createMock(\PDOStatement::class));
         $_POST = ['group_ids' => '1,2', 'set' => ['title' => 1], 'title' => 'New'];
 
-        $this->assertSame('ids', $this->makeBase(['title' => $this->makeField('title')])->saveGroup());
+        $this->assertSame('ids', $this->makeTable(['title' => $this->makeField('title')])->saveGroup());
         $this->assertNotEmpty(AlertState::get()['']['success'] ?? null);
         $this->assertFalse(Alert::hasErrors());
     }
@@ -76,7 +78,7 @@ class BaseTest extends Unit
         $this->mockDb()->method('query')->willReturn(false);
         $_POST = ['group_ids' => '1', 'set' => ['title' => 1], 'title' => 'New'];
 
-        $this->makeBase(['title' => $this->makeField('title')])->saveGroup();
+        $this->makeTable(['title' => $this->makeField('title')])->saveGroup();
         $this->assertTrue(Alert::hasErrors());
     }
 
@@ -84,20 +86,20 @@ class BaseTest extends Unit
     {
         AdminCore::$isAjax = false;
         $_POST = ['first' => '', 'second' => 'ok'];
-        $this->assertFalse($this->makeBase([
+        $this->assertFalse($this->makeTable([
             'first' => $this->makeField('first', true),
             'second' => $this->makeField('second', true),
         ])->isValid());
-        $this->assertTrue($this->makeBase(['second' => $this->makeField('second', true)])->isValid());
-        $this->assertTrue($this->makeBase()->isValid());
+        $this->assertTrue($this->makeTable(['second' => $this->makeField('second', true)])->isValid());
+        $this->assertTrue($this->makeTable()->isValid());
     }
 
     public function testShowDetailGetRowDoesNotCreateDynamicProperty(): void
     {
         $db = $this->mockDb();
-        $db->method('query')->willReturn(false);
-        $db->method('result')->willReturn(['id' => 5]);
-        $base = $this->makeBase();
+        $db->method('query')->willReturn(true);
+        $db->method('fetch')->willReturn(['id' => 5]);
+        $base = $this->makeTable();
         set_error_handler(static function (int $no, string $msg) {
             throw new \ErrorException($msg, 0, $no);
         }, E_DEPRECATED);
@@ -110,23 +112,37 @@ class BaseTest extends Unit
         $this->assertArrayNotHasKey('vfields', get_object_vars($base));
     }
 
-    private function makeBase(array $fields = []): Base
+    public function testFormShowsExtraHtml(): void
     {
-        $base = new class () extends Base {
-            protected function initTableName(): void
-            {
-                $this->table = 'test_table';
-            }
+        $this->mockRows([]);
+        $_GET = [];
+        $_REQUEST = [];
+        $table = $this->makeTable(['title' => $this->makeField('title')]);
+        $table->extraLeft = '<div id="extra-left"></div>';
+        $table->extraRight = '<div id="extra-right"></div>';
 
-            protected function initTableData(): void
+        $html = $table->form();
+        $this->assertStringContainsString('<div id="extra-left"></div>', $html);
+        // правая колонка показывается для дополнительного HTML, даже если полей в ней нет
+        $this->assertStringContainsString('content--right', $html);
+        $this->assertStringContainsString('<div id="extra-right"></div>', $html);
+    }
+
+    private function makeTable(array $fields = []): Table
+    {
+        $base = new class () extends Table {
+            protected static string $model = TestTableModel::class;
+
+            public static function getFields(): array
             {
+                return [];
             }
         };
         $set = function (array $fields) {
             $this->fields = $fields;
             $this->pk = new FieldInt(['name' => 'id', 'label' => 'ID', 'table' => 'test_table']);
         };
-        \Closure::bind($set, $base, Base::class)($fields);
+        \Closure::bind($set, $base, Table::class)($fields);
         return $base;
     }
 
@@ -136,4 +152,10 @@ class BaseTest extends Unit
         $field->required = $required;
         return $field;
     }
+}
+
+class TestTableModel extends ModelBase
+{
+    protected static string $table = 'test_table';
+    protected static string $primaryKeyName = 'id';
 }

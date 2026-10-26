@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Fill the CLI command providers
+ * Провайдеры CLI-команд
  */
 
 return [

@@ -40,6 +40,7 @@ return (new Config())
             'tokens' => ['extra', 'throw', 'use'],
         ],
         'no_multiple_statements_per_line' => true,
+        'no_unused_imports' => true,
         'no_trailing_whitespace' => true,
         'no_whitespace_in_blank_line' => true,
         'single_blank_line_at_eof' => true,

@@ -3,12 +3,12 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Base;
 use Simflex\Admin\Core as AdminCore;
-use Simflex\Admin\Modules\Account\Account;
 use Simflex\Admin\Page;
 use Simflex\Admin\Plugins\Alert\Alert;
 use Simflex\Admin\Plugins\Log\Log;
+use Simflex\Admin\Handlers\Account;
+use Simflex\Admin\Table\Table;
 use Simflex\Admin\WidgetBase;
 use Simflex\Core\Container;
 use Simflex\Core\EventManager;
@@ -17,7 +17,7 @@ use Tests\Support\AlertState;
 use Tests\Support\MockDb;
 
 /**
- * The admin panel around the sections: messages, widgets, the account, the log, the site params
+ * Админка вокруг разделов: сообщения, виджеты, учётная запись, лог, параметры сайта
  */
 class PanelTest extends Unit
 {
@@ -33,7 +33,7 @@ class PanelTest extends Unit
         $this->postBackup = $_POST;
         $this->serverBackup = $_SERVER;
         AlertState::set([]);
-        // Session::set() tries to start a session, but the headers are sent already in CLI: silence only that
+        // Session::set() пытается начать сессию, но в CLI заголовки уже отправлены: глушим только это
         set_error_handler(
             static fn(int $no, string $msg) => str_contains($msg, 'ession') || str_contains($msg, 'headers'),
             E_WARNING | E_NOTICE
@@ -96,7 +96,7 @@ class PanelTest extends Unit
         Container::set('user', $user);
         $_POST = [];
         try {
-            $account = new Account(['item_id' => 0, 'class' => Account::class, 'name' => '', 'posname' => '', 'params' => '']);
+            $account = new Account();
             $html = $account->content();
         } finally {
             Container::set('user', $oldUser);
@@ -140,11 +140,12 @@ class PanelTest extends Unit
     }
 
     /**
-     * A type of a parameter or a result is checked only when the method is called: a missing class goes unnoticed till then
+     * Тип параметра или результата проверяется только при вызове метода: отсутствующий класс до тех пор
+     * остаётся незамеченным
      */
     public function testSignaturesReferenceExistingClasses(): void
     {
-        foreach ([Base::class, WidgetBase::class, Page::class, AdminCore::class, Alert::class] as $class) {
+        foreach ([Table::class, WidgetBase::class, Page::class, AdminCore::class, Alert::class] as $class) {
             foreach ((new \ReflectionClass($class))->getMethods() as $method) {
                 $types = [$method->getReturnType()];
                 foreach ($method->getParameters() as $param) {

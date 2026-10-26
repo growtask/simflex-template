@@ -11,7 +11,7 @@ use Simflex\Core\Privilege;
 use Tests\Support\MockDb;
 
 /**
- * Registries declared in code (Privilege, Admin\Menu, Admin\AdminModules): the app's subclass from the config
+ * Реестры, объявленные в коде (Privilege, Admin\Menu, Admin\AdminModules): подкласс сайта из конфига
  */
 class CodeRegistryTest extends Unit
 {
@@ -31,7 +31,7 @@ class CodeRegistryTest extends Unit
 
     public function testNotSubclassIgnored(): void
     {
-        // a class of another registry or a missing one: the core registry is used
+        // класс другого реестра или отсутствующий: используется реестр ядра
         Container::getConfig()->adminMenuClass = \App\Core\Privilege::class;
         Container::getConfig()->adminModulesClass = 'App\Admin\NoSuchModules';
 

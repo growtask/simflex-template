@@ -7,39 +7,39 @@ use Simflex\Core\ControllerBase;
 
 class ControllerExample extends ControllerBase
 {
-    // default root, this one is invoked only if baseUri == path
+    // корень по умолчанию, вызывается, только если baseUri == path
     #[Action('/')]
     protected function exampleRoot(): string
     {
         return 'This is the exampleRoot!';
     }
 
-    // note how this one is BEFORE the first extractable path
-    // this is done this way because we can't tell for sure, and the sorting isn't done in the backend for quicker
-    // resolve
+    // обратите внимание: этот путь стоит ДО первого пути с извлечением параметра,
+    // потому что однозначно их не различить, а сортировка на бэкенде не делается ради более быстрого
+    // разрешения
     #[Action('/hello')]
     protected function exampleStrict(): string
     {
         return 'This is the exampleStrict!';
     }
 
-    // extractable path example
-    // whatever comes after /, will be extracted and put into the argument
+    // пример пути с извлечением параметра
+    // всё, что идёт после /, извлекается и передаётся в аргумент
     #[Action('/:item')]
     protected function exampleExtract(string $item): string
     {
         return 'This is the exampleExtract! Extracted item: ' . $item;
     }
 
-    // this action will be invoked only if HTTP method was "post"
+    // это действие вызывается, только если HTTP-метод "post"
     #[Action('/:item/post', 'post')]
     protected function exampleExtractPost(string $item): string
     {
         return 'This is the exampleExtractPost! Extracted item: ' . $item;
     }
 
-    // fallback method - this one will be executed if no other action was matched
-    // by default, it simply redirects to /404, but you might want some extra logic here
+    // запасной метод — выполняется, если не подошло ни одно другое действие
+    // по умолчанию просто перенаправляет на /404, но сюда можно добавить свою логику
     protected function fallback(): string
     {
         return 'This is fallback!';

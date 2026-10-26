@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * "Редактор страниц": the list, the form with the template's fields, saving, the ajax actions of the list
+ * "Редактор страниц": список, форма с полями шаблона, сохранение, ajax-действия списка
  */
 class ContentCest
 {
@@ -35,7 +35,7 @@ class ContentCest
         $I->seeInTitle('Редактор страниц');
         $I->seeInField('title', 'Главная');
 
-        // the fields of the page template, declared in code (provider/templates.php), in their blocks
+        // поля шаблона страницы, объявленные в коде (provider/templates.php), в своих блоках
         $I->seeInField('input[name="template"]', 'index');
         $I->see('Главная', $I->dropdown('template'));
         $I->seeElement('input[name="meta_title"]');
@@ -56,10 +56,10 @@ class ContentCest
             $I->dontSeeErrors();
             $I->seeInCurrentUrl('action=form');
 
-            // reload from scratch to make sure the value was actually persisted, not just left in the DOM
+            // перезагружаем с нуля, чтобы убедиться, что значение сохранено, а не просто осталось в DOM
             $I->amOnPage(self::FORM);
             $I->seeInField('meta_title', $value);
-            // kept in content.params by the field name
+            // хранится в content.params по имени поля
             $params = unserialize($I->grabRowsFromSql('SELECT params FROM content WHERE content_id = 1')[0]['params']);
             $I->assertSame($value, $params['meta_title']);
         } finally {
@@ -74,7 +74,7 @@ class ContentCest
 
     public function tryToSaveGroupWithQuoteInValue(AcceptanceTester $I): void
     {
-        // a quote in the value used to break the group UPDATE built by string interpolation
+        // кавычка в значении раньше ломала групповой UPDATE, собранный подстановкой в строку
         $value = "Group O'Test " . uniqid();
         try {
             $I->amOnPage('/admin/content/?action=form&ids=1,1');
@@ -115,6 +115,48 @@ class ContentCest
         $I->assertStringContainsString('Главная', $detail);
 
         $I->dontSeeLogProblems();
+    }
+
+    public function tryToUploadImage(AcceptanceTester $I): void
+    {
+        $photo = 'input[type="hidden"][name="photo"]';
+        $before = $I->grabRowsFromSql('SELECT photo FROM content WHERE content_id = 1')[0]['photo'];
+        $name = '';
+        try {
+            $I->amOnPage(self::FORM);
+            // файл загружается через ajax (?action=upload_img), его имя попадает в скрытое поле
+            $I->attachFile("//input[@name='photo']/ancestor::div[contains(@class, 'form-control__file')][1]//input[@type='file']", 'upload.png');
+            $I->waitForJS("return document.querySelector('$photo').value !== ''", 10);
+            // в поле — url загруженного исходника, в записи хранится имя файла
+            $name = basename($I->grabValueFrom($photo));
+            $I->submitAndWaitForReload(self::APPLY, 'input[name="meta_title"]');
+            $I->dontSeeErrors();
+
+            $I->assertSame([['photo' => $name]], $I->grabRowsFromSql('SELECT photo FROM content WHERE content_id = 1'));
+            $I->assertNotEmpty($this->uploaded($name), "$name is not saved");
+            $I->seeElement("img.form-control__file-img[src*='$name']");
+        } finally {
+            $I->runSql('UPDATE content SET photo = ? WHERE content_id = 1', [$before]);
+            foreach ($name ? $this->uploaded($name) : [] as $file) {
+                unlink($file);
+            }
+        }
+        $I->dontSeeLogProblems();
+    }
+
+    /**
+     * @return string[] файлы загруженного изображения: исходник и размеры
+     */
+    private function uploaded(string $name): array
+    {
+        $files = [];
+        $dir = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(codecept_root_dir() . 'public/uf/images/content', \FilesystemIterator::SKIP_DOTS));
+        foreach ($dir as $file) {
+            if ($file->getFilename() === $name) {
+                $files[] = $file->getPathname();
+            }
+        }
+        return $files;
     }
 
     /**

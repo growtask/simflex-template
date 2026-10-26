@@ -1,9 +1,9 @@
 <?php
 
 /*
- * Cron jobs: key => \Simflex\Core\Cron\CronJob.
- * timing and active are the defaults: the admin panel (Управление → Cron) keeps the edited values in the DB.
- * Run a job right now: php cron.php --job=<key>
+ * Задачи cron: ключ => \Simflex\Core\Cron\CronJob.
+ * timing и active — значения по умолчанию: админка (Управление → Cron) хранит изменённые значения в БД.
+ * Запустить задачу сейчас: php cron.php --job=<key>
  */
 
 use Simflex\Core\Cron\CronJob;

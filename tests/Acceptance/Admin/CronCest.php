@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Cron jobs are declared in code (provider/cron.php), the DB keeps only their activity and schedule
+ * Задачи cron объявлены в коде (provider/cron.php), в БД хранятся только их активность и расписание
  */
 class CronCest
 {
@@ -18,7 +18,7 @@ class CronCest
 
     public function tryToSeeJobsFromCode(AcceptanceTester $I): void
     {
-        // a row of a job removed from the code is deleted, a missing row of a declared job is created
+        // запись задачи, удалённой из кода, удаляется, недостающая запись объявленной задачи создаётся
         $I->runSql('DELETE FROM cron');
         $I->runSql("INSERT INTO cron SET job = 'removed_job', active = 1, timing = '* * * * *'");
 

@@ -24,17 +24,17 @@ class Simflex
 
     public function __construct()
     {
-        // bootstrap constants
+        // константы загрузки
         require_once __DIR__ . '/../vendor/growtask/simflex/src/constants.php';
         require_once __DIR__ . '/../constants.php';
 
-        // bootstrap composer
+        // загрузка composer
         require_once SF_ROOT_PATH . '/vendor/autoload.php';
         require_once SF_ROOT_PATH . '/functions.php';
     }
 
     /**
-     * Checks if the request path belongs to the admin panel (its URL prefix is set in config: adminPath)
+     * Относится ли путь запроса к админке (её URL-префикс задан в конфиге: adminPath)
      */
     public function isAdminPath(string $path): bool
     {
@@ -43,16 +43,16 @@ class Simflex
     }
 
     /**
-     * Initializes app
+     * Инициализирует приложение
      * @throws SassException
      */
     public function init(): void
     {
-        // base init
+        // базовая инициализация
         $this->initConfig();
         $this->initPhp();
 
-        // init CLI-specific stuff
+        // инициализация, специфичная для CLI
         if (SF_LOCATION == SF_LOCATION_CLI) {
             $this->initPhpCli();
         }
@@ -64,7 +64,7 @@ class Simflex
 
         Log::debug('Simflex Framework v' . getSimflexVersion());
 
-        // init core subsystems
+        // инициализация подсистем ядра
         $this->initAuth();
         $this->initCore();
 
@@ -81,13 +81,13 @@ class Simflex
     }
 
     /**
-     * Execute application
-     * @param bool $asString If set, returns output as string. Otherwise, sends to the browser
-     * @return string|null Page content, or NULL if `$asString` is set to false.
+     * Выполняет приложение
+     * @param bool $asString Если задан, возвращает вывод строкой. Иначе отправляет в браузер
+     * @return string|null Содержимое страницы или NULL, если `$asString` равен false.
      */
     public function execute(bool $asString): ?string
     {
-        // start writing to buffer, if requested
+        // начинаем запись в буфер, если запрошено
         if ($asString) {
             ob_start();
         }
@@ -95,7 +95,7 @@ class Simflex
         $ev = Container::getEvents();
         $ev->dispatch(new Event(Events::PreExecute, static::class));
 
-        // execute app
+        // выполняем приложение
         Container::getCore()::execute();
 
         $ev->dispatch(new Event(Events::PostExecute, static::class));
@@ -103,7 +103,7 @@ class Simflex
     }
 
     /**
-     * Handles admin file manager API request. Available to admin panel users only
+     * Обрабатывает запрос к API файлового менеджера админки. Доступно только пользователям админки
      */
     public function executeFileManager(): void
     {
@@ -115,16 +115,16 @@ class Simflex
     }
 
     /**
-     * Prepares data for output to the user
+     * Готовит данные к выводу пользователю
      */
     public function prepareOutput(string $data): string
     {
         $ev = Container::getEvents();
         $ev->dispatch(new Event(Events::PrePrepareOutput, static::class, $data));
 
-        // replace params
-        // site params are always taken from the site core: Admin\Core::siteParam() requires a key
-        // and can't return the full list
+        // подставляем параметры
+        // параметры сайта всегда берутся из ядра сайта: Admin\Core::siteParam() требует ключ
+        // и не может вернуть весь список
         $params = \Simflex\Core\Core::siteParam();
         $params = is_array($params) ? $params : [];
         $params['year'] = date('Y');
@@ -135,13 +135,13 @@ class Simflex
             $data
         );
 
-        // strip unnecessary stuff
+        // убираем лишнее
         if (!$this->cfg->devMode) {
             $data = preg_replace([
-                '/>[^\S ]+/', // strip whitespaces after tags, except space
-                '/[^\S ]+</', // strip whitespaces before tags, except space
-                '/(\s)+/', // shorten multiple whitespace sequences
-                '/<!--(.|\s)*?-->/', // strip HTML comments
+                '/>[^\S ]+/', // убираем пробельные символы после тегов, кроме пробела
+                '/[^\S ]+</', // убираем пробельные символы перед тегами, кроме пробела
+                '/(\s)+/', // сокращаем повторяющиеся пробельные символы
+                '/<!--(.|\s)*?-->/', // убираем HTML-комментарии
             ], [
                 '>',
                 '<',
@@ -155,7 +155,7 @@ class Simflex
     }
 
     /**
-     * Initializes authorization mechanisms
+     * Инициализирует механизмы авторизации
      */
     protected function initAuth(): void
     {
@@ -176,9 +176,9 @@ class Simflex
     }
 
     /**
-     * Initializes app core and page
+     * Инициализирует ядро приложения и страницу
      *
-     * Note, that if location is set to CLI - neither will initialize
+     * Если location — CLI, ни то, ни другое не инициализируется
      */
     protected function initCore(): void
     {
@@ -197,7 +197,7 @@ class Simflex
     }
 
     /**
-     * Initializes config
+     * Инициализирует конфиг
      */
     protected function initConfig(): void
     {
@@ -216,7 +216,7 @@ class Simflex
 
     protected function initExceptionHandler(): void
     {
-        // whoops catches the errors, no need for us to do it
+        // ошибки ловит whoops, нам это делать не нужно
         if ($this->cfg->devMode) {
             return;
         }
@@ -230,7 +230,7 @@ class Simflex
     }
 
     /**
-     * Initializes php-specific options
+     * Инициализирует настройки PHP
      */
     protected function initPhp(): void
     {
@@ -239,7 +239,7 @@ class Simflex
     }
 
     /**
-     * Initializes PHP CLI environment
+     * Инициализирует окружение PHP CLI
      */
     protected function initPhpCli(): void
     {
@@ -249,41 +249,41 @@ class Simflex
     }
 
     /**
-     * Initializes services
+     * Инициализирует сервисы
      */
     protected function initServices(): void
     {
         $services = $this->cfg->getServices();
         $toLoad = $services['all'] ?? [];
 
-        // load web-only services
+        // загружаем сервисы только для web
         if (in_array(SF_LOCATION, [SF_LOCATION_ADMIN, SF_LOCATION_SITE])) {
             $toLoad = array_merge($toLoad, $services['web'] ?? []);
         }
 
-        // load api-only services
+        // загружаем сервисы только для api
         if (SF_LOCATION == SF_LOCATION_API) {
             $toLoad = array_merge($toLoad, $services['api'] ?? []);
         }
 
-        // load cli-only services
+        // загружаем сервисы только для cli
         if (SF_LOCATION == SF_LOCATION_CLI) {
             $toLoad = array_merge($toLoad, $services['cli'] ?? []);
         }
 
-        // load dev-only services
+        // загружаем сервисы только для dev
         if ($this->cfg->devMode) {
             $toLoad = array_merge($toLoad, $services['dev'] ?? []);
         }
 
-        // load requested services
+        // загружаем запрошенные сервисы
         foreach ($toLoad as $service) {
             Container::set($service::getServiceName(), new $service());
         }
     }
 
     /**
-     * Initializes events
+     * Инициализирует события
      */
     protected function initEvents(): void
     {
@@ -294,31 +294,31 @@ class Simflex
     }
 
     /**
-     * Initializes base logger
+     * Инициализирует базовый логгер
      */
     protected function initLogger(): void
     {
         $ev = Container::getEvents();
         $ev->dispatch(new Event(Events::PreLoggerInit, static::class));
 
-        // logging is disabled
+        // логирование отключено
         if (!$this->cfg->devMode && !$this->cfg->enableLogging) {
             return;
         }
 
-        // debug bar logger
+        // логгер debug bar
         if ($this->cfg->devMode) {
             Log::addLogger(Container::get('debugbar')->getMessages());
         }
 
         Log::addLogger(new StdLogger());
 
-        // file logger, opt-in (IS_LOG_TO_FILE=1); by default the log goes to stdout only
+        // файловый логгер, по желанию (IS_LOG_TO_FILE=1); по умолчанию лог пишется только в stdout
         if ($this->cfg->logToFile) {
             Log::addLogger(new FileLogger());
         }
 
-        // fire logging init event
+        // событие инициализации логирования
         $ev->dispatch(new Event(Events::PostLoggerInit, static::class));
     }
 }

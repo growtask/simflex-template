@@ -1,47 +1,15 @@
 <?php
 
 /*
- * Simplex Framework core functions
- * Loaded automatically from the bootstrap
+ * Функции сайта, подключаются при загрузке (Core/Simflex.php).
+ * Функции ядра (env(), asset(), getSimflexVersion()) — в src/functions.php ядра
  */
 
-use Composer\InstalledVersions;
-use Simflex\Core\Buffer;
-
 /**
- * Get environment variable
- */
-function env(string $name, mixed $defaultValue = null): mixed
-{
-    return array_key_exists($name, $_ENV) ? $_ENV[$name] : $defaultValue;
-}
-
-/**
- * Get asset path
- * @param string $path Relative path to the asset
- * @param bool $siteOnly If set to true, returns only site assets
- * @return string Full path to the asset, with the file's mtime as the version (?v=...): the browser doesn't keep
- *                an outdated copy after the file is changed
- */
-function asset(string $path, bool $siteOnly = false): string
-{
-    if (!$siteOnly && SF_LOCATION == SF_LOCATION_ADMIN) {
-        $url = \Simflex\Admin\Core::webVendorPath() . '/theme/' . $path;
-        $file = \Simflex\Admin\Core::vendorPath() . '/theme/' . $path;
-    } else {
-        $url = '/assets/' . $path;
-        $file = SF_PUBLIC_PATH . '/assets/' . $path;
-    }
-
-    $mtime = is_file($file) ? filemtime($file) : false;
-    return $mtime ? $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . $mtime : $url;
-}
-
-/**
- * Get full URL
- * @param string $path Path to the resource
- * @param array $get GET parameters
- * @return string Full URL
+ * Полный URL
+ * @param string $path Путь к ресурсу
+ * @param array $get GET-параметры
+ * @return string Полный URL
  */
 function url(string $path, array $get = []): string
 {
@@ -50,25 +18,10 @@ function url(string $path, array $get = []): string
 }
 
 /**
- * Get Simflex version
- * @return string Simflex version
- */
-function getSimflexVersion(): string
-{
-    return Buffer::getOrSet('version', function () {
-        if (!InstalledVersions::isInstalled('growtask/simflex')) {
-            return 'N/A';
-        }
-
-        return InstalledVersions::getPrettyVersion('growtask/simflex');
-    });
-}
-
-/**
- * Renders an SVG icon reference from a sprite file
- * @param string $iconName Name of the icon to reference
- * @param string $className Optional CSS classes to apply
- * @return string The SVG HTML with sprite reference
+ * Выводит SVG-иконку из спрайта
+ * @param string $iconName Имя иконки
+ * @param string $className Дополнительные CSS-классы
+ * @return string HTML SVG со ссылкой на спрайт
  */
 function renderIcon(string $iconName, string $className = ''): string
 {
@@ -80,9 +33,9 @@ function renderIcon(string $iconName, string $className = ''): string
 }
 
 /**
- * Generates HTML attribute string from array of key-value pairs
- * @param array<string,mixed> $attributes Key-value pairs of HTML attributes
- * @return string Generated HTML attribute string with escaped values
+ * Собирает строку HTML-атрибутов из массива ключ => значение
+ * @param array<string,mixed> $attributes HTML-атрибуты: ключ => значение
+ * @return string Строка HTML-атрибутов с экранированными значениями
  */
 function buildAttrs(array $attributes = []): string
 {

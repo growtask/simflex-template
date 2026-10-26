@@ -17,7 +17,7 @@ class MailTest extends Unit
     {
         $prop = new \ReflectionProperty(Core::class, 'siteParams');
         $this->siteParamsBackup = $prop->getValue();
-        // Core::siteParam() doesn't go to the DB then
+        // тогда Core::siteParam() не обращается к БД
         $prop->setValue(null, ['site_name' => 'Test site', 'send_deny_email' => '', 'sender' => '']);
         $this->configBackup = Container::get('config');
         $this->serverBackup = $_SERVER;
@@ -59,7 +59,7 @@ class MailTest extends Unit
 
     public function testSmtpConnectionErrorIsReported(): void
     {
-        // port 1 is closed: PHPMailer throws, sendSMTP() returns false
+        // порт 1 закрыт: PHPMailer бросает исключение, sendSMTP() возвращает false
         $this->setMailConfig(['host' => '127.0.0.1', 'port' => '1']);
         $mail = Mail::create('to@example.test', 'Тема', 'Body')->setSMTPSender('user@example.test', 'secret');
         $this->assertFalse($this->sendSmtp($mail));
@@ -77,7 +77,7 @@ class MailTest extends Unit
 
     private function setMailConfig(array $mail): void
     {
-        // sendSMTP() reads only ->mail
+        // sendSMTP() читает только ->mail
         $defaults = ['transport' => null, 'host' => 'localhost', 'port' => '25', 'security' => '', 'username' => '', 'password' => ''];
         Container::set('config', (object)['mail' => array_merge($defaults, $mail)]);
     }

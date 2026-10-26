@@ -5,7 +5,7 @@ namespace App\Core;
 use Simflex\Core\PrivilegeParams;
 
 /**
- * Privileges of the site: the core ones (DEV, ADMIN) plus the ones below. Set as privilegeClass in config.php
+ * Привилегии сайта: привилегии ядра (DEV, ADMIN) плюс объявленные ниже. Задаётся как privilegeClass в config.php
  */
 class Privilege extends \Simflex\Core\Privilege
 {

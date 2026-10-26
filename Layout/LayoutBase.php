@@ -40,11 +40,11 @@ abstract class LayoutBase
     }
 
     /**
-     * Returns the component HTML
+     * Возвращает HTML компонента
      */
     public static function draw(array $data = []): string
     {
-        // generate fields if requested.
+        // генерируем поля, если запрошено.
         if (LayoutManager::$shouldGenerateFields && empty($data['__no_gen'])) {
             self::$inputData = $data;
             self::generateFields();
@@ -69,14 +69,14 @@ abstract class LayoutBase
 
     protected static function getFieldSchema(): array
     {
-        // stub.
+        // заглушка.
 
-        // items structure:
-        // - name: name
-        // - id: name id
-        // - type: field type
-        // - default: field default value
-        // - params: field additional parameters
+        // структура элементов:
+        // - name: имя
+        // - id: id имени
+        // - type: тип поля
+        // - default: значение поля по умолчанию
+        // - params: дополнительные параметры поля
         return [
             'items' => [],
             'group' => '',
@@ -85,8 +85,8 @@ abstract class LayoutBase
     }
 
     /**
-     * Collects the fields of the layout's schema into LayoutManager::$generatedFields: the page template's fields
-     * are declared in code (provider/templates.php), ./sf layout/generate prints them as code to put there
+     * Собирает поля схемы макета в LayoutManager::$generatedFields: поля шаблона страницы
+     * объявляются в коде (provider/templates.php), ./sf layout/generate выводит их кодом для вставки туда
      */
     protected static function generateFields(): void
     {

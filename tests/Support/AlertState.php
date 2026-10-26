@@ -7,7 +7,7 @@ namespace Tests\Support;
 use Simflex\Admin\Plugins\Alert\Alert;
 
 /**
- * The admin panel messages (Alert) without a session: read and replaced directly
+ * Сообщения админки (Alert) без сессии: читаются и подменяются напрямую
  */
 class AlertState
 {

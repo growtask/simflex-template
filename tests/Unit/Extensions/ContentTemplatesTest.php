@@ -4,11 +4,11 @@ namespace Tests\Unit\Extensions;
 
 use Codeception\Test\Unit;
 use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Structure\Repository;
+use Simflex\Admin\Table\Repository;
 use Simflex\Extensions\Content\ContentTemplates;
 
 /**
- * Page templates and their fields are declared in code: provider/templates.php
+ * Шаблоны страниц и их поля объявлены в коде: provider/templates.php
  */
 class ContentTemplatesTest extends Unit
 {
@@ -21,14 +21,14 @@ class ContentTemplatesTest extends Unit
     {
         $this->assertSame('Главная', ContentTemplates::get('index')?->name);
         $this->assertSame('index.tpl', ContentTemplates::file('index'));
-        // a page without a template or with an unknown one
+        // страница без шаблона или с неизвестным шаблоном
         $this->assertSame(ContentTemplates::DEFAULT_FILE, ContentTemplates::file(null));
         $this->assertSame(ContentTemplates::DEFAULT_FILE, ContentTemplates::file('removed'));
     }
 
     public function testTemplateFieldsAreFlatParamsInBlocks(): void
     {
-        $rows = Repository::templateParams('index');
+        $rows = Repository::getTemplateParams('index');
         $this->assertSame([''], array_keys($rows));
 
         $byName = array_column($rows[''], null, 'name');
@@ -37,6 +37,6 @@ class ContentTemplatesTest extends Unit
         $this->assertSame(FieldString::class, $byName['seo_title_1']['class']);
         $this->assertSame('Мета', $byName['meta_title']['group_name']);
         $this->assertSame('right', $byName['meta_title']['pos']);
-        $this->assertSame([], Repository::templateParams('removed'));
+        $this->assertSame([], Repository::getTemplateParams('removed'));
     }
 }

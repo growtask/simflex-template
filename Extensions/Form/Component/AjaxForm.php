@@ -14,8 +14,8 @@ use Simflex\Core\Mail\Transport\PhpMailer;
 use Simflex\Core\Time;
 
 /**
- * @todo Incomplete: there are no migrations for the callback, callback_email tables, so this code fails on SQL
- *       in a real environment. To be moved to a separate composer package.
+ * @todo Incomplete: для таблиц callback, callback_email нет миграций, поэтому в реальном окружении этот код
+ *       падает на SQL. Будет вынесено в отдельный composer-пакет.
  */
 class AjaxForm extends ComponentBase
 {
@@ -23,8 +23,8 @@ class AjaxForm extends ComponentBase
     protected array $data = [];
 
     /**
-     * The JSON response is sent directly via JsonResponse (like Api\Json does),
-     * bypassing the page layout.
+     * JSON-ответ отправляется напрямую через JsonResponse (как делает Api\Json),
+     * в обход макета страницы.
      */
     protected function content(): string
     {
@@ -32,8 +32,8 @@ class AjaxForm extends ComponentBase
     }
 
     /**
-     * Handles the form request
-     * @return array Response data
+     * Обрабатывает заявку из формы
+     * @return array Данные ответа
      */
     protected function process(): array
     {
@@ -46,7 +46,7 @@ class AjaxForm extends ComponentBase
         $fromTitle = $_REQUEST['from_title'] ?? '';
         $date = Time::create()->asMySQL();
 
-        // fix type
+        // приводим тип
         if ($type == 'available') {
             $type = 'Сообщить о поступлении';
             $message = ModelCatalogProduct::findOne(['product_id' => $message])?->name;
@@ -56,21 +56,21 @@ class AjaxForm extends ComponentBase
 
         $this->data = compact('type', 'name', 'email', 'phone', 'message', 'date', 'from', 'fromTitle');
 
-        // insert to db
+        // пишем в БД
         if (!$email) {
             ModelCallback::insertStatic(['name' => $name, 'phone' => $phone, 'message' => $message, 'date' => $date]);
         } elseif (!ModelCallbackEmail::findOne(['email' => $email])) {
             ModelCallbackEmail::insertStatic(['email' => $email, 'is_subscribed' => 1]);
         }
 
-        // run both channels, even if the first one fails
+        // запускаем оба канала, даже если первый упал
         $mailSent = $this->sendMail();
         $telegramSent = $this->sendTelegram();
         return ['success' => $mailSent && $telegramSent, 'errors' => $this->errors];
     }
 
     /**
-     * Sends JSON response and stops execution
+     * Отправляет JSON-ответ и останавливает выполнение
      */
     protected function sendJson(array $data): never
     {
@@ -109,7 +109,7 @@ HTML;
     {
         $to = (string)Core::siteParam('form_email');
         if (!$to) {
-            // mail notifications are not configured
+            // уведомления на почту не настроены
             return true;
         }
 
@@ -171,7 +171,7 @@ MD;
 
         $token = (string)Core::siteParam('form_tg_token');
         if (!$token) {
-            // telegram notifications are not configured
+            // уведомления в Telegram не настроены
             return true;
         }
 

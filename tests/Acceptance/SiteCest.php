@@ -5,7 +5,7 @@ namespace Tests\Acceptance;
 use Tests\Support\AcceptanceTester;
 
 /**
- * The site's pages
+ * Страницы сайта
  */
 class SiteCest
 {
@@ -13,7 +13,7 @@ class SiteCest
     {
         $I->amOnPage('/');
         $I->dontSeeErrors();
-        // the parts of the layout: Page::meta(), Page::content(), Page::metaJS()
+        // части макета: Page::meta(), Page::content(), Page::metaJS()
         $I->seeElementInDOM('head title');
         $I->seeElementInDOM('head meta[charset]');
         $I->seeElementInDOM('body script[src]');

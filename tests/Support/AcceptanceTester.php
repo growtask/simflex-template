@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Support;
 
 /**
- * Inherited Methods
+ * Унаследованные методы
  * @method void wantTo($text)
  * @method void wantToTest($text)
  * @method void execute($callable)
@@ -24,11 +24,11 @@ class AcceptanceTester extends \Codeception\Actor
     use _generated\AcceptanceTesterActions;
 
     /**
-     * Define custom actions here
+     * Здесь объявляются свои действия
      */
 
     /**
-     * Logs in to the admin panel with the default seeded admin account
+     * Входит в админку под учётной записью admin из начальных данных
      */
     public function loginAsAdmin(string $adminPath = '/admin'): void
     {
@@ -36,7 +36,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Today's log file, relative to the project root
+     * Сегодняшний файл лога относительно корня проекта
      */
     public function logFile(): string
     {
@@ -44,7 +44,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Checks that the page shows no PHP errors
+     * Проверяет, что на странице нет ошибок PHP
      */
     public function dontSeeErrors(): void
     {
@@ -54,7 +54,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Checks that nothing at warning level or above was logged during this test (the log is cleared before each test)
+     * Проверяет, что за тест в лог не попало ничего уровня warning и выше (лог очищается перед каждым тестом)
      */
     public function dontSeeLogProblems(): void
     {
@@ -68,7 +68,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Logs in to the admin panel with the default seeded dev account (full "dev" privilege)
+     * Входит в админку под учётной записью dev из начальных данных (полная привилегия "dev")
      */
     public function loginAsDev(): void
     {
@@ -76,13 +76,13 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Clicks a form submit button and waits until the reloaded page is ready,
-     * so that later checks don't hit elements of the page being unloaded
+     * Нажимает кнопку отправки формы и ждёт, пока перезагруженная страница будет готова,
+     * чтобы следующие проверки не попали на элементы выгружаемой страницы
      */
     public function submitAndWaitForReload(string $button, string $waitFor): void
     {
         $I = $this;
-        // the form scripts must be initialised before the click, otherwise the submit may be lost
+        // скрипты формы должны инициализироваться до клика, иначе отправка может потеряться
         $I->waitForJS('return document.readyState === "complete";', 10);
         $I->waitForElementClickable($button, 10);
         $I->executeJS('window.__beforeSubmit = true;');
@@ -92,7 +92,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * XPath of the admin panel's custom dropdown (foreign keys, registry selects) by the name of its hidden input
+     * XPath собственного выпадающего списка админки (внешние ключи, выбор из реестра) по имени его скрытого поля
      */
     public function dropdown(string $name): string
     {
@@ -100,7 +100,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * XPath of an item of the custom dropdown by its value
+     * XPath пункта собственного выпадающего списка по его значению
      */
     public function dropdownItem(string $name, string $value): string
     {
@@ -108,7 +108,7 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Chooses a value in the admin panel's custom dropdown
+     * Выбирает значение в собственном выпадающем списке админки
      */
     public function chooseInDropdown(string $name, int|string $value): void
     {
@@ -129,8 +129,8 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * Direct DB access for test fixture setup/teardown (e.g. resetting a value that's
-     * unreliable to type via WebDriver, such as non-Latin text after a page navigation).
+     * Прямой доступ к БД для подготовки и очистки данных теста (например, сброс значения, которое
+     * ненадёжно вводить через WebDriver, вроде нелатинского текста после перехода по странице).
      */
     public function runSql(string $sql, array $params = []): void
     {

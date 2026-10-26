@@ -1,8 +1,8 @@
 <?php
 
 /*
- * Components available for the site menu.
- * The title in the admin panel is set by the component's extensionTitle()
+ * Компоненты, доступные для меню сайта.
+ * Название в админке задаёт extensionTitle() компонента
  */
 
 return [

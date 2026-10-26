@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * The admin panel's menu declared in code (\Simflex\Admin\Menu, App\Admin\Menu): the sidebar, groups, breadcrumbs
+ * Меню админки, объявленное в коде (\Simflex\Admin\Menu, App\Admin\Menu): боковая панель, группы, хлебные крошки
  */
 class MenuCest
 {
@@ -16,7 +16,7 @@ class MenuCest
 
     public function tryToSeeManagementSectionsInOrder(AcceptanceTester $I): void
     {
-        // the menu, components, modules, page templates and their fields are declared in code, not edited here
+        // меню, компоненты, модули, шаблоны страниц и их поля объявлены в коде, здесь не редактируются
         $I->amOnPage('/admin');
         $links = $I->executeJS(
             "return [...document.querySelectorAll('.sidebar a')].map(a => a.getAttribute('href'))"

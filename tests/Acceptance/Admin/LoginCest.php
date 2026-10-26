@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Signing in to the admin panel
+ * Вход в админку
  */
 class LoginCest
 {
@@ -56,7 +56,7 @@ class LoginCest
         $I->see('admin', '.btn-user__title');
         $I->seeElementInDOM('a[href="/admin/logout"]');
 
-        // assets must be served from an actual URL, not a leaked filesystem path
+        // ассеты должны отдаваться по настоящему URL, а не по утёкшему пути файловой системы
         $I->dontSeeInPageSource('/var/www/');
 
         $I->dontSeeLogProblems();
@@ -64,7 +64,7 @@ class LoginCest
 
     public function tryToOpenAdminWithoutAdminPrivilege(AcceptanceTester $I): void
     {
-        // a signed-in user without the admin privilege (e.g. a site user)
+        // вошедший пользователь без привилегии admin (например, пользователь сайта)
         $token = md5(uniqid('', true));
         $I->runSql(
             "INSERT INTO user_role SET privilege = 'manager', active = 1, name = 'Codecept no admin', alias = ?",

@@ -12,7 +12,7 @@ use Simflex\Extensions\Block\Block;
 use Tests\Support\MockDb;
 
 /**
- * Modules of the admin panel layout declared in code (\Simflex\Admin\AdminModules)
+ * Модули макета админки, объявленные в коде (\Simflex\Admin\AdminModules)
  */
 class AdminModulesTest extends Unit
 {
@@ -34,7 +34,7 @@ class AdminModulesTest extends Unit
         foreach (['', '/content', '/site/seo'] as $section) {
             $this->assertSame(
                 [MenuModule::class => 'menu', Breadcrumbs::class => 'breadcrumbs'],
-                $this->positions(AdminModules::forSection($section))
+                $this->positions(AdminModules::getForSection($section))
             );
         }
     }
@@ -43,12 +43,12 @@ class AdminModulesTest extends Unit
     {
         Container::getConfig()->adminModulesClass = TestAdminModules::class;
 
-        $this->assertSame([MenuModule::class => 'menu'], $this->positions(AdminModules::forSection('/site')));
+        $this->assertSame([MenuModule::class => 'menu'], $this->positions(AdminModules::getForSection('/site')));
         $this->assertSame(
             [MenuModule::class => 'menu', Block::class => 'help'],
-            $this->positions(AdminModules::forSection('/content'))
+            $this->positions(AdminModules::getForSection('/content'))
         );
-        $this->assertSame(['text' => 'Справка'], AdminModules::forSection('/content')[1]->params);
+        $this->assertSame(['text' => 'Справка'], AdminModules::getForSection('/content')[1]->params);
     }
 
     /**

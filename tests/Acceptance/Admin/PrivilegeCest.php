@@ -5,8 +5,8 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Privileges are declared in code (\Simflex\Core\Privilege, App\Core\Privilege),
- * the optional user_privilege table keeps only the activity switched in the admin panel
+ * Привилегии объявлены в коде (\Simflex\Core\Privilege, App\Core\Privilege),
+ * необязательная таблица user_privilege хранит только активность, переключённую в админке
  */
 class PrivilegeCest
 {
@@ -36,12 +36,12 @@ class PrivilegeCest
         $I->dontSeeElement('.tooltip-row1-edit');
         $I->dontSeeElement('.tooltip-row1-delete');
         $I->dontSeeElement('.tooltip-row1-info');
-        // only the developer privilege can't be switched off: nobody could switch the others back then
+        // нельзя выключить только привилегию разработчика: иначе остальные некому было бы включить обратно
         $I->seeElementInDOM('tr[data-privilege="dev"] input[disabled]');
         $I->dontSeeElementInDOM('tr[data-privilege="admin"] input[disabled]');
         $I->dontSeeElementInDOM('tr[data-privilege="manager"] input[disabled]');
         $I->seeCheckboxIsChecked('tr[data-privilege="manager"] input');
-        // nothing is copied to the DB
+        // в БД ничего не копируется
         $I->assertSame([], $I->grabRowsFromSql('SELECT name FROM user_privilege'));
         $I->dontSeeLogProblems();
     }
@@ -53,7 +53,7 @@ class PrivilegeCest
         $I->click('tr[data-privilege="manager"] .form-control__switch');
         $this->waitForRows($I, [['name' => 'manager', 'active' => 0]]);
 
-        // the page shows the switched value after the reload
+        // после перезагрузки страница показывает переключённое значение
         $I->amOnPage('/admin/admin/privilege');
         $I->dontSeeCheckboxIsChecked('tr[data-privilege="manager"] input');
         $I->dontSeeLogProblems();
@@ -81,7 +81,7 @@ class PrivilegeCest
             "window.__status = null; fetch('?action=switch', {method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'},"
             . " body: new URLSearchParams({name: 'dev', active: '0'})}).then(r => { window.__status = r.status; })"
         );
-        // the admin panel reports a failed request in a popup
+        // админка сообщает о неудачном запросе во всплывающем окне
         $I->wait(1);
         $I->seeInPopup('400 Bad Request');
         $I->acceptPopup();
@@ -92,7 +92,7 @@ class PrivilegeCest
 
     public function tryToCloseAdminPanelForCustomer(AcceptanceTester $I): void
     {
-        // switching off the admin privilege closes the admin panel for everybody but the developers
+        // выключение привилегии admin закрывает админку для всех, кроме разработчиков
         $I->runSql("INSERT INTO user_privilege SET name = 'admin', active = 0");
 
         $I->amOnPage('/admin');
@@ -103,7 +103,7 @@ class PrivilegeCest
 
         $I->amOnPage('/admin/logout');
         $I->loginAsDev();
-        // the developer has all the privileges: the sections requiring admin are still there
+        // у разработчика все привилегии: разделы, требующие admin, по-прежнему на месте
         $I->amOnPage('/admin/admin/user');
         $I->dontSeeErrors();
         $I->see('Пользователи');

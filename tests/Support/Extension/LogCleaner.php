@@ -9,9 +9,9 @@ use Codeception\Events;
 use Codeception\Extension;
 
 /**
- * Empties today's log before every test, so a test judges only what it wrote itself
- * (not leftovers from earlier tests or manual work, like failed console commands).
- * The file is truncated, not deleted: the app keeps writing to the same file with the same owner
+ * Очищает сегодняшний лог перед каждым тестом, чтобы тест оценивал только то, что записал сам
+ * (а не остатки прошлых тестов или ручной работы, вроде упавших консольных команд).
+ * Файл обрезается, а не удаляется: сайт продолжает писать в тот же файл с тем же владельцем
  */
 class LogCleaner extends Extension
 {

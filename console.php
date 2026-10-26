@@ -23,30 +23,30 @@ if (!$request->arg()) {
 
 $isHelp = strtolower($request->arg(0)) == 'help';
 
-// get command data
+// данные команды
 $cmd = array_map(fn(string $part) => strtolower($part), explode('/', $request->arg($isHelp ? 1 : 0)));
 if (count($cmd) != 2) {
     Log::error('Usage: ./sf provider/method [args]');
     exit;
 }
 
-// create cli bootstrapper
+// загрузчик CLI
 $cli = new Cli($cmd);
 
-// check if provider exists
+// проверяем, есть ли провайдер
 if (!$cli->hasProvider()) {
     Log::error('Command provider {provider} not found. Available providers:', ['provider' => $cli->provider]);
     $cli->printProviders();
     exit;
 }
 
-// try loading the class
+// пробуем загрузить класс
 if (!$cli->tryLoadClass()) {
     Log::emergency('Provider {provider}\'s class does not exist', ['provider' => $cli->provider]);
     exit;
 }
 
-// try loading method
+// пробуем загрузить метод
 if (!$cli->tryLoadMethod()) {
     Log::error(
         'Method {method} not found in {provider}. Available methods:',
@@ -57,11 +57,11 @@ if (!$cli->tryLoadMethod()) {
     exit;
 }
 
-// check if the user wants to get help
+// пользователь запросил справку
 if ($isHelp) {
     $cli->printHelp();
     exit;
 }
 
-// execute the command
+// выполняем команду
 $cli->execute(array_slice($request->arg(), 1));

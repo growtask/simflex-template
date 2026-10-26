@@ -1,9 +1,9 @@
 <?php
 
 /*
- * Modules available for placing on the site pages (module_item).
- * Settings are static methods of the module: extensionTitle(), modulePostexec()
- * The modules of the admin panel layout are declared in \Simflex\Admin\AdminModules
+ * Модули, которые можно размещать на страницах сайта (module_item).
+ * Настройки — статические методы модуля: extensionTitle(), modulePostexec()
+ * Модули макета админки объявлены в \Simflex\Admin\AdminModules
  */
 
 return [

@@ -8,7 +8,7 @@ class PackageInstaller
 {
     public static function onPackageEvent(PackageEvent $event): void
     {
-        // make sure core is installed, if so - run the actual thing
+        // убеждаемся, что ядро установлено, и тогда запускаем саму установку
         $path = $event->getComposer()->getConfig()->get(
             'vendor-dir'
         ) . '/growtask/simflex/src/Extensions/Install/PackageInstaller.php';

@@ -15,7 +15,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->string('name');
         });
 
-        // the privileges the roles give are in 03_user_role_privilege
+        // привилегии, которые дают роли, — в 03_user_role_privilege
         $s->seed(function () {
             UserRole::bulkInsert([
                 ['privilege' => Privilege::DEV, 'active' => true, 'name' => 'Разработчик', 'alias' => 'dev'],

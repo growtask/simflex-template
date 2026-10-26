@@ -12,7 +12,7 @@ use Simflex\Core\Models\ModuleItem;
 use Tests\Support\MockDb;
 
 /**
- * The query builder: Where, ExprOr, AQ, ModelBase::find()
+ * Построитель запросов: Where, ExprOr, AQ, ModelBase::find()
  */
 class QueryTest extends Unit
 {
@@ -42,6 +42,21 @@ class QueryTest extends Unit
     {
         $this->assertSame('SELECT * FROM `content`', trim((new AQ())->from('content')->build()));
         $this->assertSame('INNER JOIN `category` USING(`category_id`)', (new JoinClause('category', 'category_id'))->toSql('content'));
+    }
+
+    public function testJoinAliasAndBoundOnConditions(): void
+    {
+        $this->assertSame(
+            'LEFT JOIN `content` `parent` ON `content`.`pid` = `parent`.`content_id`',
+            (new JoinClause('content', 'content.pid', '.content_id', 'LEFT', alias: 'parent'))->toSql('content')
+        );
+
+        // значения дополнительных условий ON привязываются запросом
+        $query = (new AQ())->from('user')->leftJoin('user_role', '.role_id', '.role_id', ['user_role.active' => 1]);
+        $sql = $query->build();
+        $binds = $query->getBinds();
+        $this->assertSame([1], array_values($binds));
+        $this->assertStringContainsString('AND `user_role`.`active` = :' . array_key_first($binds), $sql);
     }
 
     public function testBuildWithoutTableFails(): void

@@ -12,7 +12,7 @@ use Simflex\Core\Page;
 use Simflex\Core\View;
 
 /**
- * Views, components, modules and pages return their HTML, output happens only in the system layer
+ * Представления, компоненты, модули и страницы возвращают свой HTML, вывод происходит только на системном уровне
  */
 class OutputTest extends Unit
 {

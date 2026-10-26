@@ -4,6 +4,7 @@ namespace App\Extensions\Layout;
 
 use App\Extensions\Content\Content;
 use App\Layout\LayoutManager;
+use Simflex\Admin\Table\FieldDefinition;
 use Simflex\Core\Console\Command;
 use Simflex\Core\Console\Help;
 use Simflex\Core\ConsoleBase;
@@ -15,13 +16,13 @@ use Simflex\Core\Log;
 class ConsoleLayout extends ConsoleBase
 {
     /**
-     * Draws the page and prints the fields declared by its Layout components (getFieldSchema()) as the code
-     * of ContentTemplateBlock-s: put it into the params of the page's template in provider/templates.php
+     * Рисует страницу и выводит поля, объявленные её Layout-компонентами (getFieldSchema()), в виде кода
+     * ContentTemplateBlock: его нужно вставить в params шаблона страницы в provider/templates.php
      */
     #[Command('Generate the code of the layout fields of a page template')]
     public function generate(#[Help('Page path')] string $path): void
     {
-        // set bogus data.
+        // подставляем фиктивные данные.
         $_SERVER['REQUEST_URI'] = $path;
         $_SERVER['REQUEST_METHOD'] = 'GET';
         Container::set('request', new HtmlRequest());
@@ -47,7 +48,7 @@ class ConsoleLayout extends ConsoleBase
     }
 
     /**
-     * @param array<string, list<array>> $blocks block label => fields, see LayoutManager::$generatedFields
+     * @param array<string, list<array>> $blocks название блока => поля, см. LayoutManager::$generatedFields
      */
     public static function code(array $blocks): string
     {
@@ -62,14 +63,16 @@ class ConsoleLayout extends ConsoleBase
                 ];
                 $params = [];
                 if ($field['default'] !== '') {
-                    $params[] = 'defaultValue: ' . var_export($field['default'], true);
+                    $params['defaultValue'] = $field['default'];
                 }
                 foreach ($field['params'] as $key => $value) {
-                    $key = lcfirst(str_replace('_', '', ucwords((string)$key, '_')));
-                    $params[] = $key . ': ' . var_export($value, true);
+                    $params[lcfirst(str_replace('_', '', ucwords((string)$key, '_')))] = $value;
                 }
-                if ($params) {
-                    $args[] = "params: ['main' => new FieldParams(" . implode(', ', $params) . ')]';
+                // именованные аргументы в порядке конструктора FieldDefinition
+                foreach ((new \ReflectionMethod(FieldDefinition::class, '__construct'))->getParameters() as $parameter) {
+                    if (array_key_exists($parameter->name, $params)) {
+                        $args[] = $parameter->name . ': ' . var_export($params[$parameter->name], true);
+                    }
                 }
                 $code .= '    new FieldDefinition(' . implode(', ', $args) . "),\n";
             }

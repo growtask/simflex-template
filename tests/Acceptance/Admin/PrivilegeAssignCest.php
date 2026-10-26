@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * "Привилегии ролей" and "Персональные привилегии": the developer gives the privileges (by name) to roles and users
+ * "Привилегии ролей" и "Персональные привилегии": разработчик выдаёт привилегии (по имени) ролям и пользователям
  */
 class PrivilegeAssignCest
 {
@@ -22,7 +22,7 @@ class PrivilegeAssignCest
     public function tryToSeeSectionsInManagementMenu(AcceptanceTester $I): void
     {
         $I->loginAsDev();
-        // the management section page lists its subsections
+        // страница раздела «Управление» показывает его подразделы
         $I->amOnPage('/admin/admin');
         $I->see('Привилегии ролей');
         $I->see('Персональные привилегии');
@@ -42,7 +42,7 @@ class PrivilegeAssignCest
         $I->see('Привилегии ролей', '.content__title');
         $I->see('Администратор', '.table__body');
         $I->see('manager', '.table__body');
-        // the hints: what the role and the privilege mean here
+        // подсказки: что здесь значат роль и привилегия
         $I->assertStringContainsString(
             'получают все пользователи роли',
             $I->grabAttributeFrom('.table-data-privilege .table__head-help', 'title')
@@ -78,7 +78,7 @@ class PrivilegeAssignCest
         $I->loginAsDev();
         $I->amOnPage('/admin/admin/privilege_personal/?action=form');
         $I->dontSeeErrors();
-        // the user is a choice from the existing users, not a text
+        // пользователь выбирается из существующих, а не вводится текстом
         $I->dontSeeElementInDOM('input[name="user_id"][type="text"]');
         $I->seeElementInDOM('.form-control__dropdown-item[data-value="' . $userId . '"]');
         $I->chooseInDropdown('user_id', $userId);
@@ -94,7 +94,7 @@ class PrivilegeAssignCest
         $I->see('admin', '.table__body');
         $I->see('dev', '.table__body');
 
-        // the personal privilege works: the admin sees the developer's sections now
+        // персональная привилегия работает: admin теперь видит разделы разработчика
         $I->amOnPage('/admin/logout');
         $I->loginAsAdmin();
         $I->amOnPage('/admin/admin');
@@ -108,13 +108,13 @@ class PrivilegeAssignCest
         $I->amOnPage('/admin/admin/privilege_personal/?action=form');
         $I->fillField('.form-control__dropdown-text', 'a');
         $I->wait(1);
-        // the typed text is only a search: without a choice it's reset when the field loses the focus
+        // введённый текст — только поиск: без выбора он сбрасывается, когда поле теряет фокус
         $I->click('.content__title');
         $I->wait(1);
         $I->seeInField('.form-control__dropdown-text', '');
         $I->seeInField('input[name="user_id"]', '');
 
-        // not saved: the form is shown again with the error, not an empty page
+        // не сохранено: форма показана снова с ошибкой, а не пустая страница
         $I->chooseInDropdown('privilege', 'dev');
         $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
         $I->see('Пользователь');

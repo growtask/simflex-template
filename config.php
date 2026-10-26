@@ -4,12 +4,11 @@ namespace App;
 
 use App\Extensions\Content\Content;
 use Simflex\Core\ExtensionConfig;
-use Simflex\Core\Log;
 
 /**
- * @property string timezone System-wide timezone
- * @property array extensions Loaded extensions
- * @property array data Loaded file data (routes, events, etc...)
+ * @property string timezone Часовой пояс системы
+ * @property array extensions Загруженные расширения
+ * @property array data Данные загруженных файлов (маршруты, события и т.д.)
  */
 class Config extends \Simflex\Core\ConfigBase
 {
@@ -39,7 +38,7 @@ class Config extends \Simflex\Core\ConfigBase
         $this->privilegeClass = \App\Core\Privilege::class;
         $this->adminMenuClass = \App\Admin\Menu::class;
 
-        // settings from the environment. Defaults are declared in ConfigBase only
+        // настройки из окружения. Значения по умолчанию объявлены только в ConfigBase
         $this->db['host'] = env('DB_HOST', $this->db['host']);
         $this->db['user'] = env('DB_USER', $this->db['user']);
         $this->db['password'] = env('DB_PASS', $this->db['password']);
@@ -49,18 +48,18 @@ class Config extends \Simflex\Core\ConfigBase
         $this->enableLogging = env('LOGGING', $this->enableLogging);
         $this->logToFile = env('IS_LOG_TO_FILE', $this->logToFile);
 
-        // default files
+        // файлы по умолчанию
         $this->files['routes'] = SF_ROOT_PATH . '/provider/routes.php';
         $this->files['events'] = SF_ROOT_PATH . '/provider/events.php';
         $this->files['services'] = SF_ROOT_PATH . '/provider/services.php';
         $this->files['commands'] = SF_ROOT_PATH . '/provider/commands.php';
 
-        // extra settings
+        // дополнительные настройки
         $this->extra['configDebug'] = env('CONFIG_DEBUG', false);
         $this->extra['timezone'] = env('TIMEZONE', 'Asia/Yekaterinburg');
         $this->extra['extensions'] = [];
 
-        // dynamic loader
+        // динамический загрузчик
         $this->loadExtensions();
         $this->loadFiles();
     }
@@ -78,8 +77,8 @@ class Config extends \Simflex\Core\ConfigBase
         $services = include $this->files['services'];
         $commands = include $this->files['commands'];
 
-        // combine from extensions
-        // note: loads extensions FIRST, so user can override those later if needed
+        // собираем из расширений
+        // расширения загружаются ПЕРВЫМИ, чтобы их потом можно было переопределить
         foreach ($this->extra['extensions'] as $name => $data) {
             $routes = array_merge($data['routes'], $routes);
             $events = array_merge($data['events'], $events);
@@ -154,7 +153,7 @@ class Config extends \Simflex\Core\ConfigBase
             $this->log('Loaded extension {name}', ['name' => $class->name]);
         }
 
-        // sort by load order
+        // сортировка по порядку загрузки
         uasort($extensions, function (array $a, array $b) {
             if ($a['loadOrder'] == $b['loadOrder']) {
                 return 0;

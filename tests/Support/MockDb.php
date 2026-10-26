@@ -12,8 +12,8 @@ use Simflex\Core\DB;
 use Simflex\Core\DB\Adapter;
 
 /**
- * Unit tests without a database: DB::query() and the rest go to a mocked adapter.
- * The real adapter and the config are put back after every test
+ * Unit-тесты без базы: DB::query() и остальное идут в мок адаптера.
+ * Настоящий адаптер и конфиг возвращаются после каждого теста
  */
 trait MockDb
 {
@@ -27,7 +27,7 @@ trait MockDb
         $this->dbBackup = $prop->isInitialized() ? $prop->getValue() : null;
         $this->configBackup = Container::isSet('config') ? Container::get('config') : null;
 
-        // DB::query() asks the config for devMode (the profiler wants the debug bar then)
+        // DB::query() спрашивает у конфига devMode (профилировщику тогда нужен debug bar)
         $config = $this->configBackup ? clone $this->configBackup : new \stdClass();
         $config->devMode = false;
         Container::set('config', $config);
@@ -51,7 +51,7 @@ trait MockDb
     }
 
     /**
-     * Every query succeeds and gives these rows; the queries are collected in $queries
+     * Каждый запрос успешен и возвращает эти записи; запросы собираются в $queries
      */
     protected function mockRows(array $rows, ?array &$queries = null): Adapter&MockObject
     {

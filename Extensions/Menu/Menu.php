@@ -8,7 +8,7 @@ use Simflex\Core\ModuleBase;
 
 /**
  *
- * Output site mainmenu
+ * Выводит главное меню сайта
  *
  */
 class Menu extends ModuleBase

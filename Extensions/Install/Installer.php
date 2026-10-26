@@ -28,22 +28,22 @@ class Installer extends ConsoleBase
         $config = Container::getConfig();
         Log::info('Testing database connection');
 
-        // check if database works
+        // проверяем, работает ли база
         try {
             if (!DB::connect()) {
                 $this->initEnv();
             }
         } catch (Exception) {
-            // init env if exception was thrown.
+            // инициализируем окружение, если было исключение.
             $this->initEnv();
         }
 
-        // force reconnect
+        // принудительно переподключаемся
         DB::connect();
 
         Log::info('Checking if database is initialized');
 
-        // test if we need to init database
+        // проверяем, нужно ли инициализировать базу
         $res = DB::result(
             'SELECT COUNT(*) c FROM information_schema.TABLES WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
             'c',
@@ -69,14 +69,14 @@ class Installer extends ConsoleBase
     {
         Log::info('Initializing environment');
 
-        // initialize environment
+        // инициализируем окружение
         $config = Container::getConfig();
         $config->db['host'] = readline('* Database host: ');
         $config->db['user'] = readline('* Database user: ');
         $config->db['password'] = readline('* Database password: ');
         $config->db['name'] = readline('* Database name: ');
 
-        // write to .env
+        // пишем в .env
         file_put_contents(
             SF_ROOT_PATH . '/.env',
             implode("\n", [
@@ -84,7 +84,7 @@ class Installer extends ConsoleBase
                 "DB_USER={$config->db['user']}",
                 "DB_PASS={$config->db['password']}",
                 "DB_NAME={$config->db['name']}",
-                'DEVELOPER=1', // enabled by default
+                'DEVELOPER=1', // включено по умолчанию
             ])
         );
     }
@@ -93,7 +93,7 @@ class Installer extends ConsoleBase
     {
         Log::info('Initializing database');
 
-        // check if /database/migrations/00_migration.php exists
+        // проверяем, есть ли /database/migrations/00_migration.php
         if (!file_exists(SF_ROOT_PATH . '/database/migrations/00_migration.php')) {
             Log::critical('Core migration file not found. Please check your installation.');
             exit;
@@ -115,12 +115,12 @@ class Installer extends ConsoleBase
                 exit;
             }
 
-            // write to migration table
+            // пишем в таблицу миграций
             Migration::insertStatic([
                 'file' => '00_migration',
             ]);
 
-            // run migrations normally, they write the initial data too
+            // запускаем миграции как обычно, они же пишут начальные данные
             $migrator = new DB\Cli\Migrator();
             $migrator->up();
         } catch (Exception $e) {
@@ -138,7 +138,7 @@ class Installer extends ConsoleBase
             }
         }
 
-        // set permissions anyway
+        // права выставляем в любом случае
         chmod(SF_ROOT_PATH . '/' . $dir, 0777);
     }
 }
