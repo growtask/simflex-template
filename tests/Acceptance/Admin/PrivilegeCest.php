@@ -10,8 +10,6 @@ use Tests\Support\AcceptanceTester;
  */
 class PrivilegeCest
 {
-    private const MENU_ITEM = 'Codecept manager item';
-
     public function _before(AcceptanceTester $I): void
     {
         $this->cleanup($I);
@@ -113,23 +111,6 @@ class PrivilegeCest
         $I->dontSeeLogProblems();
     }
 
-    public function tryToTakeAwaySwitchedOffPrivilege(AcceptanceTester $I): void
-    {
-        // the admin role has the manager privilege, the menu item requires it by name
-        $I->runSql(
-            "INSERT INTO admin_menu SET privilege = 'manager', npp = 99, name = ?, link = '/codecept', model = '', icon = '', hidden = 0",
-            [self::MENU_ITEM]
-        );
-        $I->loginAsAdmin();
-        $I->see(self::MENU_ITEM);
-
-        $I->runSql("INSERT INTO user_privilege SET name = 'manager', active = 0");
-        $I->amOnPage('/admin');
-        $I->seeElement('.sidebar');
-        $I->dontSee(self::MENU_ITEM);
-        $I->dontSeeLogProblems();
-    }
-
     private function waitForRows(AcceptanceTester $I, array $expected): void
     {
         for ($i = 0; $i < 20; $i++) {
@@ -144,6 +125,5 @@ class PrivilegeCest
     private function cleanup(AcceptanceTester $I): void
     {
         $I->runSql('DELETE FROM user_privilege');
-        $I->runSql('DELETE FROM admin_menu WHERE name = ?', [self::MENU_ITEM]);
     }
 }

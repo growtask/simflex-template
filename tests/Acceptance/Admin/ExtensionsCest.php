@@ -5,7 +5,8 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Components and modules are declared in code (provider/components.php, provider/modules.php), not in the DB
+ * Components and modules are declared in code (provider/components.php, provider/modules.php), not in the DB.
+ * module_item places the site modules only, the admin panel ones are declared in \Simflex\Admin\AdminModules
  */
 class ExtensionsCest
 {
@@ -14,11 +15,14 @@ class ExtensionsCest
         $I->loginAsDev();
     }
 
-    public function tryToSeeModuleItemsList(AcceptanceTester $I): void
+    public function tryToSeeOnlySiteModules(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/site/module');
         $I->dontSeeErrors();
-        $I->see('Admin - Меню');
+        $I->amOnPage('/admin/site/module/?action=form');
+        $I->seeElementInDOM($I->dropdownItem('module', 'Simflex\Extensions\Block\Block'));
+        $I->dontSeeElementInDOM($I->dropdownItem('module', 'Simflex\Admin\Modules\Menu\Menu'));
+        $I->dontSeeElementInDOM($I->dropdownItem('module', 'Simflex\Admin\Modules\Breadcrumbs\Breadcrumbs'));
         $I->dontSeeLogProblems();
     }
 
@@ -35,20 +39,24 @@ class ExtensionsCest
     public function tryToSaveModuleWithoutChanges(AcceptanceTester $I): void
     {
         // the form shows the module's real defaults: saving it unchanged doesn't add a title and a wrapper
-        $id = $I->grabRowsFromSql("SELECT item_id FROM module_item WHERE posname = 'breadcrumbs'")[0]['item_id'];
-        $params = $I->grabRowsFromSql('SELECT params FROM module_item WHERE item_id = ?', [$id])[0]['params'];
+        $I->runSql(
+            "INSERT INTO module_item SET module = ?, menu_id = NULL, posname = 'codecept', active = 0, npp = 0, name = 'Codecept block', params = ''",
+            ['Simflex\\Extensions\\Block\\Block']
+        );
+        $id = $I->grabRowsFromSql("SELECT item_id FROM module_item WHERE posname = 'codecept'")[0]['item_id'];
         try {
             $I->amOnPage("/admin/site/module/?action=form&item_id=$id");
+            $I->waitForElement('.ajax-params', 5);
             $I->dontSeeCheckboxIsChecked('is_title');
             $I->dontSeeCheckboxIsChecked('is_wrap');
             $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
             $I->dontSeeErrors();
 
-            $I->amOnPage('/admin/site/module');
-            $I->seeElement('.breadcrumbs__list > .breadcrumbs__item');
-            $I->dontSee('Admin - Хлебные крошки', '.header__breadcrumbs');
+            $params = unserialize($I->grabRowsFromSql('SELECT params FROM module_item WHERE item_id = ?', [$id])[0]['params']);
+            $I->assertEmpty($params['is_title'] ?? null);
+            $I->assertEmpty($params['is_wrap'] ?? null);
         } finally {
-            $I->runSql('UPDATE module_item SET params = ? WHERE item_id = ?', [$params, $id]);
+            $I->runSql("DELETE FROM module_item WHERE posname = 'codecept'");
         }
         $I->dontSeeLogProblems();
     }

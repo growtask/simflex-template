@@ -37,6 +37,7 @@ class Config extends \Simflex\Core\ConfigBase
     {
         $this->defaultComponent = Content::class;
         $this->privilegeClass = \App\Core\Privilege::class;
+        $this->adminMenuClass = \App\Admin\Menu::class;
 
         // settings from the environment. Defaults are declared in ConfigBase only
         $this->db['host'] = env('DB_HOST', $this->db['host']);
