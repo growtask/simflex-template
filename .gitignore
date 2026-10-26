@@ -8,8 +8,7 @@
 docker/data
 /cache
 /log
-.agents/local.md
-.agents/backlog.md
+.agents/
 .DS_Store
 composer.lock
 /.php-cs-fixer.cache

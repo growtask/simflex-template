@@ -21,6 +21,7 @@
 - **Сидеров больше нет:** `database/seeders` удалён, начальные данные пишет `$s->seed()` в миграции, создающей
   таблицу (роли — `02_user_role`, их привилегии — `03_user_role_privilege` и т.д.); таблица `seeder` и запуск
   сидеров при установке и `composer update` убраны.
+- **Настройки расширений** — `provider/extensions/` (было `provider/extension/`).
 - **Привилегии по имени:** `user_role`, `user_role_privilege`, `user_privilege_personal`, `admin_widget` хранят
   имя привилегии (колонка `privilege`); у ролей нет `npp`.
 

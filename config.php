@@ -115,14 +115,14 @@ class Config extends \Simflex\Core\ConfigBase
         }
 
         $extensions = [];
-        foreach (scandir(SF_ROOT_PATH . '/provider/extension') as $file) {
+        foreach (scandir(SF_ROOT_PATH . '/provider/extensions') as $file) {
             $path = pathinfo($file);
             if (($path['extension'] ?? '') != 'php') {
                 continue;
             }
 
             /** @var ExtensionConfig $class */
-            $class = include SF_ROOT_PATH . '/provider/extension/' . $file;
+            $class = include SF_ROOT_PATH . '/provider/extensions/' . $file;
             if (!$class || !is_object($class)) {
                 $this->log('Extension {file} cannot be loaded', ['file' => $file]);
                 continue;
