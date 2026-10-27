@@ -9,6 +9,7 @@ use Simflex\Admin\Menu;
 use Simflex\Admin\MenuItem;
 use Simflex\Admin\Handlers;
 use Simflex\Core\Container;
+use Simflex\Core\ExtensionConfig;
 use Simflex\Core\Models\User;
 use Tests\Support\MockDb;
 
@@ -26,6 +27,8 @@ class MenuTest extends Unit
     {
         $this->serverBackup = $_SERVER;
         $this->userBackup = Container::isSet('user') ? Container::get('user') : null;
+        // меню ядра и сайта — без пунктов установленных расширений (их проверяет ExtensionsTest)
+        ExtensionConfig::reset([]);
         Menu::reset();
     }
 
@@ -33,6 +36,7 @@ class MenuTest extends Unit
     {
         $_SERVER = $this->serverBackup;
         Container::set('user', $this->userBackup);
+        ExtensionConfig::reset();
         Menu::reset();
         $this->resetAdminCore();
     }

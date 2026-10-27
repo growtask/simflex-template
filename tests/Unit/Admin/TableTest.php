@@ -5,8 +5,11 @@ namespace Tests\Unit\Admin;
 use Codeception\Test\Unit;
 use Simflex\Admin\Core as AdminCore;
 use Simflex\Admin\Fields\FieldInt;
+use Simflex\Admin\Fields\FieldMultiKey;
 use Simflex\Admin\Fields\FieldString;
 use Simflex\Admin\Plugins\Alert\Alert;
+use Simflex\Admin\Table\Presets\MultiKeyField;
+use Simflex\Admin\Table\Repository;
 use Simflex\Admin\Table\Table;
 use Simflex\Core\ModelBase;
 use Tests\Support\AlertState;
@@ -22,12 +25,14 @@ class TableTest extends Unit
     private array $alertBackup = [];
     private array $getBackup = [];
     private array $postBackup = [];
+    private array $requestBackup = [];
 
     protected function _before(): void
     {
         $this->alertBackup = AlertState::get();
         $this->getBackup = $_GET;
         $this->postBackup = $_POST;
+        $this->requestBackup = $_REQUEST;
         AlertState::set([]);
         // Session::set() пытается начать сессию, но в CLI заголовки уже отправлены: глушим только это
         set_error_handler(
@@ -42,6 +47,7 @@ class TableTest extends Unit
         AlertState::set($this->alertBackup);
         $_GET = $this->getBackup;
         $_POST = $this->postBackup;
+        $_REQUEST = $this->requestBackup;
         AdminCore::$ajax = AdminCore::$isAjax = false;
     }
 
@@ -126,6 +132,65 @@ class TableTest extends Unit
         // правая колонка показывается для дополнительного HTML, даже если полей в ней нет
         $this->assertStringContainsString('content--right', $html);
         $this->assertStringContainsString('<div id="extra-right"></div>', $html);
+    }
+
+    public function testInsertSavesRelationsAfterInsert(): void
+    {
+        $db = $this->mockRows([['id' => 7, 'title' => 'New']], $queries);
+        $db->method('insertId')->willReturn('7');
+        $_POST = ['title' => 'New', 'tags' => '3'];
+        $_REQUEST = $_POST;
+        $tags = new FieldMultiKey(Repository::toFieldRow(
+            new MultiKeyField(name: 'tags', label: 'Теги', values: 'tag', relations: 'test_tag', key: 'tag_id'),
+            'test_table',
+        ));
+        $tags->tablePk = 'id';
+
+        $this->assertSame(7, $this->makeTable(['title' => $this->makeField('title'), 'tags' => $tags])->save());
+        $sql = array_column($queries, 0);
+        // связи пишутся только после вставки записи, по её id
+        $this->assertStringContainsString('insert  into `test_table`', $sql[0]);
+        $this->assertSame(['DELETE FROM `test_tag` WHERE `id` = ?', [7]], $queries[2]);
+        $this->assertSame(['INSERT INTO `test_tag` (`id`, `tag_id`) VALUES (?, ?)', [7, 3]], $queries[3]);
+        $this->assertCount(4, $queries);
+        $this->assertFalse(Alert::hasErrors());
+    }
+
+    public function testUploadTableFileRejectsOtherFiles(): void
+    {
+        $files = $_FILES;
+        try {
+            $table = $this->makeTable();
+            $_FILES = [];
+            $this->assertSame('', $table->uploadTableFile());
+            // расширение не из белого списка — файл не сохраняется
+            $_FILES = ['file' => ['name' => 'shell.php', 'tmp_name' => __FILE__, 'error' => UPLOAD_ERR_OK]];
+            $this->assertSame('', $table->uploadTableFile());
+            $_FILES = ['file' => ['name' => 'photo.png', 'tmp_name' => '', 'error' => UPLOAD_ERR_NO_FILE]];
+            $this->assertSame('', $table->uploadTableFile());
+        } finally {
+            $_FILES = $files;
+        }
+    }
+
+    public function testUploadPathIsSanitized(): void
+    {
+        $method = new \ReflectionMethod(Table::class, 'getUploadPath');
+        $table = $this->makeTable();
+        $this->assertSame('content/', $method->invoke($table, '/content/'));
+        $this->assertSame('catalog/2024/', $method->invoke($table, 'catalog/2024'));
+        $this->assertSame('', $method->invoke($table, ''));
+        // выход из /uf и посторонние символы не принимаются
+        $this->assertNull($method->invoke($table, '../../public'));
+        $this->assertNull($method->invoke($table, 'content/../..'));
+        $this->assertNull($method->invoke($table, 'a b'));
+    }
+
+    public function testForbiddenExtensionsAreNotSaved(): void
+    {
+        $this->assertContains('php', \Simflex\Core\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('phtml', \Simflex\Core\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('htaccess', \Simflex\Core\File::FORBIDDEN_EXTENSIONS);
     }
 
     private function makeTable(array $fields = []): Table

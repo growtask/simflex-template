@@ -83,6 +83,29 @@ class ExtensionsTest extends Unit
         $this->assertSame('/content', array_keys($items)[array_search('/test-extension', array_keys($items)) - 1]);
     }
 
+    public function testRoutesServicesEventsAndCommands(): void
+    {
+        // в unit-тестах конфиг контейнера подменён, берём конфиг сайта
+        require_once SF_ROOT_PATH . '/config.php';
+        $config = new \App\Config();
+        $config->load();
+
+        // маршрут и команда расширения добавляются, маршрут сайта с тем же путём главнее
+        $routes = $config->getRoutes();
+        $this->assertSame(TestExtensionComponent::class, $routes['/test-extension']);
+        $this->assertSame(\App\Extensions\Content\Content::class, $routes['/']);
+        $this->assertSame(\Simflex\Core\DB\Cli\Migrator::class, $config->getCommands()['migrate']);
+        $this->assertSame(TestExtensionComponent::class, $config->getCommands()['test-extension']);
+
+        // сервисы окружения объединяются, сервисы сайта — после сервисов расширения (заменяют их в контейнере)
+        $services = $config->getServices();
+        $this->assertSame(TestExtensionComponent::class, $services['web'][0]);
+        $this->assertContains(\Simflex\Core\Html\HtmlRequest::class, $services['web']);
+
+        // слушатели одного события из расширения и сайта складываются
+        $this->assertSame([TestExtensionComponent::class], $config->getEvents()['test-event']);
+    }
+
     public function testLoadOrder(): void
     {
         $first = new TestExtension();
@@ -108,6 +131,10 @@ class TestExtension extends ExtensionConfig
     protected array $components = [TestExtensionComponent::class];
     protected array $modules = [TestExtensionModule::class];
     protected array $handlers = [TestExtensionTable::class];
+    protected array $routes = ['/test-extension' => TestExtensionComponent::class, '/' => TestExtensionComponent::class];
+    protected array $services = ['web' => [TestExtensionComponent::class]];
+    protected array $events = ['test-event' => [TestExtensionComponent::class]];
+    protected array $commands = ['test-extension' => TestExtensionComponent::class, 'migrate' => TestExtensionComponent::class];
 
     public function getCronJobs(): array
     {

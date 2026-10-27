@@ -28,9 +28,10 @@ class CronCest
         $I->see('30 0 * * *');
         $I->dontSee('removed_job');
         $I->dontSee('Добавить');
+        // задачи установленных расширений тоже в таблице, проверяем задачу сайта и удалённую
         $I->assertSame(
             [['job' => self::JOB, 'active' => 1, 'timing' => '30 0 * * *']],
-            $I->grabRowsFromSql('SELECT job, active, timing FROM cron')
+            $I->grabRowsFromSql('SELECT job, active, timing FROM cron WHERE job IN (?, ?)', [self::JOB, 'removed_job'])
         );
         $I->dontSeeLogProblems();
     }
@@ -48,7 +49,7 @@ class CronCest
 
             $I->assertSame(
                 [['job' => self::JOB, 'timing' => '15 3 * * *']],
-                $I->grabRowsFromSql('SELECT job, timing FROM cron')
+                $I->grabRowsFromSql('SELECT job, timing FROM cron WHERE job = ?', [self::JOB])
             );
         } finally {
             $I->runSql('UPDATE cron SET active = 1, timing = ? WHERE job = ?', ['30 0 * * *', self::JOB]);
@@ -58,9 +59,10 @@ class CronCest
 
     public function tryToForbidAdding(AcceptanceTester $I): void
     {
+        $count = count($I->grabRowsFromSql('SELECT id FROM cron'));
         $I->amOnPage('/admin/cron/?action=form');
         $I->see('Недостаточно прав для добавления');
-        $I->assertCount(1, $I->grabRowsFromSql('SELECT id FROM cron'));
+        $I->assertCount($count, $I->grabRowsFromSql('SELECT id FROM cron'));
     }
 
     public function tryToRunJobFromConsole(AcceptanceTester $I): void
