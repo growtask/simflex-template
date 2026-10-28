@@ -6,7 +6,7 @@ use PhpCsFixer\Finder;
 $finder = Finder::create()
     ->in([
         __DIR__,
-        __DIR__ . '/../simflex/src',
+        __DIR__ . '/../simflex-core/src',
     ])
     ->exclude([
         'cache',

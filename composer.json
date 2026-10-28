@@ -24,7 +24,7 @@
   "require": {
     "php": "^8.4",
     "ext-gd": "*",
-    "growtask/simflex": "3.*",
+    "growtask/simflex-core": "4.0.x-dev",
     "ext-readline": "*",
     "growtask/simflex-file-manager": "dev-master",
     "ext-pdo": "*",
