@@ -68,7 +68,7 @@ class CronCest
     public function tryToRunJobFromConsole(AcceptanceTester $I): void
     {
         $I->runSql('DELETE FROM cron_log WHERE job = ?', [self::JOB]);
-        exec('php cron.php --job=' . self::JOB, $output, $code);
+        exec('php sf cron/run --job=' . self::JOB, $output, $code);
         $I->assertSame(0, $code);
         $I->assertSame(
             [['result' => 'ok']],

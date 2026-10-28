@@ -188,9 +188,9 @@ class TableTest extends Unit
 
     public function testForbiddenExtensionsAreNotSaved(): void
     {
-        $this->assertContains('php', \Simflex\Core\File::FORBIDDEN_EXTENSIONS);
-        $this->assertContains('phtml', \Simflex\Core\File::FORBIDDEN_EXTENSIONS);
-        $this->assertContains('htaccess', \Simflex\Core\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('php', \Simflex\Media\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('phtml', \Simflex\Media\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('htaccess', \Simflex\Media\File::FORBIDDEN_EXTENSIONS);
     }
 
     private function makeTable(array $fields = []): Table
@@ -203,11 +203,12 @@ class TableTest extends Unit
                 return [];
             }
         };
-        $set = function (array $fields) {
-            $this->fields = $fields;
-            $this->pk = new FieldInt(['name' => 'id', 'label' => 'ID', 'table' => 'test_table']);
+        // защищённые свойства Table задаются в области видимости класса
+        $set = function (Table $table) use ($fields) {
+            $table->fields = $fields;
+            $table->pk = new FieldInt(['name' => 'id', 'label' => 'ID', 'table' => 'test_table']);
         };
-        \Closure::bind($set, $base, Table::class)($fields);
+        \Closure::bind($set, null, Table::class)($base);
         return $base;
     }
 

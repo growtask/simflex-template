@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Core\ConsoleBase;
+use Simflex\Console\ConsoleBase;
 
 class ConsoleTest extends Unit
 {

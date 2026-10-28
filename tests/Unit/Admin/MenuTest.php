@@ -10,7 +10,7 @@ use Simflex\Admin\MenuItem;
 use Simflex\Admin\Handlers;
 use Simflex\Core\Container;
 use Simflex\Core\ExtensionConfig;
-use Simflex\Core\Models\User;
+use Simflex\Models\User;
 use Tests\Support\MockDb;
 
 /**

@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Extensions\Form\Component;
+namespace App\Extensions\Form\Components;
 
-use App\Extensions\Form\Model\ModelCallback;
-use App\Extensions\Form\Model\ModelCallbackEmail;
-use App\Extensions\Form\Model\ModelCatalogProduct;
-use Simflex\Core\Api\JsonResponse;
-use Simflex\Core\ComponentBase;
-use Simflex\Core\Container;
-use Simflex\Core\Core;
-use Simflex\Core\Mail\Mailer;
-use Simflex\Core\Mail\Transport\PhpMailer;
-use Simflex\Core\Time;
+use App\Extensions\Form\Models\ModelCallback;
+use App\Extensions\Form\Models\ModelCallbackEmail;
+use App\Extensions\Form\Models\ModelCatalogProduct;
+use Simflex\Http\Api\JsonResponse;
+use Simflex\Http\ComponentBase;
+use Simflex\Mail\Mailer;
+use Simflex\Helpers\Time;
+use Simflex\Core\SiteSettings;
 
 /**
  * @todo Incomplete: для таблиц callback, callback_email нет миграций, поэтому в реальном окружении этот код
@@ -47,10 +45,10 @@ class AjaxForm extends ComponentBase
         $date = Time::create()->asMySQL();
 
         // приводим тип
-        if ($type == 'available') {
+        if ($type === 'available') {
             $type = 'Сообщить о поступлении';
             $message = ModelCatalogProduct::findOne(['product_id' => $message])?->name;
-        } elseif ($type == 'callback') {
+        } elseif ($type === 'callback') {
             $type = 'Остались вопросы';
         }
 
@@ -78,17 +76,6 @@ class AjaxForm extends ComponentBase
         exit;
     }
 
-    protected function getMailer(): Mailer
-    {
-        if (Container::isSet('mailer')) {
-            return Container::get('mailer');
-        }
-
-        $mailer = new Mailer();
-        $mailer->transport = new PhpMailer();
-        return $mailer;
-    }
-
     protected function buildMailBody(): string
     {
         $d = array_map(fn($v) => htmlspecialchars((string)$v, ENT_QUOTES), $this->data);
@@ -107,7 +94,7 @@ HTML;
 
     protected function sendMail(): bool
     {
-        $to = (string)Core::siteParam('form_email');
+        $to = (string)SiteSettings::get('form_email');
         if (!$to) {
             // уведомления на почту не настроены
             return true;
@@ -115,7 +102,7 @@ HTML;
 
         $html = $this->buildMailBody();
         try {
-            $sent = $this->getMailer()->sendText('Новая заявка с сайта', $to, $html, strip_tags($html));
+            $sent = Mailer::get()->sendText('Новая заявка с сайта', $to, $html, strip_tags($html));
         } catch (\Throwable $ex) {
             $this->errors[] = 'mail: ' . $ex->getMessage();
             return false;
@@ -169,7 +156,7 @@ HTML;
 **Сообщение: ** {$patch($this->data['message'])}
 MD;
 
-        $token = (string)Core::siteParam('form_tg_token');
+        $token = (string)SiteSettings::get('form_tg_token');
         if (!$token) {
             // уведомления в Telegram не настроены
             return true;
@@ -184,7 +171,7 @@ MD;
         );
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-            'chat_id' => Core::siteParam('form_tg_chat_id'),
+            'chat_id' => SiteSettings::get('form_tg_chat_id'),
             'parse_mode' => 'MarkdownV2',
             'text' => $md,
         ]));

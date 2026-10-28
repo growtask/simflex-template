@@ -9,9 +9,9 @@ use Simflex\Admin\Table\FieldDefinition;
 use Simflex\Admin\Table\Presets\IdField;
 use Simflex\Admin\Table\Repository;
 use Simflex\Admin\Table\Table;
-use Simflex\Core\ComponentBase;
-use Simflex\Core\Cron\CronJob;
-use Simflex\Core\Cron\CronRegistry;
+use Simflex\Http\ComponentBase;
+use Simflex\Cron\CronJob;
+use Simflex\Cron\CronRegistry;
 use Simflex\Core\ExtensionConfig;
 use Simflex\Core\ExtensionRegistry;
 use Simflex\Core\ModelBase;
@@ -90,17 +90,20 @@ class ExtensionsTest extends Unit
         $config = new \App\Config();
         $config->load();
 
-        // маршрут и команда расширения добавляются, маршрут сайта с тем же путём главнее
+        // маршрут и команда расширения добавляются, маршрут и команда сайта с тем же именем главнее,
+        // команда расширения главнее команды ядра
         $routes = $config->getRoutes();
         $this->assertSame(TestExtensionComponent::class, $routes['/test-extension']);
         $this->assertSame(\App\Extensions\Content\Content::class, $routes['/']);
-        $this->assertSame(\Simflex\Core\DB\Cli\Migrator::class, $config->getCommands()['migrate']);
+        $this->assertSame(\App\Extensions\Install\Installer::class, $config->getCommands()['install']);
+        $this->assertSame(TestExtensionComponent::class, $config->getCommands()['migrate']);
+        $this->assertSame(\Simflex\Layout\ConsoleLayout::class, $config->getCommands()['layout']);
         $this->assertSame(TestExtensionComponent::class, $config->getCommands()['test-extension']);
 
         // сервисы окружения объединяются, сервисы сайта — после сервисов расширения (заменяют их в контейнере)
         $services = $config->getServices();
         $this->assertSame(TestExtensionComponent::class, $services['web'][0]);
-        $this->assertContains(\Simflex\Core\Html\HtmlRequest::class, $services['web']);
+        $this->assertContains(\Simflex\Http\Html\HtmlRequest::class, $services['web']);
 
         // слушатели одного события из расширения и сайта складываются
         $this->assertSame([TestExtensionComponent::class], $config->getEvents()['test-event']);
@@ -134,11 +137,11 @@ class TestExtension extends ExtensionConfig
     protected array $routes = ['/test-extension' => TestExtensionComponent::class, '/' => TestExtensionComponent::class];
     protected array $services = ['web' => [TestExtensionComponent::class]];
     protected array $events = ['test-event' => [TestExtensionComponent::class]];
-    protected array $commands = ['test-extension' => TestExtensionComponent::class, 'migrate' => TestExtensionComponent::class];
+    protected array $commands = ['test-extension' => TestExtensionComponent::class, 'migrate' => TestExtensionComponent::class, 'install' => TestExtensionComponent::class];
 
     public function getCronJobs(): array
     {
-        return ['test_extension_job' => new CronJob(name: 'Задача расширения', handler: [\Simflex\Core\Models\CronLog::class, 'deleteOld'], timing: '* * * * *')];
+        return ['test_extension_job' => new CronJob(name: 'Задача расширения', handler: [\Simflex\Models\CronLog::class, 'deleteOld'], timing: '* * * * *')];
     }
 
     public function getPrivileges(): array

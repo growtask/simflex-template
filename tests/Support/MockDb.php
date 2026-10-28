@@ -8,8 +8,8 @@ use PHPUnit\Framework\Attributes\After;
 use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\MockObject\MockObject;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
-use Simflex\Core\DB\Adapter;
+use Simflex\DB\DB;
+use Simflex\DB\Adapter;
 
 /**
  * Unit-тесты без базы: DB::query() и остальное идут в мок адаптера.

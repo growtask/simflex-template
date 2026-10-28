@@ -1,15 +1,15 @@
 <?php
 
-namespace Tests\Unit\App;
+namespace Tests\Unit\Layout;
 
-use App\Extensions\Layout\ConsoleLayout;
-use App\Layout\LayoutBase;
-use App\Layout\LayoutManager;
+use Simflex\Layout\ConsoleLayout;
+use Simflex\Layout\LayoutBase;
+use Simflex\Layout\LayoutManager;
 use Codeception\Test\Unit;
 use Simflex\Admin\Fields\FieldText;
 
 /**
- * Макеты: части страницы со своим шаблоном и объявленными полями (console.php layout/generate)
+ * Макеты: части страницы со своим шаблоном и объявленными полями (./sf layout/generate)
  */
 class LayoutTest extends Unit
 {
@@ -69,7 +69,7 @@ class LayoutTest extends Unit
      */
     public function testGenerateCommandDrawsPage(): void
     {
-        $output = (string)shell_exec('cd ' . escapeshellarg(SF_ROOT_PATH) . ' && php console.php layout/generate / 2>&1');
+        $output = (string)shell_exec('cd ' . escapeshellarg(SF_ROOT_PATH) . ' && php sf layout/generate / 2>&1');
 
         $this->assertStringNotContainsString('error', $output);
         $this->assertStringContainsString('The layouts of the page declare no fields', $output);

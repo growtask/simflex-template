@@ -36,7 +36,8 @@
     "codeception/module-asserts": "*",
     "composer/composer": "*",
     "codeception/module-filesystem": "^3.0",
-    "codeception/module-webdriver": "^4.0"
+    "codeception/module-webdriver": "^4.0",
+    "phpstan/phpstan": "^2.1"
   },
   "suggest": {
   },

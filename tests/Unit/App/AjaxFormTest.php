@@ -2,37 +2,37 @@
 
 namespace Tests\Unit\App;
 
-use App\Extensions\Form\Component\AjaxForm;
+use App\Extensions\Form\Components\AjaxForm;
 use Codeception\Test\Unit;
 use Simflex\Core\Container;
-use Simflex\Core\Core;
-use Simflex\Core\Mail\Mail;
-use Simflex\Core\Mail\Mailer;
-use Simflex\Core\Mail\Transport;
+use Simflex\Mail\Mail;
+use Simflex\Mail\Mailer;
+use Simflex\Mail\Transport;
+use Simflex\Core\SiteSettings;
 
 /**
  * Форма заявки сайта: заявка отправляется на e-mail (и в Telegram, если он настроен)
  */
 class AjaxFormTest extends Unit
 {
-    private array $siteParams = [];
+    private ?array $siteParams = null;
     private mixed $mailer = null;
 
     protected function _before(): void
     {
-        $this->siteParams = (new \ReflectionProperty(Core::class, 'siteParams'))->getValue();
+        $this->siteParams = (new \ReflectionProperty(SiteSettings::class, 'values'))->getValue();
         $this->mailer = Container::isSet('mailer') ? Container::get('mailer') : null;
     }
 
     protected function _after(): void
     {
-        (new \ReflectionProperty(Core::class, 'siteParams'))->setValue(null, $this->siteParams);
+        (new \ReflectionProperty(SiteSettings::class, 'values'))->setValue(null, $this->siteParams);
         Container::set('mailer', $this->mailer);
     }
 
     public function testRequestIsSentViaMailer(): void
     {
-        (new \ReflectionProperty(Core::class, 'siteParams'))->setValue(null, ['form_email' => 'to@example.com', 'form_tg_token' => '']);
+        (new \ReflectionProperty(SiteSettings::class, 'values'))->setValue(null, ['form_email' => 'to@example.com', 'form_tg_token' => '']);
         $transport = new AjaxFormTestTransport();
         $mailer = new Mailer();
         $mailer->transport = $transport;

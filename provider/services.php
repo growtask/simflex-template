@@ -11,22 +11,22 @@
 
 return [
     'all' => [
-        \Simflex\Core\Factory::class,
+        \Simflex\Core\DI\Factory::class,
         \Simflex\Core\EventManager::class,
     ],
     'web' => [
-        \Simflex\Core\Html\HtmlRequest::class,
-        \Simflex\Core\Html\HtmlResponse::class,
+        \Simflex\Http\Html\HtmlRequest::class,
+        \Simflex\Http\Html\HtmlResponse::class,
     ],
     'api' => [
-        \Simflex\Core\Api\JsonRequest::class,
-        \Simflex\Core\Api\JsonResponse::class,
+        \Simflex\Http\Api\JsonRequest::class,
+        \Simflex\Http\Api\JsonResponse::class,
     ],
     'cli' => [
-        \Simflex\Core\Console\CliRequest::class,
+        \Simflex\Console\CliRequest::class,
     ],
     'dev' => [
-        \Simflex\Core\Wrapper\DebugBar::class,
-        \Simflex\Core\Wrapper\Whoops::class,
+        \Simflex\Debug\DebugBar::class,
+        \Simflex\Debug\Whoops::class,
     ],
 ];

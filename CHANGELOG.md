@@ -40,13 +40,27 @@
   доступность только `public/`; unit — ядро (запросы, схема, хелперы, вывод, почта, sms, картинки), админка,
   расширения, код шаблона. Общие шаги в `AcceptanceTester`, `MockDb` для unit-тестов без БД.
 - `.php-cs-fixer.php` и `make cs-fix` — проверка стиля ядра и шаблона (в том числе лишних `use`).
+- PHPStan (`phpstan.neon`, `make phpstan`) — статический анализ шаблона, ядра и тестов.
 
 ### Изменено
 
-- `./sf layout/generate` печатает код полей компонентов страницы для `provider/templates.php` вместо записи в БД
-  и создаёт компонент `Content` с зависимостями.
-- `functions.php` — только функции сайта (`url()`, `renderIcon()`, `buildAttrs()`); `env()`, `asset()`,
-  `getSimflexVersion()` — в ядре.
+- `./sf layout/generate` печатает код полей компонентов страницы для `provider/templates.php` вместо записи в БД.
+- **Layout — в ядре** (`Simflex\Layout`): `Layout/LayoutBase.php`, `LayoutManager.php`, компоненты, `assetsGlobal`
+  и команда `layout` (`Extensions/Layout`) удалены из шаблона. `Layout/` сайта — для своих компонентов (`App\Layout`)
+  и переопределения глобальных стилей (`Layout/assetsGlobal`).
+- `functions.php` — пустой файл для функций сайта; `url()`, `renderIcon()`, `buildAttrs()`, как и `env()`,
+  `asset()`, `getSimflexVersion()`, — в ядре.
+- `provider/commands.php` — только команды сайта: `migrate`, `layout` и `cron` объявляет ядро.
+- **Загрузка сайта — в ядре:** `Core/Simflex.php`, `console.php`, `cron.php` удалены. `public/index.php` и консоль `sf`
+  (теперь PHP-скрипт) подключают `constants.php`, автозагрузчик и вызывают `\Simflex\Application::runHttp()`
+  / `runConsole()`. Cron: `./sf cron/run` вместо `php cron.php`, `--job=<key>` — одна задача сейчас.
+- Тема сайта выводит заголовок, description и keywords через `Page::meta()` (`PageSeo`), настройки сайта —
+  `SiteSettings::get()`; `config.php` не задаёт `files` (по умолчанию — `provider/*.php`).
+- Сервис `cron` в `docker-compose.yml` (профиль `cron`): `./sf cron/run` в начале каждой минуты.
+- Модуль «Меню» — из ядра: `App\Extensions\Menu\Menu` — пустой наследник `Simflex\Extensions\Menu\Menu` для своей
+  вёрстки, добавлен в `provider/modules.php`.
+- Пример контроллера `Extensions/Example` и маршрут `/example` удалены: как сделать компонент и контроллер —
+  в документации («Компоненты и модули»).
 - Модули «Код» и «Текстовый блок» — из ядра (`Simflex\Extensions\Code`, `Simflex\Extensions\Block`).
 - Компоненты и модули сайта возвращают HTML строкой вместо `echo`.
 - Комментарии в коде — на русском.

@@ -3,11 +3,11 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Core\ComponentBase;
+use Simflex\Http\ComponentBase;
 use Simflex\Core\Container;
-use Simflex\Core\Html\HtmlRequest;
+use Simflex\Http\Html\HtmlRequest;
 use Simflex\Core\ModuleBase;
-use Simflex\Core\Models\ModuleItem;
+use Simflex\Models\ModuleItem;
 use Simflex\Core\Page;
 use Simflex\Core\View;
 

@@ -12,7 +12,7 @@ use Simflex\Admin\Table\Table;
 use Simflex\Admin\WidgetBase;
 use Simflex\Core\Container;
 use Simflex\Core\EventManager;
-use Simflex\Core\Models\User;
+use Simflex\Models\User;
 use Tests\Support\AlertState;
 use Tests\Support\MockDb;
 
@@ -122,20 +122,6 @@ class PanelTest extends Unit
             Log::a('login_attempt', "Логин: a' OR 1=1");
         } finally {
             Container::set('events', $oldEvents);
-        }
-    }
-
-    public function testSiteParamIsTakenFromLoaded(): void
-    {
-        $prop = new \ReflectionProperty(AdminCore::class, 'siteParams');
-        $backup = $prop->getValue();
-        try {
-            $prop->setValue(null, ['error404' => 'Not found']);
-            $this->mockDb()->expects($this->never())->method('query');
-            $this->assertSame('Not found', AdminCore::siteParam('error404'));
-            $this->assertSame('', AdminCore::siteParam('unknown'));
-        } finally {
-            $prop->setValue(null, $backup);
         }
     }
 

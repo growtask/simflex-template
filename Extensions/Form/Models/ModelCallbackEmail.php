@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Extensions\Form\Model;
+namespace App\Extensions\Form\Models;
 
 use Simflex\Core\ModelBase;
 

@@ -12,6 +12,7 @@
   `routes.php`, `events.php`, `services.php`, `commands.php`.
 - `Admin/Handlers/` и `Admin/handlers.php` — разделы админки сайта (создаются, когда нужны).
 - `database/migrations/` — миграции с начальными данными (`$s->seed()`), `./sf migrate/create` нумерует новые.
+- Точки входа — `public/index.php` (веб) и `sf` (консоль): загрузку и запуск выполняет `\Simflex\Application` ядра.
 - `public/` — корень веб-сервера (`public/index.php` — единственная точка входа, `public/assets` — статика сайта,
   `public/uf` — загруженные файлы).
 - `Extensions/`, `Layout/`, `theme/` — код и вёрстка сайта; `functions.php` — функции сайта.
@@ -19,13 +20,15 @@
 
 ## Окружение и тесты
 
-- `docker compose` (сервисы `php`, `db`, `selenium`); консоль — `docker compose exec php ./sf <команда>`.
+- `docker compose` (сервисы `php`, `db`, `selenium`; `cron` — профиль `cron`); консоль —
+  `docker compose exec php ./sf <команда>`.
 - Тесты Codeception: `docker compose exec -T php php vendor/bin/codecept run` (или `run Unit`, `run Acceptance`,
   `run Acceptance Admin/MenuCest`). Структура и правила — `docs/tests.md` документации.
   - `tests/Acceptance/` — сценарии в браузере (`Admin/` — админка), `tests/Unit/` — по подсистемам
-    (`Core`, `Admin`, `Extensions`, `App`), `tests/Support/` — общие шаги (`AcceptanceTester`), `MockDb`,
+    (`Core`, `Admin`, `Layout`, `Extensions`, `App`), `tests/Support/` — общие шаги (`AcceptanceTester`), `MockDb`,
     тестовые данные `Support/Data`.
   - Тест убирает за собой то, что создал (записи, файлы), в `finally`.
-- Стиль кода: `.php-cs-fixer.php` (проверяет шаблон и ядро), `make cs-fix`.
+- Стиль кода: `.php-cs-fixer.php` (проверяет шаблон и ядро), `make cs-fix`. Статический анализ: `phpstan.neon`
+  (шаблон, ядро, тесты), `docker compose exec php make phpstan` — после изменений кода должен проходить без ошибок.
 - Для разработки ядра `composer.json` (path-репозиторий) и `docker-compose.yml` (том ядра) локально связывают
   шаблон с клоном ядра — эти правки не коммитятся.

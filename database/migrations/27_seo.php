@@ -1,8 +1,8 @@
 <?php
 
-use Simflex\Core\DB\Schema;
+use Simflex\DB\Schema;
 
-return new class () implements \Simflex\Core\DB\Migration {
+return new class () implements \Simflex\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('seo', function (Schema\Table $c) {

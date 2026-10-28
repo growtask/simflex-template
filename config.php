@@ -28,12 +28,6 @@ class Config extends \Simflex\Core\ConfigBase
         $this->enableLogging = env('LOGGING', $this->enableLogging);
         $this->logToFile = env('IS_LOG_TO_FILE', $this->logToFile);
 
-        // файлы по умолчанию
-        $this->files['routes'] = SF_ROOT_PATH . '/provider/routes.php';
-        $this->files['events'] = SF_ROOT_PATH . '/provider/events.php';
-        $this->files['services'] = SF_ROOT_PATH . '/provider/services.php';
-        $this->files['commands'] = SF_ROOT_PATH . '/provider/commands.php';
-
         // дополнительные настройки
         $this->extra['timezone'] = env('TIMEZONE', 'Asia/Yekaterinburg');
     }

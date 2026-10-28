@@ -1,1 +1,1 @@
-<?= App\Layout\Components\Common\WelcomeScreen\Layout::draw() ?>
+<?= Simflex\Layout\Components\Common\WelcomeScreen\Layout::draw() ?>

@@ -1,0 +1,33 @@
+# Статический анализ шаблона и ядра: make phpstan (в Docker: docker compose exec php make phpstan)
+parameters:
+    level: 0
+    paths:
+        - Admin
+        - Core
+        - Extensions
+        - provider
+        - config.php
+        - functions.php
+        - public/index.php
+        - sf
+        - tests/Unit
+        - tests/Acceptance
+        - vendor/growtask/simflex/src
+    excludePaths:
+        - vendor/growtask/simflex/src/Admin/theme
+    scanDirectories:
+        - tests/Support
+    bootstrapFiles:
+        - constants.php
+    tmpDir: cache/phpstan
+    ignoreErrors:
+        # new static() в фабричных методах: наследники не меняют сигнатуру конструктора
+        - identifier: new.static
+        # драйвер SMPP работает с необязательным пакетом glushkovds/php-smpp
+        -
+            identifier: class.notFound
+            path: vendor/growtask/simflex/src/Sms/DriverSmpp.php
+        # handlers.php сайта подключается, только если он есть (is_file)
+        -
+            identifier: require.fileNotFound
+            path: vendor/growtask/simflex/src/Admin/Table/Repository.php

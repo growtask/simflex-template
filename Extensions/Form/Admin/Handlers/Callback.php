@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Extensions\Form\Admin\Component;
+namespace App\Extensions\Form\Admin\Handlers;
 
-use App\Extensions\Form\Model\ModelCallback;
+use App\Extensions\Form\Models\ModelCallback;
 use Simflex\Admin\Table\Table;
 use Simflex\Core\Container;
-use Simflex\Core\Time;
+use Simflex\Helpers\Time;
 
 /**
  * @todo Incomplete: для таблицы callback нет миграций, поэтому в реальном окружении этот код падает

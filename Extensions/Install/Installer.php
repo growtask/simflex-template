@@ -3,12 +3,14 @@
 namespace App\Extensions\Install;
 
 use Exception;
-use Simflex\Core\Console\Command;
-use Simflex\Core\ConsoleBase;
+use Simflex\Console\Command;
+use Simflex\Console\ConsoleBase;
 use Simflex\Core\Container;
-use Simflex\Core\DB;
-use Simflex\Core\Log;
-use Simflex\Core\Models\Migration;
+use Simflex\DB\DB;
+use Simflex\DB\Cli\Migrator;
+use Simflex\DB\Schema;
+use Simflex\Logger\Log;
+use Simflex\Models\Migration;
 
 class Installer extends ConsoleBase
 {
@@ -99,14 +101,14 @@ class Installer extends ConsoleBase
             exit;
         }
 
-        /** @var DB\Migration $init */
+        /** @var \Simflex\DB\Migration $init */
         $init = include SF_ROOT_PATH . '/database/migrations/00_migration.php';
         if (!$init) {
             Log::critical('Corrupted core migration file. Please check your installation.');
             exit;
         }
 
-        $schema = new DB\Schema();
+        $schema = new Schema();
         $init->up($schema);
 
         try {
@@ -121,7 +123,7 @@ class Installer extends ConsoleBase
             ]);
 
             // запускаем миграции как обычно, они же пишут начальные данные
-            $migrator = new DB\Cli\Migrator();
+            $migrator = new Migrator();
             $migrator->up();
         } catch (Exception $e) {
             Log::critical('Failed to initialize database ({ex})', ['ex' => $e->getMessage()]);
