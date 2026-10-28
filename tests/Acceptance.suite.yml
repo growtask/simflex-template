@@ -7,7 +7,7 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://php/
+            url: http://app/
             browser: chrome
             host: selenium
             port: 4444

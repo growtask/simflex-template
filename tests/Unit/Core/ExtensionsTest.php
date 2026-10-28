@@ -2,22 +2,23 @@
 
 namespace Tests\Unit\Core;
 
+use Simflex\Core\System\Container;
 use Codeception\Test\Unit;
-use Simflex\Admin\Menu;
-use Simflex\Admin\MenuItem;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Repository;
-use Simflex\Admin\Table\Table;
-use Simflex\Http\ComponentBase;
-use Simflex\Cron\CronJob;
-use Simflex\Cron\CronRegistry;
-use Simflex\Core\ExtensionConfig;
-use Simflex\Core\ExtensionRegistry;
-use Simflex\Core\ModelBase;
-use Simflex\Core\ModuleBase;
-use Simflex\Core\Privilege;
-use Simflex\Core\PrivilegeParams;
+use Simflex\Core\Admin\Menu;
+use Simflex\Core\Admin\MenuItem;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Repository;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Http\ComponentBase;
+use Simflex\Core\Cron\CronJob;
+use Simflex\Core\Cron\CronRegistry;
+use Simflex\Core\System\ExtensionConfig;
+use Simflex\Core\System\ExtensionRegistry;
+use Simflex\Core\System\ModelBase;
+use Simflex\Core\System\ModuleBase;
+use Simflex\Core\System\Privilege;
+use Simflex\Core\System\PrivilegeParams;
 use Tests\Support\MockDb;
 
 /**
@@ -61,7 +62,7 @@ class ExtensionsTest extends Unit
         $this->assertContains(TestExtensionTable::class, Repository::getHandlerClasses());
         $this->assertSame(TestExtensionTable::class, Repository::getTableClass('test_extension'));
         // разделы ядра остаются
-        $this->assertSame(\Simflex\Admin\Handlers\Seo::class, Repository::getTableClass('seo'));
+        $this->assertSame(\Simflex\Core\Admin\Handlers\Seo::class, Repository::getTableClass('seo'));
     }
 
     public function testCronJobs(): void
@@ -86,7 +87,7 @@ class ExtensionsTest extends Unit
     public function testRoutesServicesEventsAndCommands(): void
     {
         // в unit-тестах конфиг контейнера подменён, берём конфиг сайта
-        require_once SF_ROOT_PATH . '/config.php';
+        require_once Container::getPaths()->getRoot('config.php');
         $config = new \App\Config();
         $config->load();
 
@@ -97,13 +98,13 @@ class ExtensionsTest extends Unit
         $this->assertSame(\App\Extensions\Content\Content::class, $routes['/']);
         $this->assertSame(\App\Extensions\Install\Installer::class, $config->getCommands()['install']);
         $this->assertSame(TestExtensionComponent::class, $config->getCommands()['migrate']);
-        $this->assertSame(\Simflex\Layout\ConsoleLayout::class, $config->getCommands()['layout']);
+        $this->assertSame(\Simflex\Core\Layout\ConsoleLayout::class, $config->getCommands()['layout']);
         $this->assertSame(TestExtensionComponent::class, $config->getCommands()['test-extension']);
 
         // сервисы окружения объединяются, сервисы сайта — после сервисов расширения (заменяют их в контейнере)
         $services = $config->getServices();
         $this->assertSame(TestExtensionComponent::class, $services['web'][0]);
-        $this->assertContains(\Simflex\Http\Html\HtmlRequest::class, $services['web']);
+        $this->assertContains(\Simflex\Core\Http\Html\HtmlRequest::class, $services['web']);
 
         // слушатели одного события из расширения и сайта складываются
         $this->assertSame([TestExtensionComponent::class], $config->getEvents()['test-event']);
@@ -141,7 +142,7 @@ class TestExtension extends ExtensionConfig
 
     public function getCronJobs(): array
     {
-        return ['test_extension_job' => new CronJob(name: 'Задача расширения', handler: [\Simflex\Models\CronLog::class, 'deleteOld'], timing: '* * * * *')];
+        return ['test_extension_job' => new CronJob(name: 'Задача расширения', handler: [\Simflex\Core\Models\CronLog::class, 'deleteOld'], timing: '* * * * *')];
     }
 
     public function getPrivileges(): array
@@ -191,6 +192,6 @@ class TestExtensionTable extends Table
 
     public static function getFields(): array
     {
-        return [new IdField(), new FieldDefinition(name: 'name', class: \Simflex\Admin\Fields\FieldString::class)];
+        return [new IdField(), new FieldDefinition(name: 'name', class: \Simflex\Core\Admin\Fields\FieldString::class)];
     }
 }

@@ -6,7 +6,6 @@
  * Windows: php sf provider/method
  */
 
-require_once __DIR__ . '/constants.php';
-require_once SF_ROOT_PATH . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
-(new \Simflex\Application())->runConsole();
+new \Simflex\Core\Kernel(__DIR__)->runConsole();

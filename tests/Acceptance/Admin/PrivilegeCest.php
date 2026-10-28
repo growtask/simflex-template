@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Привилегии объявлены в коде (\Simflex\Core\Privilege, App\Core\Privilege),
+ * Привилегии объявлены в коде (\Simflex\Core\System\Privilege, App\Core\Privilege),
  * необязательная таблица user_privilege хранит только активность, переключённую в админке
  */
 class PrivilegeCest

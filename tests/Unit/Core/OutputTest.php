@@ -3,13 +3,13 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Http\ComponentBase;
-use Simflex\Core\Container;
-use Simflex\Http\Html\HtmlRequest;
-use Simflex\Core\ModuleBase;
-use Simflex\Models\ModuleItem;
-use Simflex\Core\Page;
-use Simflex\Core\View;
+use Simflex\Core\Http\ComponentBase;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\Html\HtmlRequest;
+use Simflex\Core\System\ModuleBase;
+use Simflex\Core\Models\ModuleItem;
+use Simflex\Core\Http\Page;
+use Simflex\Core\Http\View;
 
 /**
  * Представления, компоненты, модули и страницы возвращают свой HTML, вывод происходит только на системном уровне
@@ -114,15 +114,10 @@ class OutputTest extends Unit
 
     public function testPagePositionJoinsModules(): void
     {
-        $prop = new \ReflectionProperty(Page::class, 'positions');
-        $backup = $prop->getValue();
-        $prop->setValue(null, ['left' => ['a', 'b']]);
-        try {
-            $this->expectOutputString('');
-            $this->assertSame('a<hr/>b', Page::position('left', '<hr/>'));
-            $this->assertSame('', Page::position('right'));
-        } finally {
-            $prop->setValue(null, $backup);
-        }
+        $page = new Page();
+        new \ReflectionProperty(Page::class, 'positions')->setValue($page, ['left' => ['a', 'b']]);
+        $this->expectOutputString('');
+        $this->assertSame('a<hr/>b', $page->getPosition('left', '<hr/>'));
+        $this->assertSame('', $page->getPosition('right'));
     }
 }

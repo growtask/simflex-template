@@ -3,8 +3,8 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Media\File;
-use Simflex\Media\Image;
+use Simflex\Core\Media\File;
+use Simflex\Core\Media\Image;
 
 /**
  * Загруженные изображения: каталоги размеров, масштабирование, обрезка, SVG, удаление

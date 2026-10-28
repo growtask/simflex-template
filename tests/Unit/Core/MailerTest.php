@@ -4,12 +4,12 @@ namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
 use PHPMailer\PHPMailer\Exception as PHPMailerException;
-use Simflex\Core\Container;
-use Simflex\Mail\Mail;
-use Simflex\Mail\Mailer;
-use Simflex\Mail\Transport;
-use Simflex\Mail\Transports\PhpMailer;
-use Simflex\Core\SiteSettings;
+use Simflex\Core\System\Container;
+use Simflex\Core\Mail\Mail;
+use Simflex\Core\Mail\Mailer;
+use Simflex\Core\Mail\Transport;
+use Simflex\Core\Mail\Transports\PhpMailer;
+use Simflex\Core\System\Settings;
 
 /**
  * Почта: Mailer и письмо, транспорт по умолчанию - SMTP через PHPMailer
@@ -21,16 +21,16 @@ class MailerTest extends Unit
 
     protected function _before(): void
     {
-        $prop = new \ReflectionProperty(SiteSettings::class, 'values');
+        $prop = new \ReflectionProperty(Settings::class, 'values');
         $this->siteParams = $prop->getValue();
-        // тогда SiteSettings::getAll() не обращается к БД
+        // тогда Settings::getAll() не обращается к БД
         $prop->setValue(null, ['site_name' => 'Test site']);
         $this->config = Container::isSet('config') ? Container::get('config') : null;
     }
 
     protected function _after(): void
     {
-        (new \ReflectionProperty(SiteSettings::class, 'values'))->setValue(null, $this->siteParams);
+        (new \ReflectionProperty(Settings::class, 'values'))->setValue(null, $this->siteParams);
         Container::set('config', $this->config);
     }
 

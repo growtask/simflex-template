@@ -1,10 +1,10 @@
 <?php
 
 use App\Core\Privilege;
-use Simflex\DB\Schema;
-use Simflex\Models\UserRole;
+use Simflex\Core\DB\Schema;
+use Simflex\Core\Models\UserRole;
 
-return new class () implements \Simflex\DB\Migration {
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('user_role_privilege', function (Schema\Table $c) {

@@ -3,11 +3,14 @@
 namespace Tests\Unit\Extensions;
 
 use Codeception\Test\Unit;
-use Simflex\Extensions\Form\Fields\FieldCheckbox;
-use Simflex\Extensions\Form\Fields\FieldPassword;
-use Simflex\Extensions\Form\Fields\FieldSpamCode;
-use Simflex\Extensions\Form\Fields\FieldString;
-use Simflex\Extensions\Form\ModuleForm;
+use Simflex\Core\Extensions\Form\Fields\FieldCheckbox;
+use Simflex\Core\Extensions\Form\Fields\FieldPassword;
+use Simflex\Core\Extensions\Form\Fields\FieldSpamCode;
+use Simflex\Core\Extensions\Form\Fields\FieldString;
+use Simflex\Core\Extensions\Form\ModuleForm;
+use Simflex\Core\Http\Request;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\Session;
 use Tests\Support\MockDb;
 
 /**
@@ -17,28 +20,36 @@ class FormFieldsTest extends Unit
 {
     use MockDb;
 
-    private array $post;
-    private ?array $session;
+    private mixed $requestBackup = null;
 
     protected function _before(): void
     {
-        $this->post = $_POST;
-        $this->session = $_SESSION ?? null;
+        $this->requestBackup = Container::getRequest();
+        // Session::set() пытается начать сессию, но в CLI заголовки уже отправлены: глушим только это
+        set_error_handler(
+            static fn(int $no, string $msg) => str_contains($msg, 'ession') || str_contains($msg, 'headers'),
+            E_WARNING | E_NOTICE
+        );
     }
 
     protected function _after(): void
     {
-        $_POST = $this->post;
-        if ($this->session === null) {
-            unset($_SESSION);
-        } else {
-            $_SESSION = $this->session;
-        }
+        restore_error_handler();
+        Container::set('request', $this->requestBackup);
+        Session::set('spamcode', null);
+    }
+
+    /**
+     * Отправленные значения формы feedback
+     */
+    private function post(array $values): void
+    {
+        Container::set('request', Request::create('/', [], ['feedback' => $values]));
     }
 
     public function testCheckbox(): void
     {
-        $_POST['feedback']['agree'] = 'on';
+        $this->post(['agree' => 'on']);
         $html = (new FieldCheckbox($this->form(), 'agree', 'Agree', ''))->html();
         $this->assertStringContainsString('name="feedback[agree]"', $html);
         $this->assertStringContainsString('checked="checked"', $html);
@@ -46,7 +57,7 @@ class FormFieldsTest extends Unit
 
     public function testPassword(): void
     {
-        $_POST['feedback']['pass'] = 'a"b';
+        $this->post(['pass' => 'a"b']);
         $html = (new FieldPassword($this->form(), 'pass', 'Pass', ''))->html();
         $this->assertStringContainsString('name="feedback[pass]"', $html);
         $this->assertStringContainsString('value="a&quot;b"', $html);
@@ -55,12 +66,13 @@ class FormFieldsTest extends Unit
     public function testSpamCode(): void
     {
         $field = new FieldSpamCode($this->form(), 'code', 'Code', '');
-        $_SESSION['spamcode'] = 'abc';
-        $_POST['feedback']['code'] = 'abc';
+        Session::set('spamcode', 'abc');
+        $this->post(['code' => 'abc']);
         $this->assertSame([], $field->check());
-        $_POST['feedback']['code'] = 'xyz';
+        $this->post(['code' => 'xyz']);
         $this->assertArrayHasKey('code', $field->check());
-        unset($_SESSION['spamcode'], $_POST['feedback']['code']);
+        Session::set('spamcode', null);
+        $this->post([]);
         $this->assertArrayHasKey('code', $field->check());
     }
 
@@ -68,16 +80,16 @@ class FormFieldsTest extends Unit
     {
         $field = new FieldString($this->form(), 'email', 'E-mail', '');
         $field->vUnique = ['key' => 'user.email'];
-        $_POST['feedback']['email'] = "a'b@example.test";
+        $this->post(['email' => "a'b@example.test"]);
 
-        $db = $this->mockDb();
-        $db->expects($this->exactly(2))->method('query')
-            ->with('SELECT COUNT(*) cnt FROM `user` WHERE `email` = ?', ["a'b@example.test"])
-            ->willReturn(true);
-        $db->method('result')->willReturnOnConsecutiveCalls(0, 1);
+        $this->mockRows([[0], [1]], $queries);
 
         $this->assertSame([], $field->check());
         $this->assertSame(['email' => ['занято']], $field->check());
+        // значение - параметром запроса
+        $this->assertStringContainsString('FROM `user`', $queries[0][0]);
+        $this->assertStringNotContainsString("a'b", $queries[0][0]);
+        $this->assertSame(["a'b@example.test"], array_values($queries[0][1]));
     }
 
     private function form(): ModuleForm

@@ -3,14 +3,14 @@
 namespace App\Extensions\Install;
 
 use Exception;
-use Simflex\Console\Command;
-use Simflex\Console\ConsoleBase;
-use Simflex\Core\Container;
-use Simflex\DB\DB;
-use Simflex\DB\Cli\Migrator;
-use Simflex\DB\Schema;
-use Simflex\Logger\Log;
-use Simflex\Models\Migration;
+use Simflex\Core\Console\Command;
+use Simflex\Core\Console\ConsoleBase;
+use Simflex\Core\System\Container;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\Cli\Migrator;
+use Simflex\Core\DB\Schema;
+use Simflex\Core\Logger\Log;
+use Simflex\Core\Models\Migration;
 
 class Installer extends ConsoleBase
 {
@@ -46,16 +46,7 @@ class Installer extends ConsoleBase
         Log::info('Checking if database is initialized');
 
         // проверяем, нужно ли инициализировать базу
-        $res = DB::result(
-            'SELECT COUNT(*) c FROM information_schema.TABLES WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
-            'c',
-            [
-                'migration',
-                $config->db['name'],
-            ]
-        );
-
-        if (!$res) {
+        if (!DB::hasTable('migration')) {
             $this->initDatabase();
         }
 
@@ -80,7 +71,7 @@ class Installer extends ConsoleBase
 
         // пишем в .env
         file_put_contents(
-            SF_ROOT_PATH . '/.env',
+            Container::getPaths()->getRoot('.env'),
             implode("\n", [
                 "DB_HOST={$config->db['host']}",
                 "DB_USER={$config->db['user']}",
@@ -96,13 +87,13 @@ class Installer extends ConsoleBase
         Log::info('Initializing database');
 
         // проверяем, есть ли /database/migrations/00_migration.php
-        if (!file_exists(SF_ROOT_PATH . '/database/migrations/00_migration.php')) {
+        if (!file_exists(Container::getPaths()->getRoot('database/migrations/00_migration.php'))) {
             Log::critical('Core migration file not found. Please check your installation.');
             exit;
         }
 
-        /** @var \Simflex\DB\Migration $init */
-        $init = include SF_ROOT_PATH . '/database/migrations/00_migration.php';
+        /** @var \Simflex\Core\DB\Migration $init */
+        $init = include Container::getPaths()->getRoot('database/migrations/00_migration.php');
         if (!$init) {
             Log::critical('Corrupted core migration file. Please check your installation.');
             exit;
@@ -133,14 +124,14 @@ class Installer extends ConsoleBase
 
     protected function initDir(string $dir, bool $log = true): void
     {
-        if (!is_dir(SF_ROOT_PATH . '/' . $dir)) {
-            mkdir(SF_ROOT_PATH . '/' . $dir);
+        if (!is_dir(Container::getPaths()->getRoot($dir))) {
+            mkdir(Container::getPaths()->getRoot($dir));
             if ($log) {
                 Log::notice('Created directory {dir}', ['dir' => $dir]);
             }
         }
 
         // права выставляем в любом случае
-        chmod(SF_ROOT_PATH . '/' . $dir, 0777);
+        chmod(Container::getPaths()->getRoot($dir), 0777);
     }
 }

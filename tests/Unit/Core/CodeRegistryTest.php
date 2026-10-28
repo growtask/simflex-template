@@ -3,11 +3,11 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\AdminModules;
-use Simflex\Admin\Menu;
-use Simflex\Core\CodeRegistry;
-use Simflex\Core\Container;
-use Simflex\Core\Privilege;
+use Simflex\Core\Admin\AdminModules;
+use Simflex\Core\Admin\Menu;
+use Simflex\Core\System\CodeRegistry;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\Privilege;
 use Tests\Support\MockDb;
 
 /**

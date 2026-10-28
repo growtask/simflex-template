@@ -3,13 +3,13 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Core\Cache;
-use Simflex\Http\Cookie\CookieItem;
-use Simflex\Helpers\DatetimeHelper;
-use Simflex\Helpers\Str;
-use Simflex\Http\Request;
-use Simflex\Helpers\Time;
-use Simflex\Helpers\TimeDiff;
+use Simflex\Core\System\Cache;
+use Simflex\Core\Http\Cookie\CookieItem;
+use Simflex\Core\Helpers\DatetimeHelper;
+use Simflex\Core\Helpers\Str;
+use Simflex\Core\Http\Request;
+use Simflex\Core\Helpers\Time;
+use Simflex\Core\Helpers\TimeDiff;
 
 /**
  * Строки, даты, запрос, cookies, кэш
@@ -269,6 +269,43 @@ class HelpersTest extends Unit
         $diff = new TimeDiff($interval);
         $this->assertSame($interval, $diff->getRawDateInterval());
         $this->assertSame('2 03', $diff->format('%d %H'));
+    }
+
+    public function testSizeToStr(): void
+    {
+        $file = 'uf/codecept_size.txt';
+        $path = \Simflex\Core\System\Container::getPaths()->getPublic($file);
+        try {
+            file_put_contents($path, str_repeat('x', 3 * 1024 + 100));
+            $this->assertSame('3 кб', Str::sizeToStr('/' . $file));
+            file_put_contents($path, 'x');
+            $this->assertSame('1 б', Str::sizeToStr($file));
+        } finally {
+            @unlink($path);
+        }
+        $this->assertSame('0 б', Str::sizeToStr('/uf/missing-file.txt'));
+    }
+
+    public function testRequestCreatedFromData(): void
+    {
+        $request = Request::create(
+            '/catalog/?page=2',
+            post: ['name' => 'N'],
+            server: ['REMOTE_ADDR' => '1.2.3.4', 'HTTP_USER_AGENT' => 'agent'],
+        );
+        $this->assertSame('/catalog/', $request->getPath());
+        $this->assertSame('/catalog/?page=2', $request->getUri());
+        $this->assertSame('2', $request->get('page'));
+        $this->assertSame(['page' => '2', 'name' => 'N'], $request->request());
+        $this->assertTrue($request->isPost());
+        $this->assertSame('1.2.3.4', $request->getIp());
+        $this->assertSame('agent', $request->getUserAgent());
+        $this->assertSame('localhost', $request->getHost());
+
+        // ключ 0 - параметр, а не все параметры (позиционные аргументы консоли)
+        $request = Request::create('/', ['first', 'second']);
+        $this->assertSame('first', $request->get(0));
+        $this->assertSame('default', $request->get('missing', 'default'));
     }
 
     public function testRequestWithoutHttpHeaders(): void

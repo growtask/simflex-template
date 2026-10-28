@@ -3,12 +3,13 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\DB\AQ;
-use Simflex\DB\Expr;
-use Simflex\DB\ExprOr;
-use Simflex\DB\JoinClause;
-use Simflex\DB\Where;
-use Simflex\Models\ModuleItem;
+use Simflex\Core\DB\AQ;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\Expr;
+use Simflex\Core\DB\ExprOr;
+use Simflex\Core\DB\JoinClause;
+use Simflex\Core\DB\Where;
+use Simflex\Core\Models\ModuleItem;
 use Tests\Support\MockDb;
 
 /**
@@ -17,6 +18,37 @@ use Tests\Support\MockDb;
 class QueryTest extends Unit
 {
     use MockDb;
+
+    public function testInsertRowsWithParams(): void
+    {
+        $this->mockRows([], $queries);
+        $this->assertTrue(DB::insert('test_tag', []));
+        $this->assertSame([], $queries);
+
+        $this->assertTrue(DB::insert('test_tag', [['id' => 1, 'tag' => "a'"], ['tag' => 'b', 'id' => 2]]));
+        // колонки - как у первой строки, значения - параметрами
+        $this->assertSame([['INSERT INTO `test_tag` (`id`, `tag`) VALUES (?, ?), (?, ?)', [1, "a'", 2, 'b']]], $queries);
+    }
+
+    public function testBulkUpdateInsertsExpressionsAsIs(): void
+    {
+        $this->mockRows([], $queries);
+        ModuleItem::bulkUpdate(['name' => 'N', 'npp' => new Expr('npp + 1')], ['item_id' => 3]);
+        [$sql, $binds] = $queries[0];
+        $this->assertStringContainsString('`name` = :set_0, `npp` = npp + 1', $sql);
+        $this->assertSame(['N', 3], array_values($binds));
+    }
+
+    public function testUpsertUpdatesGivenColumns(): void
+    {
+        $this->mockRows([], $queries);
+        $this->assertTrue(ModuleItem::upsert(['item_id' => 3, 'name' => "N'", 'active' => true], ['name']));
+        $this->assertSame([[
+            'insert into `module_item` (`item_id`, `name`, `active`) values (?, ?, ?)'
+            . ' on duplicate key update `name` = VALUES(`name`)',
+            [3, "N'", 1],
+        ]], $queries);
+    }
 
     public function testWhereInBindsEveryValueSeparately(): void
     {

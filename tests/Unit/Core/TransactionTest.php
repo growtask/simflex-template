@@ -3,8 +3,8 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\DB\Adapter;
-use Simflex\DB\DB;
+use Simflex\Core\DB\Adapter;
+use Simflex\Core\DB\DB;
 use Tests\Support\MockDb;
 
 /**

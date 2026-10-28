@@ -3,12 +3,12 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Core\Container;
-use Simflex\Http\Controller\Action;
-use Simflex\Http\ControllerBase;
-use Simflex\Http\Html\HtmlRequest;
-use Simflex\Http\Html\HtmlResponse;
-use Simflex\Http\Routing\Route;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\Controller\Action;
+use Simflex\Core\Http\ControllerBase;
+use Simflex\Core\Http\Html\HtmlRequest;
+use Simflex\Core\Http\Html\HtmlResponse;
+use Simflex\Core\Http\Routing\Route;
 
 /**
  * Действия контроллера: путь относительно маршрута, извлечение частей пути, HTTP-метод
@@ -49,18 +49,12 @@ class ControllerTest extends Unit
      */
     public function testActionIsResolvedByPath(string $base, string $method, string $path, string $expected): void
     {
-        $_SERVER['REQUEST_METHOD'] = $method;
-        $_SERVER['REQUEST_URI'] = $path;
-        try {
-            $request = new HtmlRequest();
-            $request->route = new Route(TestController::class, $base);
-            Container::set('request', $request);
+        $request = HtmlRequest::create($path, server: ['REQUEST_METHOD' => $method]);
+        $request->route = new Route(TestController::class, $base);
+        Container::set('request', $request);
 
-            $controller = new TestController($request, new HtmlResponse());
-            $this->assertSame($expected, $controller->execute());
-        } finally {
-            unset($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-        }
+        $controller = new TestController($request, new HtmlResponse());
+        $this->assertSame($expected, $controller->execute());
     }
 }
 

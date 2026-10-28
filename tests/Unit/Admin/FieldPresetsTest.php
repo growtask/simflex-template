@@ -3,21 +3,21 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldDouble;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldMultiKey;
-use Simflex\Admin\Fields\FieldNPP;
-use Simflex\Admin\Fields\FieldTable;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\ActiveField;
-use Simflex\Admin\Table\Presets\ForeignKeyField;
-use Simflex\Admin\Table\Presets\IdField;
-use Simflex\Admin\Table\Presets\MultiKeyField;
-use Simflex\Admin\Table\Presets\NppField;
-use Simflex\Admin\Table\Presets\ParentField;
-use Simflex\Admin\Table\Presets\PriceField;
-use Simflex\Admin\Table\Repository;
+use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldDouble;
+use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Admin\Fields\FieldMultiKey;
+use Simflex\Core\Admin\Fields\FieldNPP;
+use Simflex\Core\Admin\Fields\FieldTable;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\ActiveField;
+use Simflex\Core\Admin\Table\Presets\ForeignKeyField;
+use Simflex\Core\Admin\Table\Presets\IdField;
+use Simflex\Core\Admin\Table\Presets\MultiKeyField;
+use Simflex\Core\Admin\Table\Presets\NppField;
+use Simflex\Core\Admin\Table\Presets\ParentField;
+use Simflex\Core\Admin\Table\Presets\PriceField;
+use Simflex\Core\Admin\Table\Repository;
 
 /**
  * Пресеты полей — те же описания полей, только короче

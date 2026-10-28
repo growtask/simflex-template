@@ -1,4 +1,4 @@
-# Статический анализ шаблона и ядра: make phpstan (в Docker: docker compose exec php make phpstan)
+# Статический анализ шаблона и ядра: make phpstan (в Docker: docker compose exec app make phpstan)
 parameters:
     level: 0
     paths:
@@ -17,8 +17,6 @@ parameters:
         - vendor/growtask/simflex-core/src/Admin/theme
     scanDirectories:
         - tests/Support
-    bootstrapFiles:
-        - constants.php
     tmpDir: cache/phpstan
     ignoreErrors:
         # new static() в фабричных методах: наследники не меняют сигнатуру конструктора
@@ -27,7 +25,3 @@ parameters:
         -
             identifier: class.notFound
             path: vendor/growtask/simflex-core/src/Sms/DriverSmpp.php
-        # handlers.php сайта подключается, только если он есть (is_file)
-        -
-            identifier: require.fileNotFound
-            path: vendor/growtask/simflex-core/src/Admin/Table/Repository.php

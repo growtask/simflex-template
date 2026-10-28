@@ -3,16 +3,16 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Core as AdminCore;
-use Simflex\Admin\Page;
-use Simflex\Admin\Plugins\Alert\Alert;
-use Simflex\Admin\Plugins\Log\Log;
-use Simflex\Admin\Handlers\Account;
-use Simflex\Admin\Table\Table;
-use Simflex\Admin\WidgetBase;
-use Simflex\Core\Container;
-use Simflex\Core\EventManager;
-use Simflex\Models\User;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\Extensions\Alert\Alert;
+use Simflex\Core\Admin\Plugins\Log\Log;
+use Simflex\Core\Admin\Handlers\Account;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Admin\WidgetBase;
+use Simflex\Core\Http\Request;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\EventManager;
+use Simflex\Core\Models\User;
 use Tests\Support\AlertState;
 use Tests\Support\MockDb;
 
@@ -24,14 +24,10 @@ class PanelTest extends Unit
     use MockDb;
 
     private array $alertBackup = [];
-    private array $postBackup = [];
-    private array $serverBackup = [];
 
     protected function _before(): void
     {
         $this->alertBackup = AlertState::get();
-        $this->postBackup = $_POST;
-        $this->serverBackup = $_SERVER;
         AlertState::set([]);
         // Session::set() пытается начать сессию, но в CLI заголовки уже отправлены: глушим только это
         set_error_handler(
@@ -44,9 +40,7 @@ class PanelTest extends Unit
     {
         restore_error_handler();
         AlertState::set($this->alertBackup);
-        $_POST = $this->postBackup;
-        $_SERVER = $this->serverBackup;
-        AdminCore::$ajax = false;
+        Container::set('page', new Page());
     }
 
     public function testAlert(): void
@@ -75,9 +69,11 @@ class PanelTest extends Unit
                 return 'widget-body';
             }
         };
-        AdminCore::$ajax = true;
+        $page = Page::get();
+        $ajax = new \ReflectionProperty($page, 'ajax');
+        $ajax->setValue($page, true);
         $this->assertSame('widget-body', $widget->execute());
-        AdminCore::$ajax = false;
+        $ajax->setValue($page, false);
         $html = $widget->execute();
         $this->assertStringContainsString('widget-body', $html);
         $this->assertStringContainsString('Sales', $html);
@@ -94,7 +90,6 @@ class PanelTest extends Unit
         $user['email'] = 'a@b.c';
         $user['role'] = (object)['name' => 'Root'];
         Container::set('user', $user);
-        $_POST = [];
         try {
             $account = new Account();
             $html = $account->content();
@@ -108,8 +103,8 @@ class PanelTest extends Unit
 
     public function testLogUsesPlaceholders(): void
     {
-        $_SERVER['REMOTE_ADDR'] = "1.2.3.4'";
-        $_SERVER['HTTP_USER_AGENT'] = "agent', data='x";
+        $oldRequest = Container::getRequest();
+        Container::set('request', Request::create(server: ['REMOTE_ADDR' => "1.2.3.4'", 'HTTP_USER_AGENT' => "agent', data='x"]));
         $oldEvents = Container::isSet('events') ? Container::get('events') : null;
         Container::set('events', new EventManager());
         $this->mockDb()->expects($this->once())->method('query')
@@ -122,6 +117,7 @@ class PanelTest extends Unit
             Log::a('login_attempt', "Логин: a' OR 1=1");
         } finally {
             Container::set('events', $oldEvents);
+            Container::set('request', $oldRequest);
         }
     }
 
@@ -131,7 +127,7 @@ class PanelTest extends Unit
      */
     public function testSignaturesReferenceExistingClasses(): void
     {
-        foreach ([Table::class, WidgetBase::class, Page::class, AdminCore::class, Alert::class] as $class) {
+        foreach ([Table::class, WidgetBase::class, Page::class, Alert::class] as $class) {
             foreach ((new \ReflectionClass($class))->getMethods() as $method) {
                 $types = [$method->getReturnType()];
                 foreach ($method->getParameters() as $param) {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Support;
 
-use Simflex\Admin\Plugins\Alert\Alert;
+use Simflex\Core\Extensions\Alert\Alert;
 
 /**
- * Сообщения админки (Alert) без сессии: читаются и подменяются напрямую
+ * Сообщения (Alert) без сессии: читаются и подменяются напрямую
  */
 class AlertState
 {

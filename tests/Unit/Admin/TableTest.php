@@ -3,15 +3,17 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Core as AdminCore;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldMultiKey;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Plugins\Alert\Alert;
-use Simflex\Admin\Table\Presets\MultiKeyField;
-use Simflex\Admin\Table\Repository;
-use Simflex\Admin\Table\Table;
-use Simflex\Core\ModelBase;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Admin\Fields\FieldMultiKey;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Extensions\Alert\Alert;
+use Simflex\Core\Admin\Table\Presets\MultiKeyField;
+use Simflex\Core\Admin\Table\Repository;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Http\Request;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\ModelBase;
 use Tests\Support\AlertState;
 use Tests\Support\MockDb;
 
@@ -23,16 +25,13 @@ class TableTest extends Unit
     use MockDb;
 
     private array $alertBackup = [];
-    private array $getBackup = [];
-    private array $postBackup = [];
-    private array $requestBackup = [];
+    private mixed $requestBackup = null;
 
     protected function _before(): void
     {
         $this->alertBackup = AlertState::get();
-        $this->getBackup = $_GET;
-        $this->postBackup = $_POST;
-        $this->requestBackup = $_REQUEST;
+        $this->requestBackup = Container::getRequest();
+        $this->setRequest();
         AlertState::set([]);
         // Session::set() пытается начать сессию, но в CLI заголовки уже отправлены: глушим только это
         set_error_handler(
@@ -45,20 +44,25 @@ class TableTest extends Unit
     {
         restore_error_handler();
         AlertState::set($this->alertBackup);
-        $_GET = $this->getBackup;
-        $_POST = $this->postBackup;
-        $_REQUEST = $this->requestBackup;
-        AdminCore::$ajax = AdminCore::$isAjax = false;
+        Container::set('request', $this->requestBackup);
+        Container::set('page', new Page());
+    }
+
+    /**
+     * Запрос раздела: раздел читает параметры из запроса в контейнере при создании
+     */
+    private function setRequest(array $get = [], array $post = [], array $files = []): void
+    {
+        Container::set('request', Request::create('/admin/test', $get, $post, $files));
     }
 
     public function testIdsAreNormalized(): void
     {
-        $_GET['ids'] = '1,0,2,invalid,3';
-        unset($_POST['group_ids']);
+        $this->setRequest(['ids' => '1,0,2,invalid,3']);
         $this->assertSame('1,2,3', $this->makeTable()->ids);
-        $_POST['group_ids'] = '4,5';
+        $this->setRequest(['ids' => '1,0,2,invalid,3'], ['group_ids' => '4,5']);
         $this->assertSame('4,5', $this->makeTable()->ids);
-        unset($_GET['ids'], $_POST['group_ids']);
+        $this->setRequest();
         $this->assertSame('', $this->makeTable()->ids);
     }
 
@@ -72,7 +76,7 @@ class TableTest extends Unit
                 $this->callback(fn(array $binds) => array_values($binds) === ['New', 1, 2])
             )
             ->willReturn($this->createMock(\PDOStatement::class));
-        $_POST = ['group_ids' => '1,2', 'set' => ['title' => 1], 'title' => 'New'];
+        $this->setRequest(post: ['group_ids' => '1,2', 'set' => ['title' => 1], 'title' => 'New']);
 
         $this->assertSame('ids', $this->makeTable(['title' => $this->makeField('title')])->saveGroup());
         $this->assertNotEmpty(AlertState::get()['']['success'] ?? null);
@@ -82,7 +86,7 @@ class TableTest extends Unit
     public function testSaveGroupReportsFailedQuery(): void
     {
         $this->mockDb()->method('query')->willReturn(false);
-        $_POST = ['group_ids' => '1', 'set' => ['title' => 1], 'title' => 'New'];
+        $this->setRequest(post: ['group_ids' => '1', 'set' => ['title' => 1], 'title' => 'New']);
 
         $this->makeTable(['title' => $this->makeField('title')])->saveGroup();
         $this->assertTrue(Alert::hasErrors());
@@ -90,8 +94,8 @@ class TableTest extends Unit
 
     public function testValidateWithoutAjax(): void
     {
-        AdminCore::$isAjax = false;
-        $_POST = ['first' => '', 'second' => 'ok'];
+        Container::set('page', new Page());
+        $this->setRequest(post: ['first' => '', 'second' => 'ok']);
         $this->assertFalse($this->makeTable([
             'first' => $this->makeField('first', true),
             'second' => $this->makeField('second', true),
@@ -121,8 +125,6 @@ class TableTest extends Unit
     public function testFormShowsExtraHtml(): void
     {
         $this->mockRows([]);
-        $_GET = [];
-        $_REQUEST = [];
         $table = $this->makeTable(['title' => $this->makeField('title')]);
         $table->extraLeft = '<div id="extra-left"></div>';
         $table->extraRight = '<div id="extra-right"></div>';
@@ -138,8 +140,7 @@ class TableTest extends Unit
     {
         $db = $this->mockRows([['id' => 7, 'title' => 'New']], $queries);
         $db->method('insertId')->willReturn('7');
-        $_POST = ['title' => 'New', 'tags' => '3'];
-        $_REQUEST = $_POST;
+        $this->setRequest(post: ['title' => 'New', 'tags' => '3']);
         $tags = new FieldMultiKey(Repository::toFieldRow(
             new MultiKeyField(name: 'tags', label: 'Теги', values: 'tag', relations: 'test_tag', key: 'tag_id'),
             'test_table',
@@ -150,7 +151,8 @@ class TableTest extends Unit
         $sql = array_column($queries, 0);
         // связи пишутся только после вставки записи, по её id
         $this->assertStringContainsString('insert  into `test_table`', $sql[0]);
-        $this->assertSame(['DELETE FROM `test_tag` WHERE `id` = ?', [7]], $queries[2]);
+        $this->assertStringStartsWith('DELETE FROM `test_tag` WHERE `id` = :', $queries[2][0]);
+        $this->assertSame([7], array_values($queries[2][1]));
         $this->assertSame(['INSERT INTO `test_tag` (`id`, `tag_id`) VALUES (?, ?)', [7, 3]], $queries[3]);
         $this->assertCount(4, $queries);
         $this->assertFalse(Alert::hasErrors());
@@ -158,19 +160,12 @@ class TableTest extends Unit
 
     public function testUploadTableFileRejectsOtherFiles(): void
     {
-        $files = $_FILES;
-        try {
-            $table = $this->makeTable();
-            $_FILES = [];
-            $this->assertSame('', $table->uploadTableFile());
-            // расширение не из белого списка — файл не сохраняется
-            $_FILES = ['file' => ['name' => 'shell.php', 'tmp_name' => __FILE__, 'error' => UPLOAD_ERR_OK]];
-            $this->assertSame('', $table->uploadTableFile());
-            $_FILES = ['file' => ['name' => 'photo.png', 'tmp_name' => '', 'error' => UPLOAD_ERR_NO_FILE]];
-            $this->assertSame('', $table->uploadTableFile());
-        } finally {
-            $_FILES = $files;
-        }
+        $this->assertSame('', $this->makeTable()->uploadTableFile());
+        // расширение не из белого списка — файл не сохраняется
+        $this->setRequest(files: ['file' => ['name' => 'shell.php', 'tmp_name' => __FILE__, 'error' => UPLOAD_ERR_OK]]);
+        $this->assertSame('', $this->makeTable()->uploadTableFile());
+        $this->setRequest(files: ['file' => ['name' => 'photo.png', 'tmp_name' => '', 'error' => UPLOAD_ERR_NO_FILE]]);
+        $this->assertSame('', $this->makeTable()->uploadTableFile());
     }
 
     public function testUploadPathIsSanitized(): void
@@ -188,9 +183,9 @@ class TableTest extends Unit
 
     public function testForbiddenExtensionsAreNotSaved(): void
     {
-        $this->assertContains('php', \Simflex\Media\File::FORBIDDEN_EXTENSIONS);
-        $this->assertContains('phtml', \Simflex\Media\File::FORBIDDEN_EXTENSIONS);
-        $this->assertContains('htaccess', \Simflex\Media\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('php', \Simflex\Core\Media\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('phtml', \Simflex\Core\Media\File::FORBIDDEN_EXTENSIONS);
+        $this->assertContains('htaccess', \Simflex\Core\Media\File::FORBIDDEN_EXTENSIONS);
     }
 
     private function makeTable(array $fields = []): Table

@@ -27,6 +27,6 @@ RUN a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
-# Install composer. Usage: docker-compose exec php composer install
+# Install composer. Usage: docker-compose exec app composer install
 RUN curl https://getcomposer.org/download/latest-stable/composer.phar > /usr/local/bin/composer && chmod +x /usr/local/bin/composer
 RUN mkdir /.composer && chmod -R a+rwX /.composer

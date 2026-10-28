@@ -3,16 +3,16 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\AdminModule;
-use Simflex\Admin\AdminModules;
-use Simflex\Admin\Modules\Breadcrumbs\Breadcrumbs;
-use Simflex\Admin\Modules\Menu\Menu as MenuModule;
-use Simflex\Core\Container;
-use Simflex\Extensions\Block\Block;
+use Simflex\Core\Admin\AdminModule;
+use Simflex\Core\Admin\AdminModules;
+use Simflex\Core\Admin\Modules\Breadcrumbs\Breadcrumbs;
+use Simflex\Core\Admin\Modules\Menu\Menu as MenuModule;
+use Simflex\Core\System\Container;
+use Simflex\Core\Extensions\Block\Block;
 use Tests\Support\MockDb;
 
 /**
- * Модули макета админки, объявленные в коде (\Simflex\Admin\AdminModules)
+ * Модули макета админки, объявленные в коде (\Simflex\Core\Admin\AdminModules)
  */
 class AdminModulesTest extends Unit
 {

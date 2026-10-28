@@ -3,9 +3,9 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\DB\Schema;
-use Simflex\DB\Schema\Column;
-use Simflex\DB\Schema\Table;
+use Simflex\Core\DB\Schema;
+use Simflex\Core\DB\Schema\Column;
+use Simflex\Core\DB\Schema\Table;
 use Tests\Support\MockDb;
 
 /**

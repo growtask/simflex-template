@@ -1,8 +1,8 @@
 <?php
 
-use Simflex\DB\Schema;
+use Simflex\Core\DB\Schema;
 
-return new class () implements \Simflex\DB\Migration {
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('menu', function (Schema\Table $c) {
@@ -17,7 +17,7 @@ return new class () implements \Simflex\DB\Migration {
         });
 
         $s->seed(function () {
-            \Simflex\Models\Menu::bulkInsert([
+            \Simflex\Core\Models\Menu::bulkInsert([
                 [
                     'menu_pid' => null,
                     'component' => \App\Extensions\Content\Content::class,

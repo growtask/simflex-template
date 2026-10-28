@@ -2,7 +2,7 @@
 
 namespace App\Admin;
 
-use Simflex\Admin\MenuItem;
+use Simflex\Core\Admin\MenuItem;
 
 /**
  * Меню админки сайта: разделы ядра плюс добавленные здесь. Задаётся как adminMenuClass в config.php
@@ -12,7 +12,7 @@ use Simflex\Admin\MenuItem;
  * перед другим пунктом: static::add(new MenuItem(...), before: '/content');
  * без раздела ядра: static::remove('/site/seo').
  */
-class Menu extends \Simflex\Admin\Menu
+class Menu extends \Simflex\Core\Admin\Menu
 {
     protected static function init(): void
     {

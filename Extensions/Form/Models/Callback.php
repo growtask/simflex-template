@@ -2,7 +2,7 @@
 
 namespace App\Extensions\Form\Models;
 
-use Simflex\Core\ModelBase;
+use Simflex\Core\System\ModelBase;
 
 /**
  * @property int $callback_id
@@ -13,7 +13,7 @@ use Simflex\Core\ModelBase;
  * @property int|null $edited_by
  * @property string|null $edited_on
  */
-class ModelCallback extends ModelBase
+class Callback extends ModelBase
 {
     protected static string $table = 'callback';
     protected static string $primaryKeyName = 'callback_id';

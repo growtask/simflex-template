@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Меню админки, объявленное в коде (\Simflex\Admin\Menu, App\Admin\Menu): боковая панель, группы, хлебные крошки
+ * Меню админки, объявленное в коде (\Simflex\Core\Admin\Menu, App\Admin\Menu): боковая панель, группы, хлебные крошки
  */
 class MenuCest
 {

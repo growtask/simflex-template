@@ -3,7 +3,7 @@
 namespace Tests\Unit\Extensions;
 
 use Codeception\Test\Unit;
-use Simflex\Extensions\Install\PackageInstaller;
+use Simflex\Core\Extensions\Install\PackageInstaller;
 
 /**
  * Установщик пакетов-расширений: миграции пакета попадают в сайт следующими номерами сайта

@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Cron\ConsoleCron;
+use Simflex\Core\Cron\ConsoleCron;
 
 /**
  * ./sf cron/install, cron/uninstall: строка сайта в crontab текущего пользователя. crontab подменён скриптом,

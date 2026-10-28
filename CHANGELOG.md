@@ -47,23 +47,33 @@
 ### Изменено
 
 - `./sf layout/generate` печатает код полей компонентов страницы для `provider/templates.php` вместо записи в БД.
-- **Layout — в ядре** (`Simflex\Layout`): `Layout/LayoutBase.php`, `LayoutManager.php`, компоненты, `assetsGlobal`
+- **Layout — в ядре** (`Simflex\Core\Layout`): `Layout/LayoutBase.php`, `LayoutManager.php`, компоненты, `assetsGlobal`
   и команда `layout` (`Extensions/Layout`) удалены из шаблона. `Layout/` сайта — для своих компонентов (`App\Layout`)
   и переопределения глобальных стилей (`Layout/assetsGlobal`).
 - `functions.php` — пустой файл для функций сайта; `url()`, `renderIcon()`, `buildAttrs()`, как и `env()`,
   `asset()`, `getSimflexVersion()`, — в ядре.
 - `provider/commands.php` — только команды сайта: `migrate`, `layout` и `cron` объявляет ядро.
-- **Загрузка сайта — в ядре:** `Core/Simflex.php`, `console.php`, `cron.php` удалены. `public/index.php` и консоль `sf`
-  (теперь PHP-скрипт) подключают `constants.php`, автозагрузчик и вызывают `\Simflex\Application::runHttp()`
-  / `runConsole()`. Cron: `./sf cron/run` вместо `php cron.php`, `--job=<key>` — одна задача сейчас.
-- Тема сайта выводит заголовок, description и keywords через `Page::meta()` (`PageSeo`), настройки сайта —
-  `SiteSettings::get()`; `config.php` не задаёт `files` (по умолчанию — `provider/*.php`).
+- **Загрузка сайта — в ядре:** `Core/Simflex.php`, `console.php`, `cron.php`, `constants.php` удалены.
+  `public/index.php` и консоль `sf` (теперь PHP-скрипт) подключают автозагрузчик и создают ядро с корнем сайта:
+  `new \Simflex\Core\Kernel(dirname(__DIR__))->runHttp()`, `new \Simflex\Core\Kernel(__DIR__)->runConsole()`. Пути
+  и окружение — `Container::getPaths()`, `Container::getLocation()` вместо `SF_*`. Cron: `./sf cron/run` вместо
+  `php cron.php`, `--job=<key>` — одна задача сейчас.
+- Тема сайта: страница — переменная `$page` (`$page->getMeta()` — заголовок, description, keywords и стили,
+  `getContent()`, `getMetaJs()`), настройки сайта — `System\Settings::get()`; `config.php` не задаёт `files`
+  (по умолчанию — `provider/*.php`).
+- Модели формы без префикса `Model`: `Extensions\Form\Models\Callback`, `CallbackEmail`, `CatalogProduct`;
+  `AjaxForm` читает заявку из `Request`.
+- **Docker: сервис `php` → `app`** (`docker compose exec app ...`, адрес сайта для acceptance-тестов —
+  `http://app/`); том `/var/www:/var/www` убран; порт сайта на хосте — `APP_PORT` в `.env` (по умолчанию 480).
+  `db` и `selenium` — в профиле `dev`, его включает `COMPOSE_PROFILES=dev` в `.env`: на сервере (`COMPOSE_PROFILES=`
+  или `cron`) `docker compose up -d` запускает только `app` и, по желанию, `cron`.
+- Тесты задают запрос `Request::create()`, а не суперглобальными массивами; `ApplicationTest` → `KernelTest`.
 - Сервис `cron` в `docker-compose.yml` (профиль `cron`): `./sf cron/run` в начале каждой минуты.
-- Модуль «Меню» — из ядра: `App\Extensions\Menu\Menu` — пустой наследник `Simflex\Extensions\Menu\Menu` для своей
+- Модуль «Меню» — из ядра: `App\Extensions\Menu\Menu` — пустой наследник `Simflex\Core\Extensions\Menu\Menu` для своей
   вёрстки, добавлен в `provider/modules.php`.
 - Пример контроллера `Extensions/Example` и маршрут `/example` удалены: как сделать компонент и контроллер —
   в документации («Компоненты и модули»).
-- Модули «Код» и «Текстовый блок» — из ядра (`Simflex\Extensions\Code`, `Simflex\Extensions\Block`).
+- Модули «Код» и «Текстовый блок» — из ядра (`Simflex\Core\Extensions\Code`, `Simflex\Core\Extensions\Block`).
 - Компоненты и модули сайта возвращают HTML строкой вместо `echo`.
 - Комментарии в коде — на русском.
 - `docker-compose.yml` без устаревшего `version`.

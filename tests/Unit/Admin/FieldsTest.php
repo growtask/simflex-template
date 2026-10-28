@@ -3,33 +3,21 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Fields\FieldBool;
-use Simflex\Admin\Fields\FieldDate;
-use Simflex\Admin\Fields\FieldDateTime;
-use Simflex\Admin\Fields\FieldDouble;
-use Simflex\Admin\Fields\FieldInt;
-use Simflex\Admin\Fields\FieldNPP;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldTable;
-use Simflex\Admin\Fields\FieldTime;
+use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldDate;
+use Simflex\Core\Admin\Fields\FieldDateTime;
+use Simflex\Core\Admin\Fields\FieldDouble;
+use Simflex\Core\Admin\Fields\FieldInt;
+use Simflex\Core\Admin\Fields\FieldNPP;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Fields\FieldTable;
+use Simflex\Core\Admin\Fields\FieldTime;
 
 /**
  * Поля админки
  */
 class FieldsTest extends Unit
 {
-    private array $post;
-
-    protected function _before(): void
-    {
-        $this->post = $_POST;
-    }
-
-    protected function _after(): void
-    {
-        $_POST = $this->post;
-    }
-
     public function testListCellsAndFiltersAreReturned(): void
     {
         $string = new FieldString(['name' => 'title', 'label' => 'Title', 'table' => 't']);
@@ -60,8 +48,9 @@ class FieldsTest extends Unit
     {
         $row = ['name' => 'f', 'label' => 'F', 'table' => 'content', 'params' => ['main' => ['e2n' => 1]]];
         foreach ([FieldDate::class, FieldDateTime::class, FieldDouble::class, FieldNPP::class, FieldTime::class] as $class) {
-            $_POST['f'] = '';
-            $this->assertNull((new $class($row))->getPOST(), $class);
+            $field = new $class($row);
+            $field->setPosted(['f' => '']);
+            $this->assertNull($field->getPOST(), $class);
         }
     }
 

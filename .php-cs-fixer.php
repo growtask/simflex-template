@@ -10,6 +10,7 @@ $finder = Finder::create()
     ])
     ->exclude([
         'cache',
+        'docker',
         'log',
         'vendor',
     ])

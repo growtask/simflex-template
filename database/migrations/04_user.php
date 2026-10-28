@@ -1,10 +1,10 @@
 <?php
 
-use Simflex\DB\Schema;
-use Simflex\Models\User;
-use Simflex\Models\UserRole;
+use Simflex\Core\DB\Schema;
+use Simflex\Core\Models\User;
+use Simflex\Core\Models\UserRole;
 
-return new class () implements \Simflex\DB\Migration {
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('user', function (Schema\Table $c) {

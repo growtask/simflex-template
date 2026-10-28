@@ -1,24 +1,31 @@
+# Какие сервисы запускает `docker compose up -d` - COMPOSE_PROFILES в .env:
+#   разработка: COMPOSE_PROFILES=dev        - app, db, selenium
+#   сервер:     COMPOSE_PROFILES=           - только app (база - хостинга, DB_HOST в .env)
+#   сервер:     COMPOSE_PROFILES=cron       - app и cron
+# Подробнее - документация, «Запуск на сервере»
+
 services:
 
-  php:
+  # Сайт: Apache + PHP, корень веб-сервера - public/. Порт на хосте - APP_PORT (.env), по умолчанию 480
+  app:
     build: docker/php
-    volumes: &php-volumes
+    volumes: &app-volumes
       - ./:/var/www/html
-      - /var/www:/var/www
     ports:
-      - "480:80"
+      - "${APP_PORT:-480}:80"
 
   # Планировщик: ./sf cron/run в начале каждой минуты, вместо системного crontab.
-  # Включается профилем: docker compose --profile cron up -d
+  # Включается профилем cron: COMPOSE_PROFILES=cron (или dev,cron) в .env
   cron:
     build: docker/php
-    volumes: *php-volumes
+    volumes: *app-volumes
     working_dir: /var/www/html
     command: sh -c 'while :; do sleep $$((60 - $$(date +%s) % 60)); php sf cron/run; done'
     restart: unless-stopped
     profiles:
       - cron
 
+  # База для разработки и тестов (профиль dev); на сервере - база хостинга
   db:
     build: docker/mysql
     volumes:
@@ -31,9 +38,14 @@ services:
       MYSQL_PASSWORD: simflex
       MYSQL_ROOT_PASSWORD: root
       VIRTUAL_HOST: db
+    profiles:
+      - dev
 
+  # Браузер для acceptance-тестов (профиль dev)
   selenium:
     image: selenium/standalone-chrome:latest
     shm_size: 2gb
     ports:
       - "4444:4444"
+    profiles:
+      - dev

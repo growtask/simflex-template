@@ -3,9 +3,9 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Handler;
-use Simflex\Admin\Handlers;
-use Simflex\Admin\Table\Repository;
+use Simflex\Core\Admin\Handler;
+use Simflex\Core\Admin\Handlers;
+use Simflex\Core\Admin\Table\Repository;
 
 /**
  * Обработчики разделов админки, объявленные в коде (Admin/handlers.php ядра и сайта)
@@ -57,6 +57,6 @@ class HandlersTest extends Unit
     }
 }
 
-abstract class NoModelTable extends \Simflex\Admin\Table\Table
+abstract class NoModelTable extends \Simflex\Core\Admin\Table\Table
 {
 }

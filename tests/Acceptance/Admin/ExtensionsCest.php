@@ -6,7 +6,7 @@ use Tests\Support\AcceptanceTester;
 
 /**
  * Компоненты и модули объявлены в коде (provider/components.php, provider/modules.php), а не в БД.
- * module_item размещает только модули сайта, модули админки объявлены в \Simflex\Admin\AdminModules
+ * module_item размещает только модули сайта, модули админки объявлены в \Simflex\Core\Admin\AdminModules
  */
 class ExtensionsCest
 {
@@ -20,9 +20,9 @@ class ExtensionsCest
         $I->amOnPage('/admin/site/module');
         $I->dontSeeErrors();
         $I->amOnPage('/admin/site/module/?action=form');
-        $I->seeElementInDOM($I->dropdownItem('module', 'Simflex\Extensions\Block\Block'));
-        $I->dontSeeElementInDOM($I->dropdownItem('module', 'Simflex\Admin\Modules\Menu\Menu'));
-        $I->dontSeeElementInDOM($I->dropdownItem('module', 'Simflex\Admin\Modules\Breadcrumbs\Breadcrumbs'));
+        $I->seeElementInDOM($I->dropdownItem('module', 'Simflex\Core\Extensions\Block\Block'));
+        $I->dontSeeElementInDOM($I->dropdownItem('module', 'Simflex\Core\Admin\Modules\Menu\Menu'));
+        $I->dontSeeElementInDOM($I->dropdownItem('module', 'Simflex\Core\Admin\Modules\Breadcrumbs\Breadcrumbs'));
         $I->dontSeeLogProblems();
     }
 
@@ -30,7 +30,7 @@ class ExtensionsCest
     {
         $I->amOnPage('/admin/site/module/?action=form');
         $I->dontSeeErrors();
-        $I->chooseInDropdown('module', 'Simflex\Extensions\Block\Block');
+        $I->chooseInDropdown('module', 'Simflex\Core\Extensions\Block\Block');
         $I->waitForElement('.ajax-params', 5);
         $I->dontSeeErrors();
         $I->dontSeeLogProblems();
@@ -42,7 +42,7 @@ class ExtensionsCest
         // сохранение без изменений не добавляет заголовок и обёртку
         $I->runSql(
             "INSERT INTO module_item SET module = ?, menu_id = NULL, posname = 'codecept', active = 0, npp = 0, name = 'Codecept block', params = ''",
-            ['Simflex\\Extensions\\Block\\Block']
+            ['Simflex\\Core\\Extensions\\Block\\Block']
         );
         $id = $I->grabRowsFromSql("SELECT item_id FROM module_item WHERE posname = 'codecept'")[0]['item_id'];
         try {

@@ -3,8 +3,8 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Sms\Sms;
-use Simflex\Sms\DriverFake;
+use Simflex\Core\Sms\Sms;
+use Simflex\Core\Sms\DriverFake;
 
 class SmsTest extends Unit
 {

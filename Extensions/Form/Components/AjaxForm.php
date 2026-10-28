@@ -2,14 +2,15 @@
 
 namespace App\Extensions\Form\Components;
 
-use App\Extensions\Form\Models\ModelCallback;
-use App\Extensions\Form\Models\ModelCallbackEmail;
-use App\Extensions\Form\Models\ModelCatalogProduct;
-use Simflex\Http\Api\JsonResponse;
-use Simflex\Http\ComponentBase;
-use Simflex\Mail\Mailer;
-use Simflex\Helpers\Time;
-use Simflex\Core\SiteSettings;
+use Simflex\Core\System\Container;
+use App\Extensions\Form\Models\Callback;
+use App\Extensions\Form\Models\CallbackEmail;
+use App\Extensions\Form\Models\CatalogProduct;
+use Simflex\Core\Http\Api\JsonResponse;
+use Simflex\Core\Http\ComponentBase;
+use Simflex\Core\Mail\Mailer;
+use Simflex\Core\Helpers\Time;
+use Simflex\Core\System\Settings;
 
 /**
  * @todo Incomplete: для таблиц callback, callback_email нет миграций, поэтому в реальном окружении этот код
@@ -35,19 +36,20 @@ class AjaxForm extends ComponentBase
      */
     protected function process(): array
     {
-        $type = $_REQUEST['type'] ?? '';
-        $name = $_REQUEST['name'] ?? '';
-        $email = strtolower($_REQUEST['email'] ?? '');
-        $phone = $_REQUEST['phone'] ?? '';
-        $message = $_REQUEST['message'] ?? '';
-        $from = $_REQUEST['from'] ?? '';
-        $fromTitle = $_REQUEST['from_title'] ?? '';
+        $request = Container::getRequest();
+        $type = (string)$request->request('type', '');
+        $name = (string)$request->request('name', '');
+        $email = strtolower((string)$request->request('email', ''));
+        $phone = (string)$request->request('phone', '');
+        $message = (string)$request->request('message', '');
+        $from = (string)$request->request('from', '');
+        $fromTitle = (string)$request->request('from_title', '');
         $date = Time::create()->asMySQL();
 
         // приводим тип
         if ($type === 'available') {
             $type = 'Сообщить о поступлении';
-            $message = ModelCatalogProduct::findOne(['product_id' => $message])?->name;
+            $message = CatalogProduct::findOne(['product_id' => $message])?->name;
         } elseif ($type === 'callback') {
             $type = 'Остались вопросы';
         }
@@ -56,9 +58,9 @@ class AjaxForm extends ComponentBase
 
         // пишем в БД
         if (!$email) {
-            ModelCallback::insertStatic(['name' => $name, 'phone' => $phone, 'message' => $message, 'date' => $date]);
-        } elseif (!ModelCallbackEmail::findOne(['email' => $email])) {
-            ModelCallbackEmail::insertStatic(['email' => $email, 'is_subscribed' => 1]);
+            Callback::insertStatic(['name' => $name, 'phone' => $phone, 'message' => $message, 'date' => $date]);
+        } elseif (!CallbackEmail::findOne(['email' => $email])) {
+            CallbackEmail::insertStatic(['email' => $email, 'is_subscribed' => 1]);
         }
 
         // запускаем оба канала, даже если первый упал
@@ -94,7 +96,7 @@ HTML;
 
     protected function sendMail(): bool
     {
-        $to = (string)SiteSettings::get('form_email');
+        $to = (string)Settings::get('form_email');
         if (!$to) {
             // уведомления на почту не настроены
             return true;
@@ -156,7 +158,7 @@ HTML;
 **Сообщение: ** {$patch($this->data['message'])}
 MD;
 
-        $token = (string)SiteSettings::get('form_tg_token');
+        $token = (string)Settings::get('form_tg_token');
         if (!$token) {
             // уведомления в Telegram не настроены
             return true;
@@ -171,7 +173,7 @@ MD;
         );
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-            'chat_id' => SiteSettings::get('form_tg_chat_id'),
+            'chat_id' => Settings::get('form_tg_chat_id'),
             'parse_mode' => 'MarkdownV2',
             'text' => $md,
         ]));

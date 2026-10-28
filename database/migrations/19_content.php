@@ -1,8 +1,8 @@
 <?php
 
-use Simflex\DB\Schema;
+use Simflex\Core\DB\Schema;
 
-return new class () implements \Simflex\DB\Migration {
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('content', function (Schema\Table $c) {
@@ -23,7 +23,7 @@ return new class () implements \Simflex\DB\Migration {
         });
 
         $s->seed(function () {
-            \Simflex\Extensions\Content\Models\ModelContent::bulkInsert([
+            \Simflex\Core\Extensions\Content\Models\Content::bulkInsert([
                 [
                     'pid' => null,
                     'active' => 1,

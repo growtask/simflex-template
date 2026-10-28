@@ -3,10 +3,10 @@
 namespace Tests\Unit\Extensions;
 
 use Codeception\Test\Unit;
-use Simflex\Core\Container;
-use Simflex\Core\SiteMenu;
-use Simflex\Http\Html\HtmlRequest;
-use Simflex\Extensions\Menu\Menu;
+use Simflex\Core\System\Container;
+use Simflex\Core\Http\Menu as SiteMenu;
+use Simflex\Core\Http\Html\HtmlRequest;
+use Simflex\Core\Extensions\Menu\Menu;
 
 /**
  * Модуль «Меню» ядра: дерево пунктов, активный раздел, подпункты текущего раздела
@@ -41,12 +41,7 @@ class MenuModuleTest extends Unit
 
     protected function draw(string $path, array $params = []): string
     {
-        $_SERVER['REQUEST_URI'] = $path;
-        try {
-            Container::set('request', new HtmlRequest());
-        } finally {
-            unset($_SERVER['REQUEST_URI']);
-        }
+        Container::set('request', HtmlRequest::create($path));
 
         $module = new Menu([
             'item_id' => 1,
@@ -90,6 +85,6 @@ class MenuModuleTest extends Unit
 
     public function testRegisteredInSite(): void
     {
-        $this->assertSame('Меню', \Simflex\Core\ExtensionRegistry::module(\App\Extensions\Menu\Menu::class)['name'] ?? null);
+        $this->assertSame('Меню', \Simflex\Core\System\ExtensionRegistry::module(\App\Extensions\Menu\Menu::class)['name'] ?? null);
     }
 }

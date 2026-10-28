@@ -2,11 +2,12 @@
 
 namespace Tests\Unit\Layout;
 
-use Simflex\Layout\ConsoleLayout;
-use Simflex\Layout\LayoutBase;
-use Simflex\Layout\LayoutManager;
+use Simflex\Core\System\Container;
+use Simflex\Core\Layout\ConsoleLayout;
+use Simflex\Core\Layout\LayoutBase;
+use Simflex\Core\Layout\LayoutManager;
 use Codeception\Test\Unit;
-use Simflex\Admin\Fields\FieldText;
+use Simflex\Core\Admin\Fields\FieldText;
 
 /**
  * Макеты: части страницы со своим шаблоном и объявленными полями (./sf layout/generate)
@@ -57,7 +58,7 @@ class LayoutTest extends Unit
 
         $this->assertStringContainsString("new ContentTemplateBlock('Hero', [", $code);
         $this->assertStringContainsString(
-            "new FieldDefinition(name: 'top_title', class: \\Simflex\\Admin\\Fields\\FieldString::class, label: 'Заголовок', "
+            "new FieldDefinition(name: 'top_title', class: \\Simflex\\Core\\Admin\\Fields\\FieldString::class, label: 'Заголовок', "
             . "defaultValue: 'Привет'),",
             $code
         );
@@ -69,7 +70,7 @@ class LayoutTest extends Unit
      */
     public function testGenerateCommandDrawsPage(): void
     {
-        $output = (string)shell_exec('cd ' . escapeshellarg(SF_ROOT_PATH) . ' && php sf layout/generate / 2>&1');
+        $output = (string)shell_exec('cd ' . escapeshellarg(Container::getPaths()->getRoot()) . ' && php sf layout/generate / 2>&1');
 
         $this->assertStringNotContainsString('error', $output);
         $this->assertStringContainsString('The layouts of the page declare no fields', $output);

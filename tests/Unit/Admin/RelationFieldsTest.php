@@ -3,12 +3,14 @@
 namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Fields\FieldMultiKey;
-use Simflex\Admin\Fields\FieldRelation;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Admin\Table\Presets\MultiKeyField;
-use Simflex\Admin\Table\Repository;
-use Simflex\Admin\Table\Table;
+use Simflex\Core\Admin\Fields\FieldMultiKey;
+use Simflex\Core\Admin\Fields\FieldRelation;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Admin\Table\Presets\MultiKeyField;
+use Simflex\Core\Admin\Table\Repository;
+use Simflex\Core\Admin\Table\Table;
+use Simflex\Core\Http\Request;
+use Simflex\Core\System\Container;
 use Tests\Support\MockDb;
 
 /**
@@ -19,27 +21,32 @@ class RelationFieldsTest extends Unit
 {
     use MockDb;
 
-    private array $postBackup = [];
-    private array $requestBackup = [];
+    private mixed $requestBackup = null;
 
     protected function _before(): void
     {
-        $this->postBackup = $_POST;
-        $this->requestBackup = $_REQUEST;
-        $_POST = $_REQUEST = [];
+        $this->requestBackup = Container::getRequest();
+        $this->setRequest();
         Table::$currentQuery = null;
     }
 
     protected function _after(): void
     {
-        $_POST = $this->postBackup;
-        $_REQUEST = $this->requestBackup;
+        Container::set('request', $this->requestBackup);
+    }
+
+    /**
+     * Запрос формы раздела: отправленные значения и id записи
+     */
+    private function setRequest(array $post = [], ?int $recordId = null): void
+    {
+        Container::set('request', Request::create('/admin/test', $recordId === null ? [] : ['product_id' => $recordId], $post));
     }
 
     public function testMultiKeySavesNothingWithoutRecordId(): void
     {
         $this->mockRows([], $queries);
-        $_POST['p2p_add'] = '3,4';
+        $this->setRequest(['p2p_add' => '3,4']);
 
         $this->assertSame('', $this->makeMultiKey()->getPOST());
         $this->assertSame([], $queries);
@@ -48,16 +55,17 @@ class RelationFieldsTest extends Unit
     public function testMultiKeySavesRelationsWithParams(): void
     {
         $this->mockRows([], $queries);
-        $_REQUEST['product_id'] = '5';
-        $_POST['p2p_add'] = "3,3,0,4,x' OR 1";
+        $this->setRequest(['p2p_add' => "3,3,0,4,x' OR 1"], 5);
 
         $this->makeMultiKey()->getPOST();
         // id записи — в колонке relation_key, выбранные — в key; повторы и мусор отброшены
-        $this->assertSame([
-            ['DELETE FROM `catalog_p2p_add` WHERE `link_id` = ?', [5]],
-            ['INSERT INTO `catalog_p2p_add` (`link_id`, `product_id`) VALUES (?, ?)', [5, 3]],
-            ['INSERT INTO `catalog_p2p_add` (`link_id`, `product_id`) VALUES (?, ?)', [5, 4]],
-        ], $queries);
+        $this->assertCount(2, $queries);
+        $this->assertStringStartsWith('DELETE FROM `catalog_p2p_add` WHERE `link_id` = :', $queries[0][0]);
+        $this->assertSame([5], array_values($queries[0][1]));
+        $this->assertSame(
+            ['INSERT INTO `catalog_p2p_add` (`link_id`, `product_id`) VALUES (?, ?), (?, ?)', [5, 3, 5, 4]],
+            $queries[1]
+        );
     }
 
     public function testMultiKeyRelationKeyDefaultsToPrimaryKey(): void
@@ -111,7 +119,7 @@ class RelationFieldsTest extends Unit
     public function testRelationSavesNothingWithoutRecordId(): void
     {
         $this->mockRows([], $queries);
-        $_POST['p2p'] = '6,7';
+        $this->setRequest(['p2p' => '6,7']);
 
         $this->assertSame('', $this->makeRelation()->getPOST());
         $this->assertSame([], $queries);
@@ -121,8 +129,7 @@ class RelationFieldsTest extends Unit
     {
         // запись 5 была связана с 8
         $this->mockRows([['id' => 8, 'name' => 'B']], $queries);
-        $_REQUEST['product_id'] = '5';
-        $_POST['p2p'] = '6,7,5';
+        $this->setRequest(['p2p' => '6,7,5'], 5);
 
         $this->makeRelation()->getPOST();
         [$select, $deleteOld, $deleteNew, $insert] = $queries;

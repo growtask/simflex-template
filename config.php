@@ -10,7 +10,7 @@ use App\Extensions\Content\Content;
  *
  * @property string timezone Часовой пояс системы
  */
-class Config extends \Simflex\Core\ConfigBase
+class Config extends \Simflex\Core\System\ConfigBase
 {
     public function load(): void
     {

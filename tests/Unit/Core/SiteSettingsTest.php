@@ -3,7 +3,7 @@
 namespace Tests\Unit\Core;
 
 use Codeception\Test\Unit;
-use Simflex\Core\SiteSettings;
+use Simflex\Core\System\Settings;
 use Tests\Support\MockDb;
 
 /**
@@ -15,21 +15,21 @@ class SiteSettingsTest extends Unit
 
     protected function _before(): void
     {
-        SiteSettings::reset();
+        Settings::reset();
     }
 
     protected function _after(): void
     {
-        SiteSettings::reset();
+        Settings::reset();
     }
 
     public function testValuesAreLoadedOnceAndInterpolated(): void
     {
         $this->mockRows([['alias' => 'greeting', 'value' => 'Hello {name}'], ['alias' => 'phone', 'value' => '123']], $queries);
 
-        $this->assertSame('Hello John', SiteSettings::get('greeting', '', ['name' => 'John']));
-        $this->assertSame('123', SiteSettings::get('phone'));
-        $this->assertSame(['greeting' => 'Hello {name}', 'phone' => '123'], SiteSettings::getAll());
+        $this->assertSame('Hello John', Settings::get('greeting', '', ['name' => 'John']));
+        $this->assertSame('123', Settings::get('phone'));
+        $this->assertSame(['greeting' => 'Hello {name}', 'phone' => '123'], Settings::getAll());
         $this->assertCount(1, $queries);
     }
 
@@ -37,7 +37,7 @@ class SiteSettingsTest extends Unit
     {
         $this->mockRows([], $queries)->method('insertId')->willReturn('1');
 
-        $this->assertSame(5, SiteSettings::get('per_page', 5));
+        $this->assertSame(5, Settings::get('per_page', 5));
         $insert = array_values(array_filter($queries, fn(array $q) => stripos(ltrim($q[0]), 'insert') === 0));
         $this->assertCount(1, $insert);
         $this->assertContains('per_page', $insert[0][1]);

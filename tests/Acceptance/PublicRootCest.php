@@ -17,12 +17,11 @@ class PublicRootCest
         $files = [
             '/.env' => 'DB_PASS',
             '/config.php' => 'namespace App',
-            '/constants.php' => 'SF_ROOT_PATH',
             '/composer.json' => 'growtask/simflex-core',
             '/Core/Privilege.php' => 'namespace App',
             '/sf' => 'runConsole',
             '/vendor/autoload.php' => 'autoload_real.php',
-            '/vendor/growtask/simflex-core/src/Core/Core.php' => 'namespace Simflex',
+            '/vendor/growtask/simflex-core/src/Kernel.php' => 'namespace Simflex',
             '/provider/routes.php' => '<?php',
             '/theme/default/index.tpl' => '<?php',
             '/' . $I->logFile() => 'CODECEPT_LOG_MARKER',

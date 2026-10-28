@@ -1,8 +1,8 @@
 <?php
 
-use Simflex\DB\Schema;
+use Simflex\Core\DB\Schema;
 
-return new class () implements \Simflex\DB\Migration {
+return new class () implements \Simflex\Core\DB\Migration {
     public function up(Schema $s): void
     {
         $s->createTable('settings', function (Schema\Table $c) {
@@ -16,7 +16,7 @@ return new class () implements \Simflex\DB\Migration {
         });
 
         $s->seed(function () {
-            \Simflex\Models\ModelSettings::bulkInsert([
+            \Simflex\Core\Models\Settings::bulkInsert([
                 [
                     'npp' => 0,
                     'name' => 'Название сайта',

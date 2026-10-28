@@ -4,28 +4,29 @@ namespace Tests\Unit\Admin;
 
 use App\Core\Privilege;
 use Codeception\Test\Unit;
-use Simflex\Admin\Core as AdminCore;
-use Simflex\Admin\Menu;
-use Simflex\Admin\MenuItem;
-use Simflex\Admin\Handlers;
-use Simflex\Core\Container;
-use Simflex\Core\ExtensionConfig;
-use Simflex\Models\User;
+use Simflex\Core\Admin\Page;
+use Simflex\Core\Admin\Menu;
+use Simflex\Core\Admin\MenuItem;
+use Simflex\Core\Admin\Handlers;
+use Simflex\Core\Http\Html\HtmlRequest;
+use Simflex\Core\System\Container;
+use Simflex\Core\System\ExtensionConfig;
+use Simflex\Core\Models\User;
 use Tests\Support\MockDb;
 
 /**
- * Меню админки, объявленное в коде (\Simflex\Admin\Menu, App\Admin\Menu)
+ * Меню админки, объявленное в коде (\Simflex\Core\Admin\Menu, App\Admin\Menu)
  */
 class MenuTest extends Unit
 {
     use MockDb;
 
-    private array $serverBackup = [];
+    private mixed $requestBackup = null;
     private mixed $userBackup = null;
 
     protected function _before(): void
     {
-        $this->serverBackup = $_SERVER;
+        $this->requestBackup = Container::getRequest();
         $this->userBackup = Container::isSet('user') ? Container::get('user') : null;
         // меню ядра и сайта — без пунктов установленных расширений (их проверяет ExtensionsTest)
         ExtensionConfig::reset([]);
@@ -34,11 +35,11 @@ class MenuTest extends Unit
 
     protected function _after(): void
     {
-        $_SERVER = $this->serverBackup;
+        Container::set('request', $this->requestBackup);
         Container::set('user', $this->userBackup);
         ExtensionConfig::reset();
         Menu::reset();
-        $this->resetAdminCore();
+        Container::set('page', null);
     }
 
     public function testCoreSections(): void
@@ -102,9 +103,7 @@ class MenuTest extends Unit
         $this->mockRows([]);
         Container::getConfig()->adminPath = '/admin';
         Container::getConfig()->adminMenuClass = TestMenu::class;
-        $_SERVER['REQUEST_URI'] = '/admin/site/redirect';
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $this->resetAdminCore();
+        Container::set('request', HtmlRequest::create('/admin/site/redirect'));
         Container::set('user', new class () extends User {
             public function getPrivileges(): array
             {
@@ -112,27 +111,21 @@ class MenuTest extends Unit
             }
         });
 
-        AdminCore::init();
+        $page = new Page();
+        $page->init();
 
-        $menu = AdminCore::menu();
+        $menu = $page->getMenu();
         // группа dev и раздел manager не показываются
         $this->assertSame(['/account', '/site', '/blog', '/content'], array_keys($menu['']));
         $this->assertArrayNotHasKey('/shop/order', $menu['/shop'] ?? []);
         // подпункты группы dev — как раньше: разделы открываются по своим ссылкам
         $this->assertArrayHasKey('/admin/user', $menu['/admin']);
-        $this->assertSame('/admin/site/redirect', AdminCore::menuCurItem('link'));
+        $this->assertSame('/admin/site/redirect', $page->getCurrentMenuItem('link'));
         $this->assertSame(Handlers\Content::class, $menu['']['/content']['handler']);
         $this->assertSame([
             ['link' => '/admin/site', 'name' => 'Настройки сайта'],
             ['link' => '/admin/site/redirect', 'name' => 'Редиректы'],
-        ], AdminCore::crumbs());
-    }
-
-    private function resetAdminCore(): void
-    {
-        foreach (['menuTree' => [], 'menuById' => [], 'menuCur' => false, 'crumbs' => []] as $name => $value) {
-            (new \ReflectionProperty(AdminCore::class, $name))->setValue(null, $value);
-        }
+        ], $page->getCrumbs());
     }
 }
 
@@ -161,6 +154,6 @@ class BrokenMenu extends Menu
     }
 }
 
-class TestMenuHandler extends \Simflex\Admin\Handlers\Menu
+class TestMenuHandler extends \Simflex\Core\Admin\Handlers\Menu
 {
 }

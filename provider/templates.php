@@ -1,17 +1,17 @@
 <?php
 
 /*
- * Шаблоны страниц: ключ => \Simflex\Extensions\Content\ContentTemplate. Страница ссылается на шаблон по ключу.
+ * Шаблоны страниц: ключ => \Simflex\Core\Extensions\Content\ContentTemplate. Страница ссылается на шаблон по ключу.
  * file: относительно Extensions/Content/tpl. params: дополнительные поля формы страницы, сгруппированные в блоки;
  * их значения — в $content->params по имени поля.
  * Поля, объявленные Layout-компонентами страницы, можно сгенерировать: ./sf layout/generate /page/path
  */
 
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Fields\FieldText;
-use Simflex\Admin\Table\FieldDefinition;
-use Simflex\Extensions\Content\ContentTemplate;
-use Simflex\Extensions\Content\ContentTemplateBlock;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Fields\FieldText;
+use Simflex\Core\Admin\Table\FieldDefinition;
+use Simflex\Core\Extensions\Content\ContentTemplate;
+use Simflex\Core\Extensions\Content\ContentTemplateBlock;
 
 return [
     'index' => new ContentTemplate(

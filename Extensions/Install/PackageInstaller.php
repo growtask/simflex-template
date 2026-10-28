@@ -14,7 +14,7 @@ class PackageInstaller
         ) . '/growtask/simflex-core/src/Extensions/Install/PackageInstaller.php';
         if (is_file($path)) {
             require_once $path;
-            \Simflex\Extensions\Install\PackageInstaller::onPackageEvent($event);
+            \Simflex\Core\Extensions\Install\PackageInstaller::onPackageEvent($event);
         } else {
             echo "[!] PackageInstaller not found, skipping (path: $path).\n";
         }

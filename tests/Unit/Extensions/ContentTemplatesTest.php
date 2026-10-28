@@ -3,9 +3,9 @@
 namespace Tests\Unit\Extensions;
 
 use Codeception\Test\Unit;
-use Simflex\Admin\Fields\FieldString;
-use Simflex\Admin\Table\Repository;
-use Simflex\Extensions\Content\ContentTemplates;
+use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Table\Repository;
+use Simflex\Core\Extensions\Content\ContentTemplates;
 
 /**
  * Шаблоны страниц и их поля объявлены в коде: provider/templates.php
