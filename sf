@@ -1,2 +1,12 @@
-#!/bin/bash
-php console.php "$@"
+#!/usr/bin/env php
+<?php
+
+/*
+ * Консоль сайта: ./sf provider/method [аргументы], список команд - ./sf help, справка - ./sf help provider/method.
+ * Windows: php sf provider/method
+ */
+
+require_once __DIR__ . '/constants.php';
+require_once SF_ROOT_PATH . '/vendor/autoload.php';
+
+(new \Simflex\Application())->runConsole();

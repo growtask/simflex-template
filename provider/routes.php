@@ -1,8 +1,10 @@
 <?php
 
-use App\Extensions\Example\Component\ControllerExample;
+/*
+ * Маршруты сайта: путь => класс компонента или контроллера (наследник ControllerBase).
+ * Маршрут сайта главнее маршрута расширения с тем же путём; пути без маршрута разрешаются по пунктам меню сайта
+ */
 
 return [
     '/' => \App\Extensions\Content\Content::class,
-    '/example' => ControllerExample::class,
 ];

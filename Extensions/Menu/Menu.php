@@ -2,63 +2,10 @@
 
 namespace App\Extensions\Menu;
 
-use Simflex\Core\Container;
-use Simflex\Core\Core;
-use Simflex\Core\ModuleBase;
-
 /**
- *
- * Выводит главное меню сайта
- *
+ * Модуль «Меню» сайта. Логика - в ядре (\Simflex\Extensions\Menu\Menu); свою вёрстку положите в tpl/index.tpl
+ * и tpl/treenode.tpl рядом с этим классом, поведение меняйте переопределением методов
  */
-class Menu extends ModuleBase
+class Menu extends \Simflex\Extensions\Menu\Menu
 {
-    private array|false $menu = false;
-
-    protected function content(): string
-    {
-        $this->menu = Core::menu();
-
-        $start_id = isset($this->params['start_id']) ? (int)$this->params['start_id'] : 0;
-        $pid = $start_id;
-
-        $this->params['max_level'] = isset($this->params['max_level']) ? (int)$this->params['max_level'] : 0;
-
-        $is_child = isset($this->params['is_child']) ? (bool)$this->params['is_child'] : false;
-        if ($is_child) {
-            $pid = -1;
-            if (isset($this->menu[$start_id])) {
-                foreach ($this->menu[$start_id] as $id => $item) {
-                    if ($item['link'] === mb_substr(Container::getRequest()->getPath(), 0, mb_strlen($item['link']))) {
-                        $pid = $item['menu_id'];
-                    }
-                }
-            }
-        }
-
-        return $this->render(__DIR__ . '/tpl/index.tpl', ['pid' => $pid]);
-    }
-
-    private function tree(int|string $pid = 0, int $lvl = 0): string
-    {
-        if (!isset($this->menu[$pid])) {
-            return '';
-        }
-
-        foreach ($this->menu[$pid] as $id => $item) {
-            $c = [];
-            if (empty($item['hidden'])) {
-                $isActive = $item['link'] === '/' && Container::getRequest()->getPath() === '/';
-                $isActive |= $item['link'] !== '/' && $item['link'] === mb_substr(Container::getRequest()->getPath(), 0, mb_strlen($item['link']));
-                $isActive ? $c[] = 'active' : null;
-
-                if ($lvl < $this->params['max_level'] && isset($this->menu[$id])) {
-                    $c[] = 'has-children';
-                }
-            }
-            $this->menu[$pid][$id]['class-a'] = $c;
-        }
-
-        return $this->render(__DIR__ . '/tpl/treenode.tpl', ['pid' => $pid, 'lvl' => $lvl]);
-    }
 }

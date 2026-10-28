@@ -1,11 +1,10 @@
 <?php
 
 /*
- * Провайдеры CLI-команд
+ * Провайдеры CLI-команд сайта: имя => класс-наследник ConsoleBase.
+ * Команды ядра (migrate, layout, cron) и расширений подключаются автоматически; провайдер сайта с тем же именем главнее
  */
 
 return [
-    'migrate' => \Simflex\Core\DB\Cli\Migrator::class,
     'install' => \App\Extensions\Install\Installer::class,
-    'layout' => \App\Extensions\Layout\ConsoleLayout::class,
 ];

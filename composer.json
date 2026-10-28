@@ -25,9 +25,6 @@
     "php": "^8.4",
     "ext-gd": "*",
     "growtask/simflex": "3.*",
-    "vlucas/phpdotenv": "^5.4",
-    "scssphp/scssphp": "^1.11",
-    "tubalmartin/cssmin": "^4.1",
     "ext-readline": "*",
     "growtask/simflex-file-manager": "dev-master",
     "ext-pdo": "*",
@@ -51,11 +48,11 @@
       "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
     ],
     "post-install-cmd": [
-      "php console.php install/install",
+      "php sf install/install",
       "./codecept run --steps"
     ],
     "post-update-cmd": [
-      "php console.php migrate/up"
+      "php sf migrate/up"
     ]
   },
   "autoload": {

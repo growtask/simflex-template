@@ -2,11 +2,22 @@ services:
 
   php:
     build: docker/php
-    volumes:
+    volumes: &php-volumes
       - ./:/var/www/html
       - /var/www:/var/www
     ports:
       - "480:80"
+
+  # Планировщик: ./sf cron/run в начале каждой минуты, вместо системного crontab.
+  # Включается профилем: docker compose --profile cron up -d
+  cron:
+    build: docker/php
+    volumes: *php-volumes
+    working_dir: /var/www/html
+    command: sh -c 'while :; do sleep $$((60 - $$(date +%s) % 60)); php sf cron/run; done'
+    restart: unless-stopped
+    profiles:
+      - cron
 
   db:
     build: docker/mysql

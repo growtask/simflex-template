@@ -29,20 +29,8 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="<?= url(Simflex\Core\Container::getRequest()->getPath()) ?>"/>
 
-    <!-- Main meta data -->
-    <?php
-    $content = App\Extensions\Content\Content::getStatic(Simflex\Core\Container::getRequest()->getPath());
-
-    $title = Simflex\Core\Page::$override['title'] ?? $content['params']['meta_title'] ?? '';
-    if ($title) {
-        Simflex\Core\Page::$override['uses_meta'] = true;
-    }
-    $description = Simflex\Core\Page::$override['description'] ?? $content['params']['meta_de'] ?? '';
-    $keywords = Simflex\Core\Page::$override['keywords'] ?? $content['params']['meta_kw'] ?? '';
-    ?>
+    <!-- Main meta data: title, description, keywords, стили -->
     <?= Simflex\Core\Page::meta() ?>
-    <meta name="description" content="<?= $description ?>"/>
-    <meta name="keywords" content="<?= $keywords ?>"/>
     <meta name="robots" content="index, follow">
 
     <!-- Structured data -->
@@ -51,13 +39,13 @@
             "@context": "https://schema.org",
             "@type": "WebPage",
             "name": "{site_name}",
-            "description": "<?= $description ?>",
+            "description": "<?= htmlspecialchars(Simflex\Core\PageSeo::getDescription()) ?>",
             "url": "<?= url('') ?>",
             "logo": "<?= url('/assets/meta/favicon/icon.svg') ?>",
             "sameAs": [
-                "<?= Simflex\Core\Core::siteParam('tg') ?>",
-                "<?= Simflex\Core\Core::siteParam('vk') ?>",
-                "<?= Simflex\Core\Core::siteParam('whats_app') ?>"
+                "<?= \Simflex\Core\SiteSettings::get('tg') ?>",
+                "<?= \Simflex\Core\SiteSettings::get('vk') ?>",
+                "<?= \Simflex\Core\SiteSettings::get('whats_app') ?>"
             ],
             "telephone": "{phone}",
             "email": "{email}",
@@ -67,9 +55,9 @@
 
     <!-- Open Graph data -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="<?= $title ?>">
+    <meta property="og:title" content="<?= htmlspecialchars(Simflex\Core\PageSeo::getFullTitle()) ?>">
     <meta property="og:url" content="<?= url(Simflex\Core\Container::getRequest()->getPath()) ?>">
-    <meta property="og:description" content="<?= $description ?>">
+    <meta property="og:description" content="<?= htmlspecialchars(Simflex\Core\PageSeo::getDescription()) ?>">
     <meta property="og:site_name" content="{site_name}">
     <meta property="og:logo" content="<?= url('/assets/meta/favicon/icon-192.png') ?>">
     <meta property="og:locale" content="ru_RU"/>

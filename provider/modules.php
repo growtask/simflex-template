@@ -7,6 +7,7 @@
  */
 
 return [
+    \App\Extensions\Menu\Menu::class,
     \Simflex\Extensions\Code\Code::class,
     \Simflex\Extensions\Block\Block::class,
 ];
