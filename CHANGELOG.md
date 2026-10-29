@@ -16,7 +16,7 @@
   в `composer.json`.
 - **PHP 8.4:** образ `php:8.4-apache-bookworm`, `"php": "^8.4"` в `composer.json`.
 - **Корень веб-сервера — `public/`:** единственная точка входа `public/index.php` (сайт, админка и файловый
-  менеджер `{adminPath}/fm`), статика сайта — `public/assets`, загруженные файлы — `public/uf`. Удалены `index.php`,
+  менеджер `{adminPath}/fm`), статика сайта — `public/assets/<тема>` (`default`), загруженные файлы — `public/uf`. Удалены `index.php`,
   `Admin/index.php`, `fm.php` в корне; `.htaccess` перенесён в `public/`.
 - **Миграции без структуры в базе:** удалены миграции `struct_*`, `component`, `component_param`, `module`,
   `module_param`, `admin_menu`, `content_template`, `content_template_param`.

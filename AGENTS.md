@@ -13,8 +13,11 @@
 - `Admin/Handlers/` и `Admin/handlers.php` — разделы админки сайта (создаются, когда нужны).
 - `database/migrations/` — миграции с начальными данными (`$s->seed()`), `./sf migrate/create` нумерует новые.
 - Точки входа — `public/index.php` (веб) и `sf` (консоль): загрузку и запуск выполняет `\Simflex\Core\Kernel` ядра.
-- `public/` — корень веб-сервера (`public/index.php` — единственная точка входа, `public/assets` — статика сайта,
-  `public/uf` — загруженные файлы).
+- `public/` — корень веб-сервера (`public/index.php` — единственная точка входа, `public/uf` — загруженные файлы).
+- `public/assets/<тема>/` — статика сайта, ровно один уровень вложенности: название темы, как в `theme/`
+  (`public/assets/default/fonts|icons|images|meta`, ссылки `/assets/default/…`). `asset()` и `renderIcon()` ядра
+  берут тему из `config->theme`; в шаблонах тем пути пишутся с названием темы, файлы вне каталога темы
+  в `public/assets` не кладутся.
 - `Extensions/`, `Layout/`, `theme/` — код и вёрстка сайта; `functions.php` — функции сайта.
 - `CHANGELOG.md` — журнал изменений шаблона.
 
