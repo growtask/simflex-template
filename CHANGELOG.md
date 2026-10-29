@@ -84,5 +84,7 @@
 
 ### Исправлено
 
+- Миграции `05_user_privilege_personal` и `06_user_auth`: внешний ключ на `user` с `ON DELETE CASCADE` — пользователь
+  с токеном «запомнить меня» или личной привилегией не удалялся.
 - Имя класса `App\Extensions\Install\PackageInstaller`: composer-скрипты не находили его.
 - Закрыта отдача каталогов `.git` и `.idea` по HTTP.
