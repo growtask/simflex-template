@@ -1,3 +1,38 @@
+<?php
+
+use Simflex\Core\Layout\Components\Common\Footer\Layout as Footer;
+use Simflex\Core\Layout\Components\Common\Form\Callback\CallbackLayout;
+use Simflex\Core\Layout\Components\Common\Form\Callback\Layout as Callback;
+use Simflex\Core\Layout\Components\Common\Header\Layout as Header;
+use Simflex\Core\Layout\Components\Common\HeaderBanner\Layout as HeaderBanner;
+use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
+use Simflex\Core\Layout\Components\Common\Modal\ModalSize;
+use Simflex\Core\System\Settings;
+
+$socials = ['telegram' => Settings::get('tg'), 'vkontakte' => Settings::get('vk'), 'whatsapp' => Settings::get('whats_app')];
+
+// Компоненты рисуются до вывода <head>: стили и скрипты компонентов собираются в $page->getMeta()
+$headerHtml = Header::drawHeader(
+    banner: HeaderBanner::drawHeaderBanner(
+        text: (string)Settings::get('header_banner_text'),
+        buttonText: (string)Settings::get('header_banner_button'),
+        buttonLink: (string)Settings::get('header_banner_link'),
+    ),
+    items: Header::getMenuItems(),
+    logoName: (string)Settings::get('site_name'),
+    phone: (string)Settings::get('phone'),
+    email: (string)Settings::get('email'),
+    socials: $socials,
+);
+$footerHtml = Footer::drawFooter();
+$modalHtml = Modal::drawModal(
+    id: 'callback',
+    title: 'Связаться с нами',
+    text: 'Оставьте заявку, и мы свяжемся с вами в ближайшее время.',
+    content: Callback::drawCallback(layout: CallbackLayout::Stack),
+    size: ModalSize::Small,
+);
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -31,6 +66,8 @@
 
     <!-- Main meta data: title, description, keywords, стили -->
     <?= $page->getMeta() ?>
+    <!-- Стили сайта: после стилей компонентов, чтобы переопределять их -->
+    <link rel="stylesheet" href="<?= asset('css/site.css') ?>">
     <meta name="robots" content="index, follow">
 
     <!-- Structured data -->
@@ -38,7 +75,7 @@
         {
             "@context": "https://schema.org",
             "@type": "WebPage",
-            "name": "{site_name}",
+            "name": "<?= htmlspecialchars((string)Settings::get('site_name')) ?>",
             "description": "<?= htmlspecialchars(Simflex\Core\Http\PageSeo::getDescription()) ?>",
             "url": "<?= url('') ?>",
             "logo": "<?= url('/assets/default/meta/favicon/icon.svg') ?>",
@@ -47,9 +84,9 @@
                 "<?= \Simflex\Core\System\Settings::get('vk') ?>",
                 "<?= \Simflex\Core\System\Settings::get('whats_app') ?>"
             ],
-            "telephone": "{phone}",
-            "email": "{email}",
-            "openingHours": "{workhours}"
+            "telephone": "<?= htmlspecialchars((string)Settings::get('phone')) ?>",
+            "email": "<?= htmlspecialchars((string)Settings::get('email')) ?>",
+            "openingHours": "<?= htmlspecialchars((string)Settings::get('workhours')) ?>"
         }
     </script>
 
@@ -58,7 +95,7 @@
     <meta property="og:title" content="<?= htmlspecialchars(Simflex\Core\Http\PageSeo::getFullTitle()) ?>">
     <meta property="og:url" content="<?= url(Simflex\Core\System\Container::getRequest()->getPath()) ?>">
     <meta property="og:description" content="<?= htmlspecialchars(Simflex\Core\Http\PageSeo::getDescription()) ?>">
-    <meta property="og:site_name" content="{site_name}">
+    <meta property="og:site_name" content="<?= htmlspecialchars((string)Settings::get('site_name')) ?>">
     <meta property="og:logo" content="<?= url('/assets/default/meta/favicon/icon-192.png') ?>">
     <meta property="og:locale" content="ru_RU"/>
     <meta property="og:image" content="<?= url('/assets/default/meta/og-image.png') ?>">
@@ -70,7 +107,13 @@
 
 </head>
 <body>
+<?= $headerHtml ?>
+<main>
 <?= $page->getContent() ?>
+</main>
+<?= $footerHtml ?>
+<?= $modalHtml ?>
+
 
 <?= $page->getMetaJs() ?>
 </body>

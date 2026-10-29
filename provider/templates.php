@@ -8,6 +8,7 @@
  */
 
 use Simflex\Core\Admin\Fields\FieldString;
+use Simflex\Core\Admin\Fields\FieldTable;
 use Simflex\Core\Admin\Fields\FieldText;
 use Simflex\Core\Admin\Table\FieldDefinition;
 use Simflex\Core\Extensions\Content\ContentTemplate;
@@ -18,6 +19,38 @@ return [
         name: 'Главная',
         file: 'index.tpl',
         params: [
+            new ContentTemplateBlock('Слайдер', [
+                new FieldDefinition(
+                    name: 'slides',
+                    class: FieldTable::class,
+                    label: 'Слайды',
+                    params: ['struct' => FieldTable::makeValue([], [
+                        FieldTable::makeStruct('title', 'text', 'Заголовок'),
+                        FieldTable::makeStruct('text', 'text', 'Описание'),
+                        FieldTable::makeStruct('image', 'image', 'Картинка'),
+                        FieldTable::makeStruct('buttonText', 'text', 'Текст кнопки'),
+                        FieldTable::makeStruct('buttonLink', 'text', 'Ссылка кнопки'),
+                    ])],
+                ),
+            ]),
+            new ContentTemplateBlock('Преимущества', [
+                new FieldDefinition(name: 'features_title', class: FieldString::class, label: 'Заголовок блока'),
+                new FieldDefinition(
+                    name: 'benefits',
+                    class: FieldTable::class,
+                    label: 'Преимущества',
+                    params: ['struct' => FieldTable::makeValue([], [
+                        FieldTable::makeStruct('title', 'text', 'Заголовок'),
+                        FieldTable::makeStruct('text', 'text', 'Текст'),
+                        FieldTable::makeStruct('icon', 'text', 'Иконка (имя из спрайта)'),
+                    ])],
+                ),
+            ]),
+            new ContentTemplateBlock('Связаться с нами', [
+                new FieldDefinition(name: 'rform_title', class: FieldString::class, label: 'Заголовок'),
+                new FieldDefinition(name: 'rform_desc', class: FieldText::class, label: 'Описание'),
+                new FieldDefinition(name: 'rform_image', class: FieldString::class, label: 'Картинка (адрес)'),
+            ]),
             new ContentTemplateBlock('SEO', [
                 new FieldDefinition(name: 'seo_title_1', class: FieldString::class, label: 'SEO заголовок 1'),
                 new FieldDefinition(

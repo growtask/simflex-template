@@ -29,6 +29,24 @@
 
 ### Добавлено
 
+- Реальные ресурсы из Figma вместо заглушек: знаки бренда `public/assets/default/images/brand/` (`logo`, `made-in`, `made-by` и варианты `*-dark`), картинки баннера и блока r-form `public/assets/default/images/banner/` (webp до 10 КБ; сидер `19_content.php` ссылается на них; водяной знак макета в картинку формы не попал, взят его градиент), иконки `icon-error` и `icon-alert` в `icons.svg` выгружены из Figma.
+- Иконки соцсетей в `public/assets/default/icons/icons.svg` по Figma (наборы `social`, `social-monochrome`): `icon-social-<сеть>`
+  (цветные) и `icon-social-monochrome-<сеть>` (`currentColor`) для figma, google, instagram, max, rutube, telegram,
+  vkontakte, whatsapp, yandex, yandex-zen, youtube; их использует компонент `Social`. Старые `icon-social-mono-*` оставлены.
+- Шапка сайта: ключи настроек `header_banner_text`, `header_banner_button`, `header_banner_link` (строка над шапкой,
+  `28_settings.php`), вёрстка модуля «Меню» (`Extensions/Menu/tpl`: `Tab` и `DropdownTab`), раздел `header`
+  в `public/assets/default/css/site.css` (поля шапки 250 / 45 / 16).
+- Стили блоков `fs` (баннер) и `features` (преимущества, сетка 4 / 4 / 2 / 1) и поля страницы `--page-gutter`
+  в `public/assets/default/css/site.css`.
+- Подвал: раздел `footer` в `public/assets/default/css/site.css` (поля 250 / 45 / 16 / 16, нижний отступ
+  `--footer-indent-bottom`: 80 на fullhd и hd, 150 на tablet и mobile как в макете — место под нижнюю панель
+  расширений каталога и магазина).
+- Миграция `23_menu.php`: колонка `place` (`main` / `footer`) для меню подвала; шаблон сидирует только «Главная»,
+  колонки подвала (Информация, FAQ, Правовая информация, Контакты) добавят страницы, когда они появятся в шаблоне,
+  и расширения своими миграциями.
+- Спрайт `public/assets/default/icons/icons.svg`: иконки `error` и `alert`. Отдельный css сайта
+  `public/assets/default/css/site.css` (заготовка для расстановки блоков), подключён в `theme/default/index.tpl`
+  после стилей компонентов.
 - `provider/components.php`, `provider/modules.php` — компоненты и модули сайта; `provider/cron.php` — задачи cron;
   `provider/templates.php` — шаблоны страниц и их поля (шаблон «Главная»).
 - `App\Core\Privilege` — привилегии сайта (`manager`), `config.php`: `privilegeClass`.
@@ -43,8 +61,21 @@
   расширения, код шаблона. Общие шаги в `AcceptanceTester`, `MockDb` для unit-тестов без БД.
 - `.php-cs-fixer.php` и `make cs-fix` — проверка стиля ядра и шаблона (в том числе лишних `use`).
 - PHPStan (`phpstan.neon`, `make phpstan`) — статический анализ шаблона, ядра и тестов.
+- **Приём формы «Связаться с нами».** `POST /form/callback` (`provider/routes.php`, компонент
+  `Extensions/Form/Components/CallbackForm`, обработчик `Extensions/Form/CallbackHandler`): проверка на сервере
+  (имя, телефон, почта, комментарий до 300 знаков, согласие обязательно), защита от ботов (`FormGuard` ядра),
+  отправка по настроенным каналам — почта `form_email` и Telegram `form_tg_token` + `form_tg_chat_id`
+  (`Extensions/Form/Notifiers`, каналы подменяются в тестах). Без настроенных каналов заявка пишется в журнал.
+- **Блок `r-form`** в `public/assets/default/css/site.css`: рамка, форма слева, картинка справа, вертикально
+  на tablet и mobile.
+- Тесты: `tests/Unit/App/CallbackHandlerTest.php`, `tests/Unit/Layout/FormComponentsTest.php`,
+  `tests/Acceptance/FormCallbackCest.php` (работает на главной, когда в ней есть блок `.r-form` и окно `#callback`).
 
 ### Изменено
+
+- Сверка главной с Figma: `site.css` — размеры mobile в `vw` пересчитаны на базу 414; `r-form` — две равные колонки
+  (650 + 650), карточка и картинка высотой 638, на mobile рамка во всю ширину, заголовок tablet и mobile 24;
+  окно «Связаться с нами» — размер `s` (560) с пояснением (`theme/default/index.tpl`); картинка `r-form` в обёртке.
 
 - `./sf layout/generate` печатает код полей компонентов страницы для `provider/templates.php` вместо записи в БД.
 - **Layout — в ядре** (`Simflex\Core\Layout`): `Layout/LayoutBase.php`, `LayoutManager.php`, компоненты, `assetsGlobal`

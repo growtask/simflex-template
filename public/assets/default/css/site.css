@@ -1,0 +1,341 @@
+/*
+ * Стили сайта: расстановка блоков главной страницы.
+ * Подключается в theme/default/index.tpl после $page->getMeta(), то есть после стилей компонентов
+ * (стили без @layer к тому же сильнее стилей компонентов из @layer). Цвета, шрифты, радиусы и тени -
+ * только переменные из assetsGlobal ядра (--gray-*, --color1-*, --radius-ui-*, --shadow-gray-* и др.).
+ */
+
+/* ===== header ===== */
+
+/* Поля шапки: 250 (fullhd), 45 (hd), 16 (tablet, mobile); шире 1920 содержимое 1420 по центру */
+.header__container {
+    max-width: 1920px;
+    padding-inline: 250px;
+}
+
+@media screen and (width > 1920px) {
+    .header__container {
+        max-width: 1420px;
+        padding-inline: 0;
+    }
+}
+
+@media screen and (width <= 1401px) {
+    .header__container {
+        padding-inline: 45px;
+    }
+}
+
+@media screen and (width <= 811px) {
+    .header__container {
+        padding-inline: 16px;
+    }
+}
+
+/* Строка над шапкой: те же поля, что у шапки */
+.header-banner__container {
+    box-sizing: border-box;
+    max-width: 1920px;
+    margin-inline: auto;
+    padding-inline: 250px;
+}
+
+@media screen and (width > 1920px) {
+    .header-banner__container {
+        max-width: 1420px;
+        padding-inline: 0;
+    }
+}
+
+@media screen and (width <= 1401px) {
+    .header-banner__container {
+        padding-inline: 45px;
+    }
+}
+
+@media screen and (width <= 811px) {
+    .header-banner__container {
+        padding-inline: 16px;
+    }
+}
+
+/* ===== banner ===== */
+
+/*
+ * Поля страницы (Figma, каркас 2.3): 250 / 45 / 16 / 16. Размеры в vw, как в компонентах ядра (vw, vwh, vwt, vwm).
+ * Переменная общая для блоков страницы.
+ */
+:root {
+    --page-gutter: 13.0208vw;
+}
+
+@media screen and (width <= 1401px) {
+    :root {
+        --page-gutter: 3.2943vw;
+    }
+}
+
+@media screen and (width <= 811px) {
+    :root {
+        --page-gutter: 2.0833vw;
+    }
+}
+
+@media screen and (width <= 481px) {
+    :root {
+        --page-gutter: 3.8648vw;
+    }
+}
+
+/* fs: первый экран с баннером, поля 250 / 45 / 16, сверху 20 (12), снизу 40 (20) */
+.fs {
+    box-sizing: border-box;
+    padding: 1.0417vw var(--page-gutter) 2.0833vw;
+}
+
+@media screen and (width <= 1401px) {
+    .fs {
+        padding-top: 1.4641vw;
+        padding-bottom: 2.9283vw;
+    }
+}
+
+@media screen and (width <= 811px) {
+    .fs {
+        padding-top: 1.5625vw;
+        padding-bottom: 2.6042vw;
+    }
+}
+
+@media screen and (width <= 481px) {
+    .fs {
+        padding-top: 2.8986vw;
+        padding-bottom: 4.8309vw;
+    }
+}
+
+/* ===== features ===== */
+
+/* features: заголовок и сетка преимуществ; отступы блока 80 (40), зазор заголовок - список 40 (32) */
+.features {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 4.1667vw var(--page-gutter);
+    gap: 2.0833vw;
+}
+
+.features__title_h2 {
+    margin: 0;
+    color: var(--gray-black);
+    font-size: 2.1875vw;
+    font-weight: 700;
+    line-height: 100%;
+}
+
+/* items_list: 4 колонки, зазор 20; ряды с зазором 20 (tablet, mobile - 32) */
+.features__items_list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+    column-gap: 1.0417vw;
+    row-gap: 1.0417vw;
+}
+
+@media screen and (width <= 1401px) {
+    .features {
+        padding-block: 5.8565vw;
+        gap: 2.9283vw;
+    }
+
+    .features__title_h2 {
+        font-size: 3.0747vw;
+    }
+
+    .features__items_list {
+        column-gap: 1.4641vw;
+        row-gap: 1.4641vw;
+    }
+}
+
+/* tablet: 2 колонки, зазор колонок 16, рядов 32 */
+@media screen and (width <= 811px) {
+    .features {
+        padding-block: 5.2083vw;
+        gap: 4.1667vw;
+    }
+
+    .features__title_h2 {
+        font-size: 3.6458vw;
+    }
+
+    .features__items_list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 2.0833vw;
+        row-gap: 4.1667vw;
+    }
+}
+
+/* mobile: 1 колонка, зазор 32 */
+@media screen and (width <= 481px) {
+    .features {
+        padding-block: 9.6619vw;
+        gap: 7.7294vw;
+    }
+
+    .features__title_h2 {
+        font-size: 6.7633vw;
+    }
+
+    .features__items_list {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 7.7294vw;
+    }
+}
+
+/* ===== r-form ===== */
+
+/*
+ * Блок «Связаться с нами» (Figma: r-form 878 / 878 / 1002 / 1128). Слои: container (рамка), form-block (белая
+ * карточка: text + callback), img. Классы-связи: .r-form, .r-form__container, .r-form__form-block, .r-form__text,
+ * .r-form__title_h3, .r-form__desc, .r-form__img.
+ * Поля страницы - --page-gutter (общая переменная блока banner), отступы секции 80 (40 на tablet и mobile).
+ */
+.r-form {
+    box-sizing: border-box;
+    max-width: 1920px;
+    margin-inline: auto;
+    padding: 80px var(--page-gutter, 250px);
+}
+
+.r-form__container {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px;
+    align-items: stretch;
+    padding: 40px;
+    background: var(--color1-lighter);
+    border-radius: calc(var(--radius-blocks) + 8px);
+}
+
+.r-form__form-block {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+    /* Высота карточки и картинки в макете 638 (с виджетом капчи) */
+    min-height: 638px;
+    padding: 40px;
+    background: var(--gray-white);
+    border-radius: var(--radius-ui-xlarge);
+}
+
+.r-form__text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.r-form__title_h3 {
+    margin: 0;
+    color: var(--color-text-icon-gray-black);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.r-form__desc {
+    margin: 0;
+    color: var(--color-text-icon-gray-dark);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Картинка 650 x 638 справа: занимает половину рамки и тянется на её высоту */
+.r-form__img {
+    position: relative;
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--radius-ui-xlarge);
+}
+
+.r-form__img img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* tablet и mobile: рамка 16, карточка 20, картинка 280 под формой */
+@media screen and (width <= 811px) {
+    .r-form {
+        padding-block: 40px;
+    }
+
+    .r-form__container {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .r-form__form-block {
+        min-height: 0;
+        padding: 20px;
+    }
+
+    .r-form__title_h3 {
+        font-size: 24px;
+        line-height: 1;
+    }
+
+    .r-form__img {
+        height: 280px;
+    }
+}
+
+/* mobile: рамка во всю ширину экрана (в макете container 414), карточка и картинка с полями 16 */
+@media screen and (width <= 481px) {
+    .r-form {
+        padding-inline: 0;
+    }
+}
+
+
+/* ===== footer ===== */
+
+/*
+ * Подвал (Figma footer_market): боковые поля 250 / 45 / 16 / 16 и нижний отступ.
+ * Нижний отступ на tablet и mobile 150 как в макете: там место под нижнюю панель (tapbar_market), которую
+ * подключают расширения каталога и магазина. В самом шаблоне панели нет - пустая полоса снизу осознанная.
+ * Расширение, которое выводит свою панель, меняет отступ переменной: .footer { --footer-indent-bottom: ... }.
+ */
+.footer {
+    padding-inline: 13.0208vw;
+    --footer-indent-bottom: 4.1667vw;
+}
+
+@media screen and (width <= 1401px) {
+    .footer {
+        padding-inline: 3.2943vw;
+        --footer-indent-bottom: 5.8565vw;
+    }
+}
+
+@media screen and (width <= 811px) {
+    .footer {
+        padding-inline: 2.0833vw;
+        --footer-indent-bottom: 19.5313vw;
+    }
+}
+
+@media screen and (width <= 481px) {
+    .footer {
+        padding-inline: 3.8648vw;
+        --footer-indent-bottom: 36.2319vw;
+    }
+}

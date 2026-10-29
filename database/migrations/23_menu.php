@@ -11,6 +11,8 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->string('component');
             $c->boolean('active')->setDefault(0);
             $c->boolean('hidden')->setDefault(0);
+            // Где выводится: основное меню (шапка) или подвал (корневые пункты - колонки, вложенные - их ссылки)
+            $c->enum('place', ['main', 'footer'])->setDefault('main')->comment('Основное меню;;Подвал');
             $c->integer('npp')->setDefault(0);
             $c->string('name');
             $c->string('link');
@@ -23,6 +25,7 @@ return new class () implements \Simflex\Core\DB\Migration {
                     'component' => \App\Extensions\Content\Content::class,
                     'active' => true,
                     'hidden' => false,
+                    'place' => 'main',
                     'npp' => 1,
                     'name' => 'Главная',
                     'link' => '/',

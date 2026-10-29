@@ -7,4 +7,6 @@
 
 return [
     '/' => \App\Extensions\Content\Content::class,
+    // приём формы «Связаться с нами»
+    '/form/callback' => \App\Extensions\Form\Components\CallbackForm::class,
 ];
