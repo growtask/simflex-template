@@ -58,9 +58,9 @@ class AjaxForm extends ComponentBase
 
         // пишем в БД
         if (!$email) {
-            Callback::insertStatic(['name' => $name, 'phone' => $phone, 'message' => $message, 'date' => $date]);
+            Callback::insert(['name' => $name, 'phone' => $phone, 'message' => $message, 'date' => $date]);
         } elseif (!CallbackEmail::findOne(['email' => $email])) {
-            CallbackEmail::insertStatic(['email' => $email, 'is_subscribed' => 1]);
+            CallbackEmail::insert(['email' => $email, 'is_subscribed' => 1]);
         }
 
         // запускаем оба канала, даже если первый упал

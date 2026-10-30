@@ -109,7 +109,7 @@ class Installer extends ConsoleBase
             }
 
             // пишем в таблицу миграций
-            Migration::insertStatic([
+            Migration::insert([
                 'file' => '00_migration',
             ]);
 
