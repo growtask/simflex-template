@@ -12,6 +12,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->addConstraint()->foreignKey('user', ['user_id' => 'user_id'])
                 ->onDelete(ConstraintParams::REFERENCE_OPTION_CASCADE); // записи удаляются вместе с пользователем
             $c->string('privilege', 64);
+            $c->noTimestamps();
         });
     }
 

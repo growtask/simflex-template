@@ -12,7 +12,6 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->addConstraint()->foreignKey('user', ['user_id' => 'user_id'])
                 ->onDelete(ConstraintParams::REFERENCE_OPTION_CASCADE); // записи удаляются вместе с пользователем
             $c->string('token');
-            $c->addColumn('time_create', 'timestamp')->setDefault('CURRENT_TIMESTAMP');
             $c->addColumn('time_last_login', 'timestamp')->index();
             $c->dateTime('time_expires');
             $c->string('useragent');

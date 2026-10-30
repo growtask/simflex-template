@@ -134,7 +134,7 @@ class TestExtension extends ExtensionConfig
     public int $loadOrder = 0;
     protected array $components = [TestExtensionComponent::class];
     protected array $modules = [TestExtensionModule::class];
-    protected array $handlers = [TestExtensionTable::class];
+    protected array $adminHandlers = [TestExtensionTable::class];
     protected array $routes = ['/test-extension' => TestExtensionComponent::class, '/' => TestExtensionComponent::class];
     protected array $services = ['web' => [TestExtensionComponent::class]];
     protected array $events = ['test-event' => [TestExtensionComponent::class]];

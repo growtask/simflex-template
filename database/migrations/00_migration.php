@@ -8,6 +8,7 @@ return new class () implements \Simflex\Core\DB\Migration {
         $s->createTable('migration', function (Schema\Table $c) {
             $c->id('id');
             $c->string('file');
+            $c->noTimestamps();
         });
     }
 

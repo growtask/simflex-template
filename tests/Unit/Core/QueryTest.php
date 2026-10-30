@@ -44,8 +44,8 @@ class QueryTest extends Unit
         $this->mockRows([], $queries);
         $this->assertTrue(ModuleItem::upsert(['item_id' => 3, 'name' => "N'", 'active' => true], ['name']));
         $this->assertSame([[
-            'insert into `module_item` (`item_id`, `name`, `active`) values (?, ?, ?)'
-            . ' on duplicate key update `name` = VALUES(`name`)',
+            'insert into `module_item` (`item_id`, `name`, `active`, `time_create`, `time_update`)'
+            . ' values (?, ?, ?, NOW(), NOW()) on duplicate key update `name` = VALUES(`name`), `time_update` = NOW()',
             [3, "N'", 1],
         ]], $queries);
     }

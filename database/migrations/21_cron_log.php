@@ -10,6 +10,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->string('job', 100)->index();
             $c->dateTime('datetime');
             $c->string('result', 2047);
+            $c->noTimestamps();
         });
     }
 

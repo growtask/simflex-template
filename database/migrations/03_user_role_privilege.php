@@ -11,6 +11,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->id('id');
             $c->integer('role_id')->foreignKey('user_role');
             $c->string('privilege', 64);
+            $c->noTimestamps();
         });
 
         $s->seed(function () {

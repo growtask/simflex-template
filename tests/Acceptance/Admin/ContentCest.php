@@ -113,6 +113,9 @@ class ContentCest
         $detail = $this->fetch($I, '/admin/content/?ajax=1&action=showDetail&id=1')['body'];
         $I->assertStringContainsString('modal-info__table', $detail);
         $I->assertStringContainsString('Главная', $detail);
+        // колонки времени модели выводятся только в карточке записи
+        $I->assertStringContainsString('<th>Создано</th>', $detail);
+        $I->assertStringContainsString('<th>Изменено</th>', $detail);
 
         $I->dontSeeLogProblems();
     }

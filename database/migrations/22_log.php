@@ -12,6 +12,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->string('ip');
             $c->string('browser');
             $c->string('data', 1000);
+            $c->noTimestamps();
         });
     }
 

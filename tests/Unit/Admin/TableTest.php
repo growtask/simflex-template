@@ -219,4 +219,7 @@ class TestTableModel extends ModelBase
 {
     protected static string $table = 'test_table';
     protected static string $primaryKeyName = 'id';
+
+    public const ?string COLUMN_TIME_CREATE = null;
+    public const ?string COLUMN_TIME_UPDATE = null;
 }

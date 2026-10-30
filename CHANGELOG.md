@@ -12,6 +12,8 @@
 
 ### Несовместимые изменения
 
+- **`ExtensionConfig`:** в `provider/extensions/*.php` свойство `$handlers` → `$adminHandlers`.
+- **`time_create`, `time_update`:** миграции таблиц сущностей (пользователи, роли, меню, модули, страницы, настройки, задачи cron, SEO, виджеты) получили колонки автоматически (`createTable()`), таблицы связей, кэшей и журналов — `noTimestamps()`; в `user_auth` колонка `time_create` стала общей.
 - **Пути без конечного «/»:** миграции страниц контента (`/catalog`, `/cart`, `/user`, `/blog` и др.) и тесты; адрес со слэшем на конце — 404.
 - **Ядро — пакет `growtask/simflex-core`** (было `growtask/simflex`): `"growtask/simflex-core": "4.0.x-dev"`
   в `composer.json`.

@@ -10,6 +10,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->id('privilege_id');
             $c->string('name', 64)->unique();
             $c->boolean('active')->setDefault(1);
+            $c->noTimestamps();
         });
     }
 
