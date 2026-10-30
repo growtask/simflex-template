@@ -28,6 +28,9 @@ class Config extends \Simflex\Core\System\ConfigBase
         $this->enableLogging = env('LOGGING', $this->enableLogging);
         $this->logToFile = env('IS_LOG_TO_FILE', $this->logToFile);
 
+        $this->telegram['token'] = env('TELEGRAM_TOKEN', $this->telegram['token'] ?? '');
+        $this->telegram['proxy'] = env('TELEGRAM_PROXY', '');
+
         // дополнительные настройки
         $this->extra['timezone'] = env('TIMEZONE', 'Asia/Yekaterinburg');
     }
