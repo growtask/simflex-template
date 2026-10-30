@@ -307,7 +307,7 @@ class UiCoreTest extends Unit
         $this->assertStringContainsString('href="/privacy/"', $html);
         $this->assertStringContainsString('name="agree"', $html);
 
-        $this->assertStringContainsString('href="/policy/"', Checkbox::drawCheckbox(policy: true));
+        $this->assertStringContainsString('href="/policy"', Checkbox::drawCheckbox(policy: true));
     }
 
     public function testCheckboxSizeStatesAndText(): void

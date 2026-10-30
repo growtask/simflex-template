@@ -82,7 +82,7 @@ class TableActionsCest
             $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
             $I->dontSeeErrors();
             $I->assertSame(
-                [['path' => '/codecept-child/']],
+                [['path' => '/codecept-child']],
                 $I->grabRowsFromSql('SELECT path FROM content WHERE content_id = ?', [$id])
             );
         } finally {

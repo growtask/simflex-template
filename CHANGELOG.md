@@ -12,6 +12,7 @@
 
 ### Несовместимые изменения
 
+- **Пути без конечного «/»:** миграции страниц контента (`/catalog`, `/cart`, `/user`, `/blog` и др.) и тесты; адрес со слэшем на конце — 404.
 - **Ядро — пакет `growtask/simflex-core`** (было `growtask/simflex`): `"growtask/simflex-core": "4.0.x-dev"`
   в `composer.json`.
 - **PHP 8.4:** образ `php:8.4-apache-bookworm`, `"php": "^8.4"` в `composer.json`.

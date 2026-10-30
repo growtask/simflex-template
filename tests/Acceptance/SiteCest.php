@@ -46,4 +46,10 @@ class SiteCest
         }
         $I->dontSeeLogProblems();
     }
+
+    public function tryToOpenPathWithTrailingSlash(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/404/');
+        $I->seeCurrentUrlEquals('/404');
+    }
 }
