@@ -3,7 +3,7 @@
 /*
  * Задачи cron: ключ => \Simflex\Core\Cron\CronJob.
  * timing и active — значения по умолчанию: админка (Управление → Cron) хранит изменённые значения в БД.
- * Запустить задачу сейчас: php cron.php --job=<key>
+ * Запустить задачу сейчас: ./sf cron/run --job=<key>
  */
 
 use Simflex\Core\Cron\CronJob;

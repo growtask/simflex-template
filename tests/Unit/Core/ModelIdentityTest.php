@@ -27,4 +27,21 @@ class ModelIdentityTest extends Unit
         $this->assertCount(1, $updates);
         $this->assertCount(1, $inserts);
     }
+
+    /**
+     * Таблица без AUTO_INCREMENT: insertId() - 0, ключ из данных модели остаётся
+     */
+    public function testProvidedKeyKeptWithoutAutoIncrement(): void
+    {
+        $this->mockRows([], $queries)->method('insertId')->willReturn('0');
+        $class = get_class(new class () extends ModelBase {
+            protected static string $table = 'identity_probe';
+            protected static string $primaryKeyName = 'code_id';
+        });
+
+        $model = $class::insert(['code_id' => 42, 'name' => 'Manual']);
+        $this->assertNotNull($model);
+        $this->assertSame(42, $model->getId());
+        $this->assertSame(42, $model->toArray()['code_id']);
+    }
 }

@@ -8,4 +8,5 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-new \Simflex\Core\Kernel(__DIR__)->runConsole();
+// код завершения: 0 - команда выполнена, иначе - ошибка (видно cron и CI)
+exit(new \Simflex\Core\Kernel(__DIR__)->runConsole());
