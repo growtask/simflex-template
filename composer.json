@@ -42,6 +42,9 @@
   "suggest": {
   },
   "scripts": {
+    "post-create-project-cmd": [
+      "@php -r \"foreach (['CHANGELOG.md', 'AGENTS.md', 'CLAUDE.md'] as \\$file) file_put_contents(\\$file, '');\""
+    ],
     "post-package-install": [
       "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
     ],

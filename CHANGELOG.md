@@ -7,6 +7,10 @@
 
 ## [4.0.0] — не выпущена
 
+- `composer create-project` очищает `CHANGELOG.md`, `AGENTS.md` и `CLAUDE.md` нового сайта
+  (`post-create-project-cmd`): журнал и правила для агентов шаблона сайту не нужны. Команда создания сайта —
+  `composer create-project --no-install --ignore-platform-reqs growtask/simflex-template {sitename} 4.0.x-dev`,
+  без `--no-scripts`.
 - Telegram API поддерживает необязательный прокси: `telegram['proxy']` (в шаблоне — `TELEGRAM_PROXY`). Без значения используется прямое подключение.
 
 Изменения относительно 3.6.2. Шаблон переведён на ядро 4.0: структура админки, меню, привилегии, шаблоны страниц,
