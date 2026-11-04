@@ -78,8 +78,8 @@ class TableActionsCest
         );
         $id = $I->grabRowsFromSql("SELECT content_id FROM content WHERE alias = 'codecept-child'")[0]['content_id'];
         try {
-            $I->amOnPage("/admin/content/?action=form&content_id=$id");
-            $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+            $I->amOnPage("/admin/content/page/?action=form&content_id=$id");
+            $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
             $I->dontSeeErrors();
             $I->assertSame(
                 [['path' => '/codecept-child']],
@@ -109,10 +109,10 @@ class TableActionsCest
 
             // клик по заголовку сортирует по колонке, второй меняет порядок на обратный
             $I->amOnPage('/admin/site/seo?o=title&p=0');
-            $I->seeElement('.table-data-title .form-control__sort-up--active');
+            $I->seeElement('th.table-data-title[aria-sort="ascending"] .sort-button.active');
             $I->assertSame('Codecept 01', $this->firstTitle($I));
             $I->amOnPage('/admin/site/seo?o=title&p=0');
-            $I->seeElement('.table-data-title .form-control__sort-down--active');
+            $I->seeElement('th.table-data-title[aria-sort="descending"] .sort-button.active');
             $I->assertSame('Codecept 25', $this->firstTitle($I));
 
             // неизвестная колонка игнорируется

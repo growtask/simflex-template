@@ -16,8 +16,8 @@ class UnderscoreLoginCest
             $I->fillField('login[login]', $login);
             $I->fillField('login[password]', '12345');
             $I->click('Войти');
-            $I->waitForElement('.sidebar', 10);
-            $I->see($login, '.btn-user__title');
+            $I->waitForElement('.menu', 10);
+            $I->seeElement('.menu-account__name');
         } finally {
             $I->runSql('DELETE FROM user WHERE login = ?', [$login]);
         }

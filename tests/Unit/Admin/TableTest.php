@@ -124,6 +124,9 @@ class TableTest extends Unit
 
     public function testFormShowsExtraHtml(): void
     {
+        // форма выводит page-head: адреса админки и иконки берутся из конфига
+        $configBackup = Container::get('config');
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
         $this->mockRows([]);
         $table = $this->makeTable(['title' => $this->makeField('title')]);
         $table->extraLeft = '<div id="extra-left"></div>';
@@ -132,8 +135,38 @@ class TableTest extends Unit
         $html = $table->form();
         $this->assertStringContainsString('<div id="extra-left"></div>', $html);
         // правая колонка показывается для дополнительного HTML, даже если полей в ней нет
-        $this->assertStringContainsString('content--right', $html);
+        $this->assertStringContainsString('edit-aside', $html);
         $this->assertStringContainsString('<div id="extra-right"></div>', $html);
+        Container::set('config', $configBackup);
+    }
+
+    public function testFormTabsAndSections(): void
+    {
+        $configBackup = Container::get('config');
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
+        try {
+            $this->mockRows([]);
+            $title = $this->makeField('title', true);
+            $seo = $this->makeField('seo_title');
+            $seo->params['tab'] = 'SEO';
+            $seo->params['pos_group'] = 'Мета';
+            $html = $this->makeTable(['title' => $title, 'seo_title' => $seo])->form();
+
+            // поля без вкладки — «Основное», вкладки видны, когда их больше одной
+            $this->assertStringContainsString('role="tablist"', $html);
+            $this->assertStringContainsString('data-sf-tab-button="tab-osnovnoe"', $html);
+            $this->assertStringContainsString('data-sf-tab-button="tab-seo"', $html);
+            $this->assertMatchesRegularExpression('/data-sf-tab="tab-seo"[^>]*>.*Мета/s', $html);
+            $this->assertStringContainsString('form-input__required', $html);
+            $this->assertStringContainsString('class="edit-bar', $html);
+
+            // одна вкладка — без переключателя
+            $this->mockRows([]);
+            $html = $this->makeTable(['title' => $this->makeField('title')])->form();
+            $this->assertStringNotContainsString('role="tablist"', $html);
+        } finally {
+            Container::set('config', $configBackup);
+        }
     }
 
     public function testInsertSavesRelationsAfterInsert(): void
@@ -186,6 +219,53 @@ class TableTest extends Unit
         $this->assertContains('php', \Simflex\Core\Media\File::FORBIDDEN_EXTENSIONS);
         $this->assertContains('phtml', \Simflex\Core\Media\File::FORBIDDEN_EXTENSIONS);
         $this->assertContains('htaccess', \Simflex\Core\Media\File::FORBIDDEN_EXTENSIONS);
+    }
+
+    public function testListSearchAndAppliedFilters(): void
+    {
+        $title = $this->makeField('title');
+        $title->filter = true;
+        $title->isVisible = true;
+        $hidden = $this->makeField('hidden');
+        $hidden->filter = true;
+        $hidden->isVisible = false;
+        $table = $this->makeTable(['title' => $title, 'hidden' => $hidden]);
+
+        // поиск — по видимым текстовым колонкам с фильтром
+        $this->assertSame(['title'], array_keys($table->getSearchFields()));
+
+        \Simflex\Core\System\Session::set('test_table', ['filter' => ['title' => 'abc', 'hidden' => '']]);
+        $filters = $table->getAppliedFilters();
+        $this->assertCount(1, $filters);
+        $this->assertSame(['title', 'Title', 'abc'], [$filters[0]['name'], $filters[0]['label'], $filters[0]['value']]);
+        $this->assertStringContainsString('filter%5Btitle%5D=', $filters[0]['reset']);
+        \Simflex\Core\System\Session::set('test_table', []);
+    }
+
+    public function testListMarkup(): void
+    {
+        $configBackup = Container::get('config');
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
+        try {
+            $this->mockRows([['cnt' => 2], ['id' => 1, 'title' => 'Первая'], ['id' => 2, 'title' => 'Вторая']]);
+            $title = $this->makeField('title');
+            $title->isVisible = true;
+            $table = $this->makeTable(['title' => $title]);
+            $set = fn(Table $table) => [$table->canAdd = true, $table->canDelete = true, $table->canEdit = true];
+            \Closure::bind($set, null, Table::class)($table);
+
+            $html = $table->show();
+            $this->assertStringContainsString('class="page-head', $html);
+            $this->assertStringContainsString('data-sf="list"', $html);
+            $this->assertStringContainsString('aria-sort="none"', $html);
+            $this->assertStringContainsString('href="?o=title&amp;d=1"', $html);
+            $this->assertStringContainsString('data-sf-row-delete="?action=delete&amp;rows[]=1"', $html);
+            $this->assertStringContainsString('id="btn-control-delete"', $html);
+            $this->assertStringContainsString('class="table-bar', $html);
+            $this->assertStringNotContainsString('table-empty', $html);
+        } finally {
+            Container::set('config', $configBackup);
+        }
     }
 
     private function makeTable(array $fields = []): Table

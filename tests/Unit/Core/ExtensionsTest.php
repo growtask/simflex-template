@@ -80,8 +80,8 @@ class ExtensionsTest extends Unit
         $items = Menu::getItems();
         $this->assertSame('Расширение', $items['/test-extension']->name);
         $this->assertSame('/test-extension', Menu::getParent('/test-extension/rows'));
-        // пункты ядра на месте, пункт расширения — после них
-        $this->assertSame('/content', array_keys($items)[array_search('/test-extension', array_keys($items)) - 1]);
+        // пункты ядра на месте, пункт расширения — после них (последний пункт ядра — Редактор страниц в группе Контент)
+        $this->assertSame('/content/page', array_keys($items)[array_search('/test-extension', array_keys($items)) - 1]);
     }
 
     public function testRoutesServicesEventsAndCommands(): void

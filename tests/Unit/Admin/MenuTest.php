@@ -61,6 +61,7 @@ class MenuTest extends Unit
             '/site/settings' => '/site',
             '/site/seo' => '/site',
             '/content' => '',
+            '/content/page' => '/content',
         ], array_map(fn($link) => Menu::getParent($link), array_combine(array_keys(Menu::getItems()), array_keys(Menu::getItems()))));
 
         $this->assertSame(\App\Admin\Menu::class, Menu::registryClass());
@@ -68,6 +69,24 @@ class MenuTest extends Unit
         $this->assertSame(Privilege::DEV, Menu::getItems()['/admin']->privilege);
         $this->assertSame(Privilege::ADMIN, Menu::getItems()['/admin/role']->privilege);
         $this->assertTrue(Menu::getItems()['/account']->hidden);
+        $this->assertSame(Handlers\Content::class, Menu::getItems()['/content/page']->handler);
+        $this->assertSame('', Menu::getItems()['/content']->handler);
+    }
+
+    public function testThirdLevelThrows(): void
+    {
+        Container::getConfig()->adminMenuClass = ThirdLevelMenu::class;
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('third level');
+        Menu::getItems();
+    }
+
+    public function testNestedChildrenThrow(): void
+    {
+        $this->expectException(\LogicException::class);
+        new MenuItem('Группа', '/group', children: [
+            new MenuItem('Пункт', '/group/item', children: [new MenuItem('Третий', '/group/item/third')]),
+        ]);
     }
 
     public function testAppAddsAndRemovesItems(): void
@@ -103,6 +122,8 @@ class MenuTest extends Unit
         $this->mockRows([]);
         Container::getConfig()->adminPath = '/admin';
         Container::getConfig()->adminMenuClass = TestMenu::class;
+        // раздел выводит компоненты Layout: renderIcon() берёт тему из конфига
+        Container::getConfig()->theme ??= 'default';
         Container::set('request', HtmlRequest::create('/admin/site/redirect'));
         Container::set('user', new class () extends User {
             public function getPrivileges(): array
@@ -151,6 +172,15 @@ class BrokenMenu extends Menu
     protected static function init(): void
     {
         static::add(new MenuItem('Блог', '/blog/post'), parent: '/blog');
+    }
+}
+
+class ThirdLevelMenu extends Menu
+{
+    protected static function init(): void
+    {
+        static::add(new MenuItem('Настройки', '/site', children: [new MenuItem('Меню', '/site/menu')]));
+        static::add(new MenuItem('Пункт меню', '/site/menu/item'), parent: '/site/menu');
     }
 }
 

@@ -31,8 +31,14 @@ class ExtensionsCest
         $I->amOnPage('/admin/site/module/?action=form');
         $I->dontSeeErrors();
         $I->chooseInDropdown('module', 'Simflex\Core\Extensions\Block\Block');
-        $I->waitForElement('.ajax-params', 5);
+        // параметры модуля: группа «Контент» с визуальным редактором — в основную колонку на всю строку
+        $I->waitForElement('.ajax-params-left .form-input_wide .tox-tinymce', 10);
         $I->dontSeeErrors();
+
+        // другой модуль: параметры прежнего и его редактор убираются
+        $I->chooseInDropdown('module', 'Simflex\Core\Extensions\Code\Code');
+        $I->waitForElementNotVisible('.tox-tinymce', 5);
+        $I->dontSeeElementInDOM('.tox-tinymce');
         $I->dontSeeLogProblems();
     }
 
@@ -47,15 +53,18 @@ class ExtensionsCest
         $id = $I->grabRowsFromSql("SELECT item_id FROM module_item WHERE posname = 'codecept'")[0]['item_id'];
         try {
             $I->amOnPage("/admin/site/module/?action=form&item_id=$id");
-            $I->waitForElement('.ajax-params', 5);
             $I->dontSeeCheckboxIsChecked('is_title');
             $I->dontSeeCheckboxIsChecked('is_wrap');
-            $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+            // текст редактора параметров сохраняется вместе с формой
+            $I->waitForElement('.ajax-params-left .tox-tinymce', 10);
+            $I->executeJS("tinymce.get()[0].setContent('<p>Codecept text</p>')");
+            $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
             $I->dontSeeErrors();
 
             $params = unserialize($I->grabRowsFromSql('SELECT params FROM module_item WHERE item_id = ?', [$id])[0]['params']);
             $I->assertEmpty($params['is_title'] ?? null);
             $I->assertEmpty($params['is_wrap'] ?? null);
+            $I->assertStringContainsString('Codecept text', $params['content'] ?? '');
         } finally {
             $I->runSql("DELETE FROM module_item WHERE posname = 'codecept'");
         }

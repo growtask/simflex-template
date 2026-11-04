@@ -33,13 +33,13 @@ class PrivilegeAssignCest
         $I->loginAsDev();
         $I->amOnPage('/admin/admin/role_privilege');
         $I->dontSeeErrors();
-        $I->see('Привилегии ролей', '.content__title');
+        $I->see('Привилегии ролей', '.page-head__title');
         $I->see('Администратор', '.table__body');
         $I->see('manager', '.table__body');
         // подсказки: что здесь значат роль и привилегия
         $I->assertStringContainsString(
             'получают все пользователи роли',
-            $I->grabAttributeFrom('.table-data-privilege .table__head-help', 'title')
+            (string)$I->executeJS("return document.querySelector('.table-data-privilege .table__head-help .tooltip').textContent")
         );
         $I->seeElement('.table-data-role_id .table__head-help');
         $I->amOnPage('/admin/admin/role_privilege/?action=form');
@@ -56,7 +56,7 @@ class PrivilegeAssignCest
         $I->dontSeeErrors();
         $I->chooseInDropdown('role_id', $roleId);
         $I->chooseInDropdown('privilege', 'manager');
-        $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+        $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
         $I->dontSeeErrors();
 
         $I->assertSame(
@@ -74,10 +74,10 @@ class PrivilegeAssignCest
         $I->dontSeeErrors();
         // пользователь выбирается из существующих, а не вводится текстом
         $I->dontSeeElementInDOM('input[name="user_id"][type="text"]');
-        $I->seeElementInDOM('.form-control__dropdown-item[data-value="' . $userId . '"]');
+        $I->seeElementInDOM($I->dropdownItem('user_id', (string)$userId));
         $I->chooseInDropdown('user_id', $userId);
         $I->chooseInDropdown('privilege', 'dev');
-        $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+        $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
         $I->dontSeeErrors();
         $I->assertSame(
             [['privilege' => 'dev']],
@@ -100,20 +100,20 @@ class PrivilegeAssignCest
     {
         $I->loginAsDev();
         $I->amOnPage('/admin/admin/privilege_personal/?action=form');
-        $I->fillField('.form-control__dropdown-text', 'a');
+        // введённый в поиск списка текст — только поиск: без выбора значение не меняется, клик снаружи закрывает список
+        $I->click($I->dropdown('user_id') . '//button[@data-sf-dropdown-trigger]');
+        $I->fillField($I->dropdown('user_id') . '//input[@data-sf-dropdown-search]', 'a');
         $I->wait(1);
-        // введённый текст — только поиск: без выбора он сбрасывается, когда поле теряет фокус
-        $I->click('.content__title');
-        $I->wait(1);
-        $I->seeInField('.form-control__dropdown-text', '');
+        $I->click('.page-head__title');
+        $I->dontSeeElement($I->dropdown('user_id') . '//input[@data-sf-dropdown-search]');
         $I->seeInField('input[name="user_id"]', '');
 
         // не сохранено: форма показана снова с ошибкой, а не пустая страница
         $I->chooseInDropdown('privilege', 'dev');
-        $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+        $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
         $I->see('Пользователь');
         $I->seeElementInDOM('input[name="privilege"]');
-        $I->seeElement('.content__btns button[name="submit_apply"]');
+        $I->seeElement('.edit-bar button[name="submit_apply"]');
         $I->assertSame([], $I->grabRowsFromSql('SELECT id FROM user_privilege_personal'));
         $I->dontSeeLogProblems();
     }

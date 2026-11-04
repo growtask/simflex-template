@@ -19,7 +19,7 @@ class MenuCest
         // меню, компоненты, модули, шаблоны страниц и их поля объявлены в коде, здесь не редактируются
         $I->amOnPage('/admin');
         $links = $I->executeJS(
-            "return [...document.querySelectorAll('.sidebar a')].map(a => a.getAttribute('href'))"
+            "return [...document.querySelectorAll('.menu__groups a')].map(a => a.getAttribute('href'))"
             . ".filter(h => h && (h.startsWith('/admin/admin/') || h === '/admin/cron'))"
         );
         $I->assertSame([
@@ -38,7 +38,7 @@ class MenuCest
         $I->amOnPage('/admin/site');
         $I->dontSeeErrors();
         foreach (['/admin/site/menu', '/admin/site/module', '/admin/site/settings', '/admin/site/seo'] as $link) {
-            $I->seeElement('.content .list-board a[href="' . $link . '"]');
+            $I->seeElement('.group-card a[href="' . $link . '"]');
         }
         $I->dontSeeLogProblems();
     }

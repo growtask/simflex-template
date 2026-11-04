@@ -11,7 +11,7 @@ class CrudCest
 {
     private const SECTION = '/admin/site/seo';
     private const LINK = '/codecept-crud';
-    private const SAVE = '.content__btns button[name="submit_save"]';
+    private const SAVE = '.edit-bar button[name="submit_save"]';
 
     public function _before(AcceptanceTester $I): void
     {
@@ -45,11 +45,8 @@ class CrudCest
         // чтение: запись есть в списке
         $I->see(self::LINK, '.table__body');
         $I->see('Codecept title', '.table__body');
-        // «Удалить» записи в мобильном меню тоже удаляет, а не открывает форму
-        $I->seeElementInDOM(
-            "//tr[td[@data-pk='$id']]//div[contains(@class, 'table__body-item-settings-btns')]"
-            . "//button[contains(@onclick, 'onRowDeleteRequest($id,')]"
-        );
+        // «Удалить» записи удаляет её после подтверждения, а не открывает форму
+        $I->seeElementInDOM("//tr[td[@data-pk='$id']]//button[@data-sf-row-delete='?action=delete&rows[]=$id']");
 
         // изменение: «Редактировать» записи, в форме есть значения
         $I->click($this->rowButton($id, 'tooltip-row1-edit', 'a'));
@@ -67,8 +64,8 @@ class CrudCest
 
         // удаление: «Удалить» записи с подтверждением в диалоге
         $I->click($this->rowButton($id, 'tooltip-row1-delete', 'button'));
-        $I->waitForElementVisible('.modal-delete__btns a', 10);
-        $I->click('.modal-delete__btns a');
+        $I->waitForElementVisible('#sf-modal-confirm [data-sf-confirm="yes"]', 10);
+        $I->click('#sf-modal-confirm [data-sf-confirm="yes"]');
         $I->waitForText('Запись удалена', 10);
         $I->assertSame([], $I->grabRowsFromSql('SELECT seo_id FROM seo WHERE seo_id = ?', [$id]));
         $I->dontSee(self::LINK, '.table__body');
@@ -87,9 +84,12 @@ class CrudCest
 
         $I->amOnPage(self::SECTION);
         foreach ($ids as $id) {
-            $I->checkOption("//tr[td[@data-pk='$id']]//input[@type='checkbox']");
+            // флажок оформлен компонентом Checkbox: нажимается подпись, сам input скрыт
+            $I->click("//tr[td[@data-pk='$id']]//label[contains(@class, 'td__check')]");
         }
         $I->click('#btn-control-delete');
+        $I->waitForElementVisible('#sf-modal-confirm [data-sf-confirm="yes"]', 10);
+        $I->click('#sf-modal-confirm [data-sf-confirm="yes"]');
         $I->waitForText('Запись удалена', 10);
         $I->assertSame([], $I->grabRowsFromSql('SELECT seo_id FROM seo WHERE link = ?', [self::LINK]));
         $I->dontSeeLogProblems();

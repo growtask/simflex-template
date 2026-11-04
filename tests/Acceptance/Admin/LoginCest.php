@@ -29,7 +29,7 @@ class LoginCest
         $I->seeInTitle('Simflex Admin');
         $I->seeElement('input[name="login[login]"]');
         $I->seeElement('input[name="login[password]"]');
-        $I->dontSeeElement('.sidebar');
+        $I->dontSeeElement('.menu');
     }
 
     public function tryToLoginWithWrongPassword(AcceptanceTester $I): void
@@ -41,7 +41,10 @@ class LoginCest
         $I->wait(1);
 
         $I->seeElement('input[name="login[login]"]');
-        $I->dontSeeElement('.sidebar');
+        $I->dontSeeElement('.menu');
+        $I->see('Неверный логин или пароль', '.notice');
+        // пароль не попадает в адрес страницы: форма отправляется POST
+        $I->dontSeeInCurrentUrl('wrong-password');
     }
 
     public function tryToLoginAndSeeDashboard(AcceptanceTester $I): void
@@ -51,10 +54,11 @@ class LoginCest
         $I->dontSeeErrors();
         $I->seeInTitle('Simflex Admin');
         $I->dontSeeElement('input[name="login[password]"]');
-        $I->see('Меню', '.sidebar__title');
-        $I->seeElement('.header');
-        $I->see('admin', '.btn-user__title');
-        $I->seeElementInDOM('a[href="/admin/logout"]');
+        $I->seeElement('.menu__groups');
+        $I->seeElement('.page-head');
+        $I->seeElement('.menu-account__name');
+        // выход — на странице профиля, в меню ссылка на профиль
+        $I->seeElementInDOM('a.menu-account[href="/admin/account"]');
 
         // ассеты должны отдаваться по настоящему URL, а не по утёкшему пути файловой системы
         $I->dontSeeInPageSource('/var/www/');
@@ -90,7 +94,7 @@ class LoginCest
         $I->amOnPage('/admin');
 
         $I->see('Недостаточно прав для входа в панель управления');
-        $I->dontSeeElement('.sidebar');
+        $I->dontSeeElement('.menu');
         $I->seeElement('a[href="/admin/logout"]');
 
         $I->dontSeeLogProblems();

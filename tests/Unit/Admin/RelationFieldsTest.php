@@ -22,10 +22,14 @@ class RelationFieldsTest extends Unit
     use MockDb;
 
     private mixed $requestBackup = null;
+    private mixed $configBackup = null;
 
     protected function _before(): void
     {
         $this->requestBackup = Container::getRequest();
+        // поля выводятся компонентами Layout: иконкам нужна тема
+        $this->configBackup = Container::isSet('config') ? Container::get('config') : null;
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
         $this->setRequest();
         Table::$currentQuery = null;
     }
@@ -33,6 +37,7 @@ class RelationFieldsTest extends Unit
     protected function _after(): void
     {
         Container::set('request', $this->requestBackup);
+        Container::set('config', $this->configBackup);
     }
 
     /**

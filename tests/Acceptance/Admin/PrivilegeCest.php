@@ -50,7 +50,7 @@ class PrivilegeCest
     {
         $I->loginAsDev();
         $I->amOnPage('/admin/admin/privilege');
-        $I->click('tr[data-privilege="manager"] .form-control__switch');
+        $I->click('tr[data-privilege="manager"] .privilege-table__switch');
         $this->waitForRows($I, [['name' => 'manager', 'active' => 0]]);
 
         // после перезагрузки страница показывает переключённое значение
@@ -65,7 +65,7 @@ class PrivilegeCest
         $I->loginAsDev();
         $I->amOnPage('/admin/admin/privilege');
         $I->dontSeeCheckboxIsChecked('tr[data-privilege="manager"] input');
-        $I->click('tr[data-privilege="manager"] .form-control__switch');
+        $I->click('tr[data-privilege="manager"] .privilege-table__switch');
         $this->waitForRows($I, [['name' => 'manager', 'active' => 1]]);
 
         $I->amOnPage('/admin/admin/privilege');
@@ -81,12 +81,18 @@ class PrivilegeCest
             "window.__status = null; fetch('?action=switch', {method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'},"
             . " body: new URLSearchParams({name: 'dev', active: '0'})}).then(r => { window.__status = r.status; })"
         );
-        // админка сообщает о неудачном запросе во всплывающем окне
-        $I->wait(1);
-        $I->seeInPopup('400 Bad Request');
-        $I->acceptPopup();
         $I->waitForJS('return window.__status !== null;', 10);
         $I->assertSame(400, $I->executeJS('return window.__status;'));
+        $I->assertSame([], $I->grabRowsFromSql('SELECT name FROM user_privilege'));
+
+        // в списке переключатель dev недоступен; если запрос всё же отправлен — тост с ошибкой, переключатель
+        // возвращается
+        $I->executeJS(
+            'const input = [...document.querySelectorAll("input[type=checkbox]")]'
+            . '.find((el) => el.closest("tr")?.textContent.includes("Привилегия разработчика"));'
+            . 'input.disabled = false; input.click();'
+        );
+        $I->waitForText('Не удалось изменить привилегию', 5, '.toast');
         $I->assertSame([], $I->grabRowsFromSql('SELECT name FROM user_privilege'));
     }
 
@@ -99,7 +105,7 @@ class PrivilegeCest
         $I->fillField('login[login]', 'admin');
         $I->fillField('login[password]', '12345');
         $I->click('Войти');
-        $I->dontSeeElement('.sidebar');
+        $I->dontSeeElement('.menu');
 
         $I->amOnPage('/admin/logout');
         $I->loginAsDev();

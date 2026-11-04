@@ -21,7 +21,7 @@ class UsersCest
         $I->dontSee('№ п/п');
         $I->see('Администратор', '.table__body');
         // справка поля — ещё и подсказка у заголовка колонки списка
-        $title = $I->grabAttributeFrom('.table-data-privilege .table__head-help', 'title');
+        $title = (string)$I->executeJS("return document.querySelector('.table-data-privilege .table__head-help .tooltip').textContent");
         $I->assertStringContainsString('Кто управляет ролью', $title);
 
         $I->amOnPage('/admin/admin/role/?action=form&role_id=2');
@@ -33,10 +33,12 @@ class UsersCest
     public function tryToSeeUserInfo(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin/admin/user');
+        // «Ещё» → «Информация»
         $I->click('.tooltip-row1-info button');
+        $I->click('.tooltip-row1-info [data-sf-row-info]');
         $I->waitForElementVisible('.modal-info__talbe-wrapper table', 10);
         // только сведения о записи, а не вся страница админки
-        $I->dontSeeElement('.modal-info__talbe-wrapper .sidebar');
+        $I->dontSeeElement('.modal-info__talbe-wrapper .menu');
         $I->see('dev@simflex', '.modal-info__talbe-wrapper');
         $I->dontSeeLogProblems();
     }
@@ -46,14 +48,14 @@ class UsersCest
         // раздел без таблицы (Handlers\Account), не в боковой панели
         $I->amOnPage('/admin/account');
         $I->dontSeeErrors();
-        $I->see('Данные пользователя', '.content__title');
+        $I->see('Данные пользователя', '.page-head__title');
         $I->seeInField('input[name="email"]', 'dev@simflex');
 
         // сохранение своих данных
         $before = $I->grabRowsFromSql('SELECT name FROM user WHERE user_id = 1')[0]['name'];
         try {
             $I->fillField('input[name="name"]', 'Codecept dev');
-            $I->click('.content__btns button[type="submit"]');
+            $I->click('.edit-bar button[type="submit"]');
             $I->waitForText('Данные успешно обновлены', 10);
             $I->assertSame([['name' => 'Codecept dev', 'email' => 'dev@simflex']], $I->grabRowsFromSql('SELECT name, email FROM user WHERE user_id = 1'));
         } finally {
@@ -87,7 +89,7 @@ class UsersCest
         try {
             $I->amOnPage('/admin/admin/user/?action=form&user_id=2');
             $I->fillField('name', 'Codecept admin');
-            $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', 'input[name="login"]');
+            $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', 'input[name="login"]');
             $I->dontSeeErrors();
             $I->assertSame(
                 [['password' => $before['password'], 'name' => 'Codecept admin']],

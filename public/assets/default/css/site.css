@@ -2,7 +2,7 @@
  * Стили сайта: расстановка блоков главной страницы.
  * Подключается в theme/default/index.tpl после $page->getMeta(), то есть после стилей компонентов
  * (стили без @layer к тому же сильнее стилей компонентов из @layer). Цвета, шрифты, радиусы и тени -
- * только переменные из assetsGlobal ядра (--gray-*, --color1-*, --radius-ui-*, --shadow-gray-* и др.).
+ * только переменные из assetsGlobal ядра (--color-main-*, --color-text-icon-*, --radius-ui-*, --shadow-gray-* и др.).
  */
 
 /* ===== header ===== */
@@ -127,7 +127,7 @@
 
 .features__title_h2 {
     margin: 0;
-    color: var(--gray-black);
+    color: var(--color-main-gray-black);
     font-size: 2.1875vw;
     font-weight: 700;
     line-height: 100%;
@@ -215,7 +215,7 @@
     gap: 40px;
     align-items: stretch;
     padding: 40px;
-    background: var(--color1-lighter);
+    background: var(--color-main-color1-lighter);
     border-radius: calc(var(--radius-blocks) + 8px);
 }
 
@@ -228,7 +228,7 @@
     /* Высота карточки и картинки в макете 638 (с виджетом капчи) */
     min-height: 638px;
     padding: 40px;
-    background: var(--gray-white);
+    background: var(--color-main-gray-white);
     border-radius: var(--radius-ui-xlarge);
 }
 

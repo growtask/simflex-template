@@ -18,12 +18,27 @@ use Simflex\Core\Admin\Table\Presets\NppField;
 use Simflex\Core\Admin\Table\Presets\ParentField;
 use Simflex\Core\Admin\Table\Presets\PriceField;
 use Simflex\Core\Admin\Table\Repository;
+use Simflex\Core\System\Container;
 
 /**
  * Пресеты полей — те же описания полей, только короче
  */
 class FieldPresetsTest extends Unit
 {
+    private mixed $configBackup;
+
+    protected function _before(): void
+    {
+        // поля выводят компоненты Layout: renderIcon() берёт тему из конфига
+        $this->configBackup = Container::isSet('config') ? Container::get('config') : null;
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
+    }
+
+    protected function _after(): void
+    {
+        Container::set('config', $this->configBackup);
+    }
+
     public function testIdField(): void
     {
         $this->assertSame(

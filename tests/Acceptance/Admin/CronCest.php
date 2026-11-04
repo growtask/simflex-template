@@ -44,7 +44,7 @@ class CronCest
             $I->amOnPage("/admin/cron/?action=form&id=$id");
             $I->seeInField('job', 'Очистка журнала cron');
             $I->fillField('timing', '15 3 * * *');
-            $I->submitAndWaitForReload('.content__btns button[name="submit_apply"]', '.sidebar');
+            $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
             $I->dontSeeErrors();
 
             $I->assertSame(

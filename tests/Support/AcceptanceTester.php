@@ -96,7 +96,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function dropdown(string $name): string
     {
-        return '//input[@name="' . $name . '"]/ancestor::div[contains(concat(" ", @class, " "), " form-control__dropdown ")][1]';
+        return '//input[@name="' . $name . '"]/ancestor::div[@data-sf-dropdown][1]';
     }
 
     /**
@@ -104,7 +104,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function dropdownItem(string $name, string $value): string
     {
-        return $this->dropdown($name) . '//div[contains(@class, "form-control__dropdown-item") and @data-value="' . $value . '"]';
+        return $this->dropdown($name) . '//*[contains(@class, "dropdown__option") and @data-value="' . $value . '"]';
     }
 
     /**
@@ -113,7 +113,7 @@ class AcceptanceTester extends \Codeception\Actor
     public function chooseInDropdown(string $name, int|string $value): void
     {
         $I = $this;
-        $I->click($I->dropdown($name) . '//div[contains(@class, "form-control__dropdown-top")]');
+        $I->click($I->dropdown($name) . '//button[@data-sf-dropdown-trigger]');
         $I->click($I->dropdownItem($name, (string)$value));
         $I->seeInField('input[name="' . $name . '"]', (string)$value);
     }
@@ -125,7 +125,7 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('login[login]', $login);
         $I->fillField('login[password]', '12345');
         $I->click('Войти');
-        $I->waitForElement('.sidebar', 10);
+        $I->waitForElement('.menu', 10);
     }
 
     /**

@@ -12,12 +12,27 @@ use Simflex\Core\Admin\Fields\FieldNPP;
 use Simflex\Core\Admin\Fields\FieldString;
 use Simflex\Core\Admin\Fields\FieldTable;
 use Simflex\Core\Admin\Fields\FieldTime;
+use Simflex\Core\System\Container;
 
 /**
  * Поля админки
  */
 class FieldsTest extends Unit
 {
+    private mixed $configBackup;
+
+    protected function _before(): void
+    {
+        // ячейки и фильтры выводят компоненты Layout: renderIcon() берёт тему из конфига
+        $this->configBackup = Container::isSet('config') ? Container::get('config') : null;
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false]);
+    }
+
+    protected function _after(): void
+    {
+        Container::set('config', $this->configBackup);
+    }
+
     public function testListCellsAndFiltersAreReturned(): void
     {
         $string = new FieldString(['name' => 'title', 'label' => 'Title', 'table' => 't']);
@@ -29,6 +44,12 @@ class FieldsTest extends Unit
         $this->assertStringContainsString('filter[title]', $string->filter('x'));
         $this->assertNotSame('', $bool->show(['active' => 1]));
         $this->assertSame('', $bool->filter('1'));
+        // ячейка bool — переключатель, который сохраняет значение сразу
+        $this->assertStringContainsString('data-sf-bool-change', $bool->show(['active' => 1]));
+        $bool->filter = true;
+        $this->assertStringContainsString('name="filter[active]"', $bool->filter('1'));
+        $this->assertSame('Да', $bool->getFilterLabel('1'));
+        $this->assertSame('Нет', $bool->getFilterLabel('0'));
     }
 
     public function testNumericDefaultsAndFractionalWidths(): void

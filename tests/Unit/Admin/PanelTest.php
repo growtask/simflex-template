@@ -90,11 +90,15 @@ class PanelTest extends Unit
         $user['email'] = 'a@b.c';
         $user['role'] = (object)['name' => 'Root'];
         Container::set('user', $user);
+        // страница выводит page-head и компоненты Layout: адреса админки и иконки берутся из конфига
+        $oldConfig = Container::get('config');
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
         try {
             $account = new Account();
             $html = $account->content();
         } finally {
             Container::set('user', $oldUser);
+            Container::set('config', $oldConfig);
         }
         $this->assertStringContainsString('value="&lt;b&gt;Admin&lt;/b&gt;"', $html);
         $this->assertStringContainsString('value="Root"', $html);

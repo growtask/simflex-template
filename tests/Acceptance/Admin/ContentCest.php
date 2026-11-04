@@ -9,8 +9,8 @@ use Tests\Support\AcceptanceTester;
  */
 class ContentCest
 {
-    private const FORM = '/admin/content/?action=form&content_id=1';
-    private const APPLY = '.content__btns button[name="submit_apply"]';
+    private const FORM = '/admin/content/page/?action=form&content_id=1';
+    private const APPLY = '.edit-bar button[name="submit_apply"]';
 
     public function _before(AcceptanceTester $I): void
     {
@@ -19,7 +19,7 @@ class ContentCest
 
     public function tryToSeeList(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/content');
+        $I->amOnPage('/admin/content/page');
         $I->dontSeeErrors();
         $I->seeInTitle('Редактор страниц');
         $I->seeElement('table');
@@ -40,8 +40,8 @@ class ContentCest
         $I->see('Главная', $I->dropdown('template'));
         $I->seeElement('input[name="meta_title"]');
         $I->seeElement('input[name="seo_title_1"]');
-        $I->see('SEO', '.data2__title');
-        $I->see('Мета', '.data3__title');
+        $I->see('SEO', '.edit-main .form-section__name');
+        $I->see('Мета', '.edit-aside .form-section__name');
 
         $I->dontSeeLogProblems();
     }
@@ -77,11 +77,11 @@ class ContentCest
         // кавычка в значении раньше ломала групповой UPDATE, собранный подстановкой в строку
         $value = "Group O'Test " . uniqid();
         try {
-            $I->amOnPage('/admin/content/?action=form&ids=1,1');
+            $I->amOnPage('/admin/content/page/?action=form&ids=1,1');
             $I->seeInField('group_ids', '1,1');
             $I->executeJS('document.querySelector(\'input[name="set[title]"]\').checked = true;');
             $I->fillField('title', $value);
-            $I->submitAndWaitForReload(self::APPLY, '.sidebar');
+            $I->submitAndWaitForReload(self::APPLY, '.menu');
             $I->dontSeeErrors();
             $I->see('успешно сохранены');
 
@@ -96,21 +96,21 @@ class ContentCest
 
     public function tryToCallListActions(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin/content/');
+        $I->amOnPage('/admin/content/page/');
 
-        $validate = $this->fetch($I, '/admin/content/?ajax=1&action=validate', 'POST');
+        $validate = $this->fetch($I, '/admin/content/page/?ajax=1&action=validate', 'POST');
         $I->assertSame(200, $validate['status']);
         $I->assertArrayHasKey('valid', json_decode($validate['body'], true) ?? [], $validate['body']);
 
         try {
-            $toggle = '/admin/content/?ajax=1&action=boolChange&field=active&pk=1';
+            $toggle = '/admin/content/page/?ajax=1&action=boolChange&field=active&pk=1';
             $I->assertSame('0', $this->fetch($I, $toggle)['body']);
             $I->assertSame('1', $this->fetch($I, $toggle)['body']);
         } finally {
             $I->runSql('UPDATE content SET active = 1 WHERE content_id = 1');
         }
 
-        $detail = $this->fetch($I, '/admin/content/?ajax=1&action=showDetail&id=1')['body'];
+        $detail = $this->fetch($I, '/admin/content/page/?ajax=1&action=showDetail&id=1')['body'];
         $I->assertStringContainsString('modal-info__table', $detail);
         $I->assertStringContainsString('Главная', $detail);
         // колонки времени модели выводятся только в карточке записи
@@ -128,7 +128,7 @@ class ContentCest
         try {
             $I->amOnPage(self::FORM);
             // файл загружается через ajax (?action=upload_img), его имя попадает в скрытое поле
-            $I->attachFile("//input[@name='photo']/ancestor::div[contains(@class, 'form-control__file')][1]//input[@type='file']", 'upload.png');
+            $I->attachFile('[data-sf-uploader]:has(input[name="photo"]) .uploader__input', 'upload.png');
             $I->waitForJS("return document.querySelector('$photo').value !== ''", 10);
             // в поле — url загруженного исходника, в записи хранится имя файла
             $name = basename($I->grabValueFrom($photo));
@@ -137,10 +137,13 @@ class ContentCest
 
             $I->assertSame([['photo' => $name]], $I->grabRowsFromSql('SELECT photo FROM content WHERE content_id = 1'));
             $I->assertNotEmpty($this->uploaded($name), "$name is not saved");
-            $I->seeElement("img.form-control__file-img[src*='$name']");
+            $I->seeElementInDOM("[data-sf-uploader]:has(input[name='photo']).uploader_filled img.uploader__image[src*='$name']");
 
             // «Удалить» у изображения: поле очищается в записи (?action=deleteField), файлы удаляются
-            $I->click("//input[@name='photo']/ancestor::div[contains(@class, 'form-control__file')][1]//button[contains(@class, 'btn-file-reset')]");
+            // кнопка у нижнего края окна под закреплённой панелью сохранения: нажимается скриптом
+            $I->executeJS(
+                'document.querySelector(\'[data-sf-uploader]:has(input[name="photo"]) [data-sf-uploader-remove]\').click()'
+            );
             for ($i = 0; $i < 20 && $I->grabRowsFromSql('SELECT photo FROM content WHERE content_id = 1')[0]['photo'] !== ''; $i++) {
                 usleep(250000);
             }
