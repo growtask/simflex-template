@@ -2,8 +2,8 @@
 
 Все заметные изменения шаблона сайта Simflex CMS (`simflex-template`). Формат —
 [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/), версии — [SemVer](https://semver.org/lang/ru/).
-Журнал ведётся с версии 4.0. Изменения ядра — в `CHANGELOG.md` пакета `growtask/simflex-core`
-(`vendor/growtask/simflex-core/CHANGELOG.md`).
+Журнал ведётся с версии 4.0. Изменения ядра — в `CHANGELOG.md` пакета `simflex/core`
+(`vendor/simflex/core/CHANGELOG.md`).
 
 ## [4.0.0] — не выпущена
 
@@ -41,8 +41,9 @@
 - **`ExtensionConfig`:** в `provider/extensions/*.php` свойство `$handlers` → `$adminHandlers`.
 - **`time_create`, `time_update`:** миграции таблиц сущностей (пользователи, роли, меню, модули, страницы, настройки, задачи cron, SEO, виджеты) получили колонки автоматически (`createTable()`), таблицы связей, кэшей и журналов — `noTimestamps()`; в `user_auth` колонка `time_create` стала общей.
 - **Пути без конечного «/»:** миграции страниц контента (`/catalog`, `/cart`, `/user`, `/blog` и др.) и тесты; адрес со слэшем на конце — 404.
-- **Ядро — пакет `growtask/simflex-core`** (было `growtask/simflex`): `"growtask/simflex-core": "4.0.x-dev"`
-  в `composer.json`.
+- **Ядро — пакет `simflex/core`** (было `growtask/simflex`, промежуточно — `growtask/simflex-core`):
+  `"simflex/core": "dev-master"` в `composer.json`; файловый менеджер — `"simflex/file-manager": "dev-master"`
+  (было `growtask/simflex-file-manager`); пути `vendor/simflex/core` в `phpstan.neon` и `PackageInstaller`.
 - **PHP 8.4:** образ `php:8.4-apache-bookworm`, `"php": "^8.4"` в `composer.json`.
 - **Корень веб-сервера — `public/`:** единственная точка входа `public/index.php` (сайт, админка и файловый
   менеджер `{adminPath}/fm`), статика сайта — `public/assets/<тема>` (`default`), загруженные файлы — `public/uf`. Удалены `index.php`,

@@ -12,9 +12,9 @@ parameters:
         - sf
         - tests/Unit
         - tests/Acceptance
-        - vendor/growtask/simflex-core/src
+        - vendor/simflex/core/src
     excludePaths:
-        - vendor/growtask/simflex-core/src/Admin/theme
+        - vendor/simflex/core/src/Admin/theme
     scanDirectories:
         - tests/Support
     tmpDir: cache/phpstan
@@ -24,4 +24,4 @@ parameters:
         # драйвер SMPP работает с необязательным пакетом glushkovds/php-smpp
         -
             identifier: class.notFound
-            path: vendor/growtask/simflex-core/src/Sms/DriverSmpp.php
+            path: vendor/simflex/core/src/Sms/DriverSmpp.php

@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Файловый менеджер админки (пакет growtask/simflex-file-manager): окно, папки, загрузка, выбор файла кнопкой
+ * Файловый менеджер админки (пакет simflex/file-manager): окно, папки, загрузка, выбор файла кнопкой
  * «Готово», переименование из меню, удаление с подтверждением. Работает в public/uf/images/codecept-fm
  */
 class FileManagerCest
