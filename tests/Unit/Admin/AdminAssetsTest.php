@@ -111,6 +111,35 @@ class AdminAssetsTest extends Unit
         }
     }
 
+    public function testLogoFromConfig(): void
+    {
+        $requestBackup = Container::isSet('request') ? Container::get('request') : null;
+        try {
+            Container::set('request', Request::create('/admin'));
+            // без настройки сайта — лого Simflex CMS из статики ядра
+            Container::getConfig()->adminLogo = ['name' => 'Simflex CMS', 'src' => '', 'srcDark' => ''];
+            $html = Page::get()->drawLogo('menu__logo', '/admin', isHomeLink: true);
+            $this->assertStringContainsString('aria-label="Simflex CMS — главная админки"', $html);
+            $this->assertMatchesRegularExpression('#src="[^"]*/Admin/theme/img/brand/logo\.svg#', $html);
+
+            // лого сайта: светлое и тёмное из статики темы сайта
+            Container::getConfig()->adminLogo = [
+                'name' => 'Growtask Hosting',
+                'src' => 'images/brand/admin-logo.svg',
+                'srcDark' => 'images/brand/admin-logo-dark.svg',
+            ];
+            $html = Page::get()->drawLogo('auth__logo', '/');
+            $this->assertStringContainsString('aria-label="Growtask Hosting"', $html);
+            $this->assertStringContainsString('src="/assets/default/images/brand/admin-logo.svg', $html);
+
+            Container::set('request', Request::create('/admin', cookies: [Page::THEME_COOKIE => 'dark']));
+            $html = Page::get()->drawLogo('auth__logo', '/');
+            $this->assertStringContainsString('src="/assets/default/images/brand/admin-logo-dark.svg', $html);
+        } finally {
+            Container::set('request', $requestBackup);
+        }
+    }
+
     public function testCoreJsModuleIsModuleScript(): void
     {
         $page = Page::get();
