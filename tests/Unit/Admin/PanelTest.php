@@ -15,6 +15,7 @@ use Simflex\Core\System\EventManager;
 use Simflex\Core\Models\User;
 use Tests\Support\AlertState;
 use Tests\Support\MockDb;
+use Tests\Support\RedirectingAlert;
 
 /**
  * Админка вокруг разделов: сообщения, виджеты, учётная запись, лог, параметры сайта
@@ -59,6 +60,24 @@ class PanelTest extends Unit
         Alert::success('Done');
         $this->assertTrue((bool)Alert::has());
         $this->assertFalse(Alert::hasErrors());
+    }
+
+    public function testAdminMessagesSurviveRedirectResponse(): void
+    {
+        Alert::success('Сохранено');
+
+        // Тело ответа-редиректа браузер не показывает: сообщение остаётся для следующей страницы
+        RedirectingAlert::$isRedirect = true;
+        try {
+            $this->assertSame(['toasts' => '', 'notices' => ''], RedirectingAlert::drawAdminMessages('light'));
+            $this->assertTrue((bool)Alert::has());
+        } finally {
+            RedirectingAlert::$isRedirect = false;
+        }
+
+        $messages = RedirectingAlert::drawAdminMessages('light');
+        $this->assertStringContainsString('Сохранено', $messages['toasts']);
+        $this->assertFalse((bool)Alert::has(), 'shown messages are removed');
     }
 
     public function testWidget(): void
