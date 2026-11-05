@@ -115,6 +115,14 @@ class TableActionsCest
             $I->seeElement('th.table-data-title[aria-sort="descending"] .sort-button.active');
             $I->assertSame('Codecept 25', $this->firstTitle($I));
 
+            // ссылка на запись (?show_id=) открывает её страницу при выбранной сортировке и подсвечивает её:
+            // «Codecept 03» по убыванию — 23-я, на второй странице
+            $id = (int)$I->grabRowsFromSql("SELECT seo_id FROM seo WHERE title = 'Codecept 03'")[0]['seo_id'];
+            $I->amOnPage('/admin/site/seo?show_id=' . $id);
+            $I->assertSame(5, $this->rowCount($I));
+            $I->seeElementInDOM('.table__body-row.tr_saved[data-id="' . $id . '"]');
+            $I->assertSame(1, (int)$I->executeJS("return document.querySelectorAll('.tr_saved').length"));
+
             // неизвестная колонка игнорируется
             $I->amOnPage('/admin/site/seo?o=no_such_column');
             $I->dontSeeErrors();
