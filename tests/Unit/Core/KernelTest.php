@@ -84,4 +84,32 @@ class KernelTest extends Unit
             }
         };
     }
+
+    /**
+     * Вне devMode необработанное исключение пишется в журнал PHP независимо от enableLogging
+     * и не остаётся пустым ответом 200
+     */
+    public function testUncaughtExceptionIsWrittenToPhpLog(): void
+    {
+        $kernel = (new \ReflectionClass(Kernel::class))->newInstanceWithoutConstructor();
+        $file = tempnam(sys_get_temp_dir(), 'sf-errlog');
+        $oldLog = ini_set('error_log', $file);
+        $oldStatus = http_response_code();
+        try {
+            ob_start();
+            $kernel->handleException(new \RuntimeException('Duplicate entry for key email_uq'));
+            $output = ob_get_clean();
+            $log = (string)file_get_contents($file);
+        } finally {
+            ini_set('error_log', $oldLog === false ? '' : $oldLog);
+            @unlink($file);
+            $oldStatus ? http_response_code($oldStatus) : null;
+        }
+        $this->assertStringContainsString('RuntimeException', $log);
+        $this->assertStringContainsString('Duplicate entry for key email_uq', $log);
+        $this->assertStringContainsString('KernelTest.php', $log);
+        $this->assertStringContainsString('Stack trace', $log);
+        // в CLI тело не печатается, в вебе — короткий текст без деталей
+        $this->assertStringNotContainsString('Duplicate', $output);
+    }
 }

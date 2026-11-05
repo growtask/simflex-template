@@ -16,6 +16,24 @@ use Simflex\Core\Helpers\TimeDiff;
  */
 class HelpersTest extends Unit
 {
+    public function testEnvReadsDotenvThenProcessEnvironment(): void
+    {
+        $name = 'SF_TEST_ENV_' . bin2hex(random_bytes(4));
+        try {
+            $this->assertSame('fallback', env($name, 'fallback'));
+            // Переменная окружения процесса (docker compose environment) при variables_order без E не попадает
+            // в $_ENV, но env() её видит
+            putenv($name . '=from-process');
+            $this->assertSame('from-process', env($name));
+            // Значение из .env (Dotenv кладёт его в $_ENV) читается первым
+            $_ENV[$name] = 'from-dotenv';
+            $this->assertSame('from-dotenv', env($name));
+        } finally {
+            putenv($name);
+            unset($_ENV[$name]);
+        }
+    }
+
     public function testTransliteMakesUrlSlug(): void
     {
         $this->assertSame('vtoraya-zapis', Str::translite('Вторая запись'));

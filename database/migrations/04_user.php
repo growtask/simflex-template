@@ -13,7 +13,7 @@ return new class () implements \Simflex\Core\DB\Migration {
             $c->boolean('active')->setDefault(1);
             $c->string('login')->unique(true);
             $c->string('password');
-            $c->string('email')->unique(true);
+            $c->string('email')->setNull()->unique(true);
             $c->string('name');
             $c->string('code');
             $c->boolean('in_mailing')->setDefault(1);

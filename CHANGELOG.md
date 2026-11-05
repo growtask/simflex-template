@@ -7,6 +7,11 @@
 
 ## [4.0.0] — не выпущена
 
+- `user.email` в `04_user.php` — nullable с уникальным индексом: у нескольких пользователей e-mail может быть не
+  задан (раньше `''` у двух пользователей давало `Duplicate entry ''`). Пустой e-mail сохраняется как NULL
+  (ядро: `Account`). Для существующей БД: `ALTER TABLE user MODIFY email VARCHAR(255) NULL;
+  UPDATE user SET email = NULL WHERE email = '';`.
+
 - `composer create-project` очищает `CHANGELOG.md`, `AGENTS.md` и `CLAUDE.md` нового сайта
   (`post-create-project-cmd`): журнал и правила для агентов шаблона сайту не нужны. Команда создания сайта —
   `composer create-project --no-install --ignore-platform-reqs growtask/simflex-template {sitename} 4.0.x-dev`,

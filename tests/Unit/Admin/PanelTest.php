@@ -124,6 +124,40 @@ class PanelTest extends Unit
         $this->assertStringContainsString('value="a@b.c"', $html);
     }
 
+    public function testAccountSaveStoresEmptyEmailAsNullAndRejectsTakenEmail(): void
+    {
+        $save = new \ReflectionMethod(Account::class, 'save');
+        $account = new Account();
+
+        $this->mockRows([], $queries);
+        [$isSaved] = $save->invoke($account, 3, '  ', 'Name', '');
+        $this->assertTrue($isSaved);
+        $update = array_values(array_filter($queries, fn(array $q) => str_starts_with($q[0], 'update')));
+        $this->assertCount(1, $update);
+        $this->assertContains(null, $update[0][1]);
+        $this->assertNotContains('', $update[0][1]);
+
+        // e-mail занят другим пользователем: проверка запросом, update не выполняется
+        $this->mockRows([['user_id' => 9, 'email' => 'taken@b.c']], $queries);
+        [$isSaved, $message] = $save->invoke($account, 3, 'taken@b.c', 'Name', '');
+        $this->assertFalse($isSaved);
+        $this->assertSame('Этот e-mail уже используется', $message);
+        $this->assertSame([], array_filter($queries, fn(array $q) => str_starts_with($q[0], 'update')));
+
+        // исключение БД не роняет страницу
+        $db = $this->mockDb();
+        $db->method('query')->willReturnCallback(function (string $q) {
+            if (str_starts_with($q, 'update')) {
+                throw new \PDOException('Duplicate entry', 23000);
+            }
+            return true;
+        });
+        $db->method('fetch')->willReturn(false);
+        [$isSaved, $message] = $save->invoke($account, 3, 'free@b.c', 'Name', '');
+        $this->assertFalse($isSaved);
+        $this->assertSame('Данные не обновлены', $message);
+    }
+
     public function testLogUsesPlaceholders(): void
     {
         $oldRequest = Container::getRequest();
