@@ -11,6 +11,8 @@
   (`post-create-project-cmd`): журнал и правила для агентов шаблона сайту не нужны. Команда создания сайта —
   `composer create-project --no-install --ignore-platform-reqs growtask/simflex-template {sitename} 4.0.x-dev`,
   без `--no-scripts`.
+- `composer create-project` убирает `composer.lock` из `.gitignore` нового сайта: у шаблона lock-файла нет,
+  а сайт хранит его в репозитории и на проде ставит зависимости только `composer install`.
 - `public/assets/default/css/site.css` использует новые имена токенов цветов ядра (`--color-main-gray-black`,
   `--color-main-color1-lighter`, `--color-main-gray-white`).
 - Unit-тест `Admin/AdminAssetsTest`: стили админки (px на десктопе, отдельный кеш), спрайт иконок админки,

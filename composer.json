@@ -43,7 +43,8 @@
   },
   "scripts": {
     "post-create-project-cmd": [
-      "@php -r \"foreach (['CHANGELOG.md', 'AGENTS.md', 'CLAUDE.md'] as \\$file) file_put_contents(\\$file, '');\""
+      "@php -r \"foreach (['CHANGELOG.md', 'AGENTS.md', 'CLAUDE.md'] as \\$file) file_put_contents(\\$file, '');\"",
+      "@php -r \"file_put_contents('.gitignore', preg_replace('/^composer\\\\.lock\\\\R/m', '', file_get_contents('.gitignore')));\""
     ],
     "post-package-install": [
       "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
