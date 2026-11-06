@@ -7,6 +7,10 @@
 
 ## [4.0.0] — не выпущена
 
+- Docker (`docker/php/Dockerfile`): в контейнере команда `sf` работает из любого каталога (без `./`,
+  `/usr/local/bin/sf`); ответы без заголовка `X-Powered-By` (`expose_php = Off`) и без версии Apache в `Server`
+  (`ServerTokens Prod`, `ServerSignature Off`). Нужна пересборка образа: `docker compose up -d --build`.
+
 - `user.email` в `04_user.php` — nullable с уникальным индексом: у нескольких пользователей e-mail может быть не
   задан (раньше `''` у двух пользователей давало `Duplicate entry ''`). Пустой e-mail сохраняется как NULL
   (ядро: `Account`). Для существующей БД: `ALTER TABLE user MODIFY email VARCHAR(255) NULL;

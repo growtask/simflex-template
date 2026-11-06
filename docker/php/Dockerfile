@@ -23,9 +23,18 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath intl 
 RUN docker-php-ext-configure gd --with-webp --with-jpeg && docker-php-ext-install gd zip
 RUN a2enmod rewrite
 
+# Hide X-Powered-By header
+RUN printf 'expose_php = Off\n' > $PHP_INI_DIR/conf.d/security.ini
+# Hide Apache version (Server header, error pages)
+RUN sed -ri -e 's/^ServerTokens .*/ServerTokens Prod/' -e 's/^ServerSignature .*/ServerSignature Off/' \
+    /etc/apache2/conf-available/security.conf
+
 # Document root is public/: only index.php and static files are reachable from the web
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+
+# Create sf executable script to run sf command without ./ prefix
+RUN printf '#!/bin/sh\nexec php /var/www/html/sf "$@"\n' > /usr/local/bin/sf && chmod +x /usr/local/bin/sf
 
 # Install composer. Usage: docker-compose exec app composer install
 RUN curl https://getcomposer.org/download/latest-stable/composer.phar > /usr/local/bin/composer && chmod +x /usr/local/bin/composer
