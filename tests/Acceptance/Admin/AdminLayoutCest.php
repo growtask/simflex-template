@@ -165,6 +165,35 @@ class AdminLayoutCest
         }
     }
 
+    public function tryToPickDateInFilterCalendar(AcceptanceTester $I): void
+    {
+        // период в меню фильтра колонки даты: акции каталога, «Начало»
+        $sales = '/admin/catalog/sale';
+        $filter = 'th.table-data-start [data-sf-th-filter]';
+        $toggle = $filter . ' .text-input:has([data-sf-date-range="from"]) [data-sf-date-toggle]';
+        try {
+            $I->amOnPage($sales . '?action=filterReset');
+            $I->click($filter . ' [data-sf-th-filter-toggle]');
+            $I->waitForElementVisible($toggle, 5);
+            $I->click($toggle);
+            $I->waitForElementVisible($filter . ' .calendar__day', 5);
+            // выбор дня закрывает календарь, но не меню фильтра
+            $I->click($filter . ' .calendar__day:not([disabled])');
+            $I->waitForElementNotVisible($filter . ' .text-input__calendar', 5);
+            $I->seeElement($filter . ' .th-filter__menu');
+            $from = $I->grabValueFrom($filter . ' [data-sf-date-range="from"]');
+            $I->assertMatchesRegularExpression('/^\d{2}\.\d{2}\.\d{4}$/', $from);
+            $I->assertStringEndsWith('|', $I->grabValueFrom($filter . ' [data-sf-date-range-value]'));
+
+            // «Применить»: тег периода
+            $I->click($filter . ' [data-sf-th-filter-apply]');
+            $I->waitForText('Начало: с ' . $from, 10, '.th-tags');
+            $I->dontSeeErrors();
+        } finally {
+            $I->amOnPage($sales . '?action=filterReset');
+        }
+    }
+
     public function tryToChooseSearchScope(AcceptanceTester $I): void
     {
         $settings = '/admin/site/settings';

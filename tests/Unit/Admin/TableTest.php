@@ -5,6 +5,7 @@ namespace Tests\Unit\Admin;
 use Codeception\Test\Unit;
 use Simflex\Core\Admin\Page;
 use Simflex\Core\Admin\Fields\FieldBool;
+use Simflex\Core\Admin\Fields\FieldDateTime;
 use Simflex\Core\Admin\Fields\FieldInt;
 use Simflex\Core\Admin\Fields\FieldMultiKey;
 use Simflex\Core\Admin\Fields\FieldString;
@@ -294,6 +295,36 @@ class TableTest extends Unit
             $this->assertStringContainsString('Title: Перв', $html);
             $this->assertStringContainsString('Поиск: x', $html);
             $this->assertStringContainsString('table-toolbar__filters-count', $html);
+        } finally {
+            \Simflex\Core\System\Session::set('test_table', []);
+            Container::set('config', $configBackup);
+        }
+    }
+
+    public function testListDateRangeFilter(): void
+    {
+        $configBackup = Container::get('config');
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
+        try {
+            $this->mockRows([['cnt' => 0]], $queries);
+            $date = new FieldDateTime(['name' => 'date', 'label' => 'Дата', 'table' => 'test_table']);
+            $date->filter = true;
+            $date->isVisible = true;
+            $table = $this->makeTable(['date' => $date]);
+            \Simflex\Core\System\Session::set('test_table', ['filter' => ['date' => '2026-11-01|2026-11-30']]);
+
+            $html = $table->show();
+            // период включительно: до начала следующего дня после «до»
+            $sql = implode("\n", array_column($queries, 0));
+            $params = array_merge(...array_column($queries, 1));
+            $this->assertStringContainsString(' >= :filter_date_from', $sql);
+            $this->assertStringContainsString(' < :filter_date_to', $sql);
+            $this->assertSame('2026-11-01', $params['filter_date_from']);
+            $this->assertSame('2026-12-01', $params['filter_date_to']);
+            // меню фильтра — «От» и «До» с календарём, тег — период
+            $this->assertStringContainsString('data-sf-date-range="from"', $html);
+            $this->assertStringContainsString('value="01.11.2026"', $html);
+            $this->assertStringContainsString('Дата: 01.11.2026 — 30.11.2026', $html);
         } finally {
             \Simflex\Core\System\Session::set('test_table', []);
             Container::set('config', $configBackup);

@@ -63,6 +63,26 @@ class FieldsTest extends Unit
         $this->assertStringContainsString('inputmode="numeric"', $html);
     }
 
+    public function testDateRangeFilterValue(): void
+    {
+        $range = \Simflex\Core\Admin\Fields\DateRange::class;
+        $this->assertSame(['2026-11-01', '2026-11-30'], $range::parse('2026-11-01|2026-11-30'));
+        $this->assertSame(['2026-11-01', null], $range::parse('2026-11-01|'));
+        $this->assertSame([null, '2026-11-30'], $range::parse('|2026-11-30'));
+        // не дата и несуществующий день — границы нет
+        $this->assertSame([null, null], $range::parse("2026-02-30|x' OR 1"));
+        $this->assertSame('с 01.11.2026', $range::getLabel('2026-11-01|'));
+        $this->assertSame('по 30.11.2026', $range::getLabel('|2026-11-30'));
+        $this->assertSame('', $range::getLabel('abc'));
+
+        $date = new FieldDate(['name' => 'date', 'label' => 'Дата', 'table' => 't']);
+        $this->assertSame('', $date->filter(''));
+        $date->filter = true;
+        $html = $date->filter('2026-11-01|');
+        $this->assertStringContainsString('data-sf-date-range="to"', $html);
+        $this->assertStringContainsString('name="filter[date]" value="2026-11-01|"', $html);
+    }
+
     public function testNumericDefaultsAndFractionalWidths(): void
     {
         $row = ['name' => 'value', 'label' => 'Value', 'table' => 'content', 'params' => ['main' => ['width' => 120.5]]];
