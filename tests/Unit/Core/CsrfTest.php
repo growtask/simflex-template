@@ -84,4 +84,25 @@ final class CsrfTest extends Unit
         $this->expectException(DomainException::class);
         Csrf::check(Request::create('/'));
     }
+
+    public function testMutationNeedsJsonBodyOrToken(): void
+    {
+        $token = Csrf::token();
+
+        $this->assertTrue(Csrf::isTrustedMutation(\Simflex\Core\Http\Api\JsonRequest::createJson('/cart', ['qty' => 1])));
+        $this->assertTrue(Csrf::isTrustedMutation(Request::create('/cart', post: ['qty' => 1, Csrf::FIELD => $token])));
+        $this->assertFalse(Csrf::isTrustedMutation(Request::create('/cart', post: ['qty' => 1])));
+        // GET не изменяет данные, даже с JSON или токеном
+        $this->assertFalse(Csrf::isTrustedMutation(Request::create('/cart?' . Csrf::FIELD . '=' . $token)));
+        $this->assertFalse(Csrf::isTrustedMutation(
+            \Simflex\Core\Http\Api\JsonRequest::createJson('/cart', ['qty' => 1], 'GET')
+        ));
+
+        try {
+            Csrf::checkMutation(Request::create('/cart', post: ['qty' => 1]));
+            $this->fail('Ожидалось ApiException');
+        } catch (\Simflex\Core\Http\Api\ApiException $ex) {
+            $this->assertSame(403, $ex->getHttpStatus());
+        }
+    }
 }

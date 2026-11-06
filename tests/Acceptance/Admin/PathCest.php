@@ -44,10 +44,13 @@ class PathCest
 
         $fm = $I->executeAsyncJS(
             'const done = arguments[arguments.length - 1];
-            fetch(arguments[0]).then(r => r.json()).then(done).catch(e => done({error: String(e)}));',
+            fetch(arguments[0]).then(r => r.text()).then(done).catch(e => done(String(e)));',
             [self::PATH . '/fm?method=getTree']
         );
-        $I->assertTrue($fm['success'] ?? false, json_encode($fm));
+        // тело - строкой: объект с ключом error chromedriver принимает за ошибку WebDriver
+        $fm = json_decode($fm, true);
+        $I->assertSame(0, $fm['error']['code'] ?? null, json_encode($fm));
+        $I->assertIsArray($fm['items'] ?? null, json_encode($fm));
 
         // адрес со слэшем на конце редиректит на адрес без него
         $I->amOnPage(self::PATH . '/content/page/');

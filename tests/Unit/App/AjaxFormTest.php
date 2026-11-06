@@ -53,7 +53,7 @@ class AjaxFormTest extends Unit
 
         $transport->throw = true;
         $this->assertFalse($form->callSendMail());
-        $this->assertSame(['mail: boom'], $form->getErrors());
+        $this->assertSame(['mail' => 'boom'], $form->getErrors());
     }
 }
 

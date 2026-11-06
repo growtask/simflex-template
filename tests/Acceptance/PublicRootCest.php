@@ -73,12 +73,16 @@ class PublicRootCest
     public function tryToOpenFileManager(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->assertStringContainsString('not_authenticated', $this->fetch($I, '/admin/fm?method=getTree')['body']);
+        $res = $this->fetch($I, '/admin/fm?method=getTree');
+        $I->assertSame(401, $res['status']);
+        $I->assertSame(401, json_decode($res['body'], true)['error']['code'] ?? 0, $res['body']);
 
         $I->loginAsAdmin();
         $res = $this->fetch($I, '/admin/fm?method=getTree');
         $I->assertSame(200, $res['status']);
-        $I->assertTrue(json_decode($res['body'], true)['success'] ?? false, $res['body']);
+        $json = json_decode($res['body'], true);
+        $I->assertSame(0, $json['error']['code'] ?? null, $res['body']);
+        $I->assertIsArray($json['items'] ?? null, $res['body']);
     }
 
     private function seeAllAssetsServed(AcceptanceTester $I): void

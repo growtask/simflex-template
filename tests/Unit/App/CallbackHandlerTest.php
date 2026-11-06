@@ -6,6 +6,7 @@ use App\Extensions\Form\CallbackHandler;
 use App\Extensions\Form\Notifiers\Notifier;
 use Codeception\Test\Unit;
 use Simflex\Core\Extensions\Form\FormGuard;
+use Simflex\Core\Http\Api\ApiException;
 use Simflex\Core\Http\Request;
 use Simflex\Core\System\Container;
 
@@ -67,6 +68,21 @@ class CallbackHandlerTest extends Unit
         };
     }
 
+    /**
+     * Ошибка запроса: статус и ошибки полей
+     *
+     * @return array{int, array<string,string>, string}
+     */
+    private function fails(CallbackHandler $handler, Request $request): array
+    {
+        try {
+            $handler->handle($request);
+        } catch (ApiException $e) {
+            return [$e->getHttpStatus(), $e->getErrors(), $e->getMessage()];
+        }
+        $this->fail('Ожидалась ApiException');
+    }
+
     public function testSuccessfulSendGoesToConfiguredChannels(): void
     {
         $mail = $this->notifier();
@@ -74,7 +90,7 @@ class CallbackHandlerTest extends Unit
 
         $answer = (new CallbackHandler([$mail, $telegram]))->handle($this->request());
 
-        $this->assertTrue($answer['success']);
+        $this->assertSame([], $answer);
         $this->assertCount(1, $mail->sent);
         $this->assertSame('Иван', $mail->sent[0]['name']);
         $this->assertSame('+7 999 123-45-67', $mail->sent[0]['phone']);
@@ -86,26 +102,26 @@ class CallbackHandlerTest extends Unit
         $channel = $this->notifier();
         $request = $this->request(['name' => ' ', 'phone' => '12', 'email' => 'bad', 'comment' => str_repeat('я', 301), 'consent' => '']);
 
-        $answer = (new CallbackHandler([$channel]))->handle($request);
+        [$status, $errors] = $this->fails(new CallbackHandler([$channel]), $request);
 
-        $this->assertFalse($answer['success']);
-        $this->assertSame(['name', 'phone', 'email', 'comment', 'consent'], array_keys($answer['errors']));
+        $this->assertSame(422, $status);
+        $this->assertSame(['name', 'phone', 'email', 'comment', 'consent'], array_keys($errors));
         $this->assertSame([], $channel->sent, 'С ошибками заявка не отправляется');
     }
 
     public function testConsentIsRequired(): void
     {
-        $answer = (new CallbackHandler([$this->notifier()]))->handle($this->request(['consent' => '']));
+        [$status, $errors] = $this->fails(new CallbackHandler([$this->notifier()]), $this->request(['consent' => '']));
 
-        $this->assertFalse($answer['success']);
-        $this->assertSame(['consent'], array_keys($answer['errors']));
+        $this->assertSame(422, $status);
+        $this->assertSame(['consent'], array_keys($errors));
     }
 
     public function testEmailIsOptional(): void
     {
         $answer = (new CallbackHandler([$this->notifier()]))->handle($this->request(['email' => '']));
 
-        $this->assertTrue($answer['success']);
+        $this->assertSame([], $answer);
     }
 
     public function testTrapAndTokenReject(): void
@@ -113,23 +129,28 @@ class CallbackHandlerTest extends Unit
         $channel = $this->notifier();
         $handler = new CallbackHandler([$channel]);
 
-        $trap = $handler->handle($this->request([FormGuard::TRAP_FIELD => 'http://spam']));
-        $noToken = $handler->handle($this->request(withToken: false));
-        $fast = $handler->handle($this->request([FormGuard::TOKEN_FIELD => (new FormGuard())->issueToken()]));
-        $forged = $handler->handle($this->request([FormGuard::TOKEN_FIELD => time() - 60 . '.deadbeef']));
-
-        foreach ([$trap, $noToken, $fast, $forged] as $answer) {
-            $this->assertFalse($answer['success']);
-            $this->assertSame([], $answer['errors']);
+        $requests = [
+            $this->request([FormGuard::TRAP_FIELD => 'http://spam']),
+            $this->request(withToken: false),
+            $this->request([FormGuard::TOKEN_FIELD => (new FormGuard())->issueToken()]),
+            $this->request([FormGuard::TOKEN_FIELD => time() - 60 . '.deadbeef']),
+        ];
+        foreach ($requests as $request) {
+            [$status, $errors] = $this->fails($handler, $request);
+            $this->assertSame(400, $status);
+            $this->assertSame([], $errors);
         }
         $this->assertSame([], $channel->sent);
     }
 
     public function testAllChannelsFailedIsError(): void
     {
-        $answer = (new CallbackHandler([$this->notifier(true, false), $this->notifier(true, false)]))->handle($this->request());
+        $handler = new CallbackHandler([$this->notifier(true, false), $this->notifier(true, false)]);
 
-        $this->assertFalse($answer['success']);
+        [$status, , $message] = $this->fails($handler, $this->request());
+
+        $this->assertSame(500, $status);
+        $this->assertSame('Не удалось отправить заявку', $message);
     }
 
     public function testOneFailedChannelIsStillSuccess(): void
@@ -137,14 +158,14 @@ class CallbackHandlerTest extends Unit
         $ok = $this->notifier();
         $answer = (new CallbackHandler([$this->notifier(true, false), $ok]))->handle($this->request());
 
-        $this->assertTrue($answer['success']);
+        $this->assertSame([], $answer);
         $this->assertCount(1, $ok->sent);
     }
 
     public function testGetRequestIsRejected(): void
     {
-        $answer = (new CallbackHandler([$this->notifier()]))->handle(Request::create('/form/callback'));
+        [$status] = $this->fails(new CallbackHandler([$this->notifier()]), Request::create('/form/callback'));
 
-        $this->assertFalse($answer['success']);
+        $this->assertSame(400, $status);
     }
 }

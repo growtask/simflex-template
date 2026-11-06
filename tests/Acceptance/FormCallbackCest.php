@@ -96,4 +96,55 @@ class FormCallbackCest
         $I->seeInField(self::FORM . ' input[name="name"]', '');
         $I->dontSeeLogProblems();
     }
+
+    public function tryToSeeEnvelopeErrors(AcceptanceTester $I): void
+    {
+        $I->amOnPage(self::PAGE);
+        // защита от ботов: форма не принимается быстрее трёх секунд после показа
+        $token = $I->executeJS('return document.querySelector(\'' . self::FORM . ' input[name="form_token"]\').value');
+        $I->wait(3);
+
+        // ошибка проверки полей: 422, error.errors - поле => текст
+        $invalid = $this->post($I, true, ['name' => '', 'phone' => '12', 'form_token' => $token]);
+        $I->assertSame(422, $invalid['status']);
+        $I->assertSame(422, $invalid['body']['error']['code']);
+        $I->assertSame('Проверьте поля формы', $invalid['body']['error']['message']);
+        $I->assertEqualsCanonicalizing(['name', 'phone', 'consent'], array_keys($invalid['body']['error']['errors']));
+
+        // защита от ботов: без токена заявка не принимается, поля не подсказываются
+        $bot = $this->post($I, true, ['name' => 'Иван', 'phone' => '+7 999 123-45-67', 'consent' => '1']);
+        $I->assertSame(400, $bot['status']);
+        $I->assertArrayNotHasKey('errors', $bot['body']['error']);
+
+        // изменяющий запрос без JSON и без CSRF-токена отклоняется
+        $form = $this->post($I, false, ['name' => 'Иван']);
+        $I->assertSame(403, $form['status']);
+
+        // действия нет: JSON 404
+        $get = $I->executeAsyncJS(
+            'const done = arguments[arguments.length - 1];
+            fetch("/form/callback").then(r => r.json().then(body => done({status: r.status, body})));'
+        );
+        $I->assertSame(404, $get['status']);
+        $I->assertSame(404, $get['body']['error']['code']);
+        $I->dontSeeLogProblems();
+    }
+
+    /**
+     * @param array<string, string> $fields
+     * @return array{status: int, body: array<string, mixed>}
+     */
+    private function post(AcceptanceTester $I, bool $asJson, array $fields): array
+    {
+        return $I->executeAsyncJS(
+            'const done = arguments[arguments.length - 1];
+            const [asJson, fields] = arguments;
+            fetch("/form/callback", {
+                method: "POST",
+                headers: asJson ? {"Content-Type": "application/json"} : {},
+                body: asJson ? JSON.stringify(fields) : new URLSearchParams(fields),
+            }).then(r => r.json().then(body => done({status: r.status, body})));',
+            [$asJson, $fields]
+        );
+    }
 }

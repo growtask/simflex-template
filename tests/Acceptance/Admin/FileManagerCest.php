@@ -104,6 +104,37 @@ class FileManagerCest
         $I->dontSeeLogProblems();
     }
 
+    public function tryToGetApiEnvelope(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/admin');
+        $fetch = fn(string $url, array $options = []): array => $I->executeAsyncJS(
+            'const done = arguments[arguments.length - 1];
+            fetch(arguments[0], arguments[1]).then(r => r.json().then(json => done({status: r.status, json})));',
+            [$url, $options]
+        );
+
+        $tree = $fetch('/admin/fm?method=getTree');
+        $I->assertSame(200, $tree['status']);
+        $I->assertSame(0, $tree['json']['error']['code']);
+        $I->assertContains('/images', array_column($tree['json']['items'], 'path'));
+
+        $unknown = $fetch('/admin/fm?method=nope');
+        $I->assertSame(404, $unknown['status']);
+        $I->assertSame('Неизвестное действие', $unknown['json']['error']['message']);
+
+        $missing = $fetch('/admin/fm?method=getFileList&path=/codecept-no-dir');
+        $I->assertSame(404, $missing['status']);
+
+        $badName = $fetch('/admin/fm?method=createDir&path=/images&name=.evil', ['method' => 'POST']);
+        $I->assertSame(422, $badName['status']);
+        $I->assertSame('Недопустимое имя', $badName['json']['error']['message']);
+        $I->assertDirectoryDoesNotExist(codecept_root_dir('public/uf/images/.evil'));
+
+        $notFound = $fetch('/admin/fm?method=delete&path=/codecept-no-file', ['method' => 'POST']);
+        $I->assertSame(404, $notFound['status']);
+        $I->assertSame(404, $notFound['json']['error']['code']);
+    }
+
     public function tryToPickFileForTableRow(AcceptanceTester $I): void
     {
         // картинка колонки поля-таблицы «Из библиотеки»: менеджер — поверх окна строки, после выбора окно строки

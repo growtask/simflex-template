@@ -7,6 +7,15 @@
 
 ## [4.0.0] — не выпущена
 
+- `provider/services.php`: убрана группа `api` (окружение `Location::Api` удалено из ядра). Сайтам: удалить группу
+  `api` и её строку в комментарии.
+
+- Форма «Связаться с нами»: `Extensions/Form/Components/CallbackForm` и `AjaxForm` — `ApiController`, ответ —
+  конверт JSON API. `CallbackHandler::handle()` возвращает пустой массив и бросает `ApiException` (ошибки полей —
+  422 с `error.errors`, защита от ботов и неверный метод — 400, не ушла ни по одному каналу — 500) вместо
+  `{success, errors, message}`; `AjaxForm`: ошибки каналов — `error.errors` (`mail`). Скрипт формы отправляет JSON.
+  Тесты: `FormCallbackCest` (ответы `/form/callback`), `TableActionsCest` (ajax-действия раздела), `CallbackHandlerTest`.
+
 - Docker (`docker/php/Dockerfile`): в контейнере команда `sf` работает из любого каталога (без `./`,
   `/usr/local/bin/sf`); ответы без заголовка `X-Powered-By` (`expose_php = Off`) и без версии Apache в `Server`
   (`ServerTokens Prod`, `ServerSignature Off`). Нужна пересборка образа: `docker compose up -d --build`.

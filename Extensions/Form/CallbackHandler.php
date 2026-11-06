@@ -6,6 +6,7 @@ use App\Extensions\Form\Notifiers\MailNotifier;
 use App\Extensions\Form\Notifiers\Notifier;
 use App\Extensions\Form\Notifiers\TelegramNotifier;
 use Simflex\Core\Extensions\Form\FormGuard;
+use Simflex\Core\Http\Api\ApiException;
 use Simflex\Core\Http\Request;
 use Simflex\Core\Logger\Log;
 
@@ -14,7 +15,8 @@ use Simflex\Core\Logger\Log;
  * защита от ботов (FormGuard) и отправка заявки по настроенным каналам (почта form_email, Telegram
  * form_tg_token + form_tg_chat_id). Каналы - Notifier, в тестах подменяются.
  *
- * Ответ - массив {success: bool, errors: {поле: текст}, message: текст}.
+ * Успех - пустой массив, ошибка - ApiException: ошибка проверки полей - 422 с error.errors (поле => текст),
+ * остальное - 400/500 с текстом.
  */
 class CallbackHandler
 {
@@ -36,17 +38,18 @@ class CallbackHandler
 
     /**
      * Обрабатывает запрос с формой
-     * @return array{success: bool, errors: array<string,string>, message: string}
+     * @return array<string, mixed> Данные ответа (пустой массив - заявка принята)
+     * @throws ApiException Запрос не принят: ошибки полей, защита от ботов, не ушла ни по одному каналу
      */
     public function handle(Request $request): array
     {
         if (!$request->isPost()) {
-            return $this->fail('Форма отправляется методом POST');
+            throw ApiException::badRequest('Форма отправляется методом POST');
         }
         if (!$this->guard->check($request)) {
             // бота не подсказываем: общая ошибка без полей
             Log::warning('Заявка отклонена защитой от ботов, IP {ip}', ['ip' => $request->getIp()]);
-            return $this->fail('Не удалось отправить, обновите страницу и попробуйте ещё раз');
+            throw ApiException::badRequest('Не удалось отправить, обновите страницу и попробуйте ещё раз');
         }
 
         $data = [
@@ -61,7 +64,7 @@ class CallbackHandler
 
         $errors = $this->validate($data, (string)$request->post('consent', '') === '1');
         if ($errors) {
-            return ['success' => false, 'errors' => $errors, 'message' => 'Проверьте заполнение полей'];
+            throw ApiException::unprocessable('Проверьте поля формы', $errors);
         }
 
         return $this->deliver($data);
@@ -105,6 +108,8 @@ class CallbackHandler
      * Отправляет заявку по настроенным каналам: успех, если ушла хотя бы по одному. Без настроенных каналов
      * заявка пишется в журнал (чтобы не потерять) и считается принятой
      * @param array<string,string> $data Проверенные данные
+     * @return array<string, mixed>
+     * @throws ApiException Заявка не ушла ни по одному каналу
      */
     protected function deliver(array $data): array
     {
@@ -113,7 +118,7 @@ class CallbackHandler
             Log::info('Заявка принята, но каналы уведомлений не настроены (form_email, form_tg_token): {data}', [
                 'data' => json_encode($data, JSON_UNESCAPED_UNICODE),
             ]);
-            return ['success' => true, 'errors' => [], 'message' => ''];
+            return [];
         }
 
         $sent = false;
@@ -122,14 +127,10 @@ class CallbackHandler
             $sent = $notifier->send($data) || $sent;
         }
 
-        return $sent ? ['success' => true, 'errors' => [], 'message' => ''] : $this->fail('Не удалось отправить заявку');
-    }
+        if (!$sent) {
+            throw new ApiException('Не удалось отправить заявку', 500);
+        }
 
-    /**
-     * @return array{success: bool, errors: array<string,string>, message: string}
-     */
-    protected function fail(string $message): array
-    {
-        return ['success' => false, 'errors' => [], 'message' => $message];
+        return [];
     }
 }

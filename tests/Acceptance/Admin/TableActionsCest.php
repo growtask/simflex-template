@@ -39,6 +39,38 @@ class TableActionsCest
         $I->dontSeeLogProblems();
     }
 
+    /**
+     * Ajax-действия раздела отвечают конвертом JSON API: данные рядом с error, списки - в items, ошибка - статус
+     */
+    public function tryToCallAjaxActionsWithEnvelope(AcceptanceTester $I): void
+    {
+        $I->amOnPage(self::SECTION);
+
+        $npp = $this->fetchJson($I, self::SECTION . '?action=change_npp&field=npp&menu_id=0&val=1');
+        $I->assertSame(200, $npp['status']);
+        $I->assertSame(['code' => 0, 'message' => ''], $npp['body']['error']);
+
+        $missing = $this->fetchJson($I, self::SECTION . '?action=change_npp&field=nothing&menu_id=1&val=1');
+        $I->assertSame(404, $missing['status']);
+        $I->assertSame('Поле не найдено', $missing['body']['error']['message']);
+        $I->assertSame(404, $this->fetchJson($I, self::SECTION . '?action=change_enum&field=nothing&menu_id=1')['status']);
+
+        $validate = $this->fetchJson($I, self::SECTION . '?action=validate', 'POST');
+        $I->assertSame(200, $validate['status']);
+        $I->assertArrayHasKey('valid', $validate['body']);
+        $I->assertSame(0, $validate['body']['error']['code']);
+
+        // поиск записи для внешнего ключа: список лежит в items
+        $roles = $this->fetchJson($I, '/admin/admin/role_privilege?action=searchInt&name=role_id&text=');
+        $I->assertSame(200, $roles['status']);
+        $I->assertNotEmpty($roles['body']['items']);
+        $I->assertArrayHasKey('id', $roles['body']['items'][0]);
+        $I->assertArrayHasKey('name', $roles['body']['items'][0]);
+        $none = $this->fetchJson($I, '/admin/admin/role_privilege?action=searchInt&name=privilege&text=');
+        $I->assertSame([], $none['body']['items']);
+        $I->dontSeeLogProblems();
+    }
+
     public function tryToFilterList(AcceptanceTester $I): void
     {
         // роль — внешний ключ: её название приходит через join
@@ -152,5 +184,23 @@ class TableActionsCest
             [$url]
         );
         $I->assertSame(200, $status, $url);
+    }
+
+    /**
+     * @return array{status: int, body: array<string, mixed>}
+     */
+    private function fetchJson(AcceptanceTester $I, string $url, string $method = 'GET'): array
+    {
+        $answer = $I->executeAsyncJS(
+            'const done = arguments[arguments.length - 1];
+            fetch(arguments[0], {method: arguments[1], credentials: "same-origin",
+                headers: {"X-Requested-With": "XMLHttpRequest"}})
+                .then(r => r.text().then(body => done({status: r.status, body})))
+                .catch(e => done({status: 0, body: String(e)}));',
+            [$url, $method]
+        );
+        $answer['body'] = json_decode($answer['body'], true) ?? [];
+
+        return $answer;
     }
 }

@@ -6,8 +6,9 @@ use Simflex\Core\System\Container;
 use App\Extensions\Form\Models\Callback;
 use App\Extensions\Form\Models\CallbackEmail;
 use App\Extensions\Form\Models\CatalogProduct;
-use Simflex\Core\Http\Api\JsonResponse;
-use Simflex\Core\Http\ComponentBase;
+use Simflex\Core\Http\Api\ApiController;
+use Simflex\Core\Http\Api\ApiException;
+use Simflex\Core\Http\Controller\Action;
 use Simflex\Core\Mail\Mailer;
 use Simflex\Core\Helpers\Time;
 use Simflex\Core\System\Settings;
@@ -16,24 +17,19 @@ use Simflex\Core\System\Settings;
  * @todo Incomplete: для таблиц callback, callback_email нет миграций, поэтому в реальном окружении этот код
  *       падает на SQL. Будет вынесено в отдельный composer-пакет.
  */
-class AjaxForm extends ComponentBase
+class AjaxForm extends ApiController
 {
     protected array $errors = [];
     protected array $data = [];
 
     /**
-     * JSON-ответ отправляется напрямую через JsonResponse (как делает Api\Json),
-     * в обход макета страницы.
+     * Обрабатывает заявку из формы. Ответ - конверт JSON API: заявка принята - пустой конверт;
+     * не ушла по почте или в Telegram - 422 с описанием в error.errors
+     *
+     * @return array<string, mixed>
+     * @throws ApiException
      */
-    protected function content(): string
-    {
-        $this->sendJson($this->process());
-    }
-
-    /**
-     * Обрабатывает заявку из формы
-     * @return array Данные ответа
-     */
+    #[Action('/', 'post')]
     protected function process(): array
     {
         $request = Container::getRequest();
@@ -66,16 +62,11 @@ class AjaxForm extends ComponentBase
         // запускаем оба канала, даже если первый упал
         $mailSent = $this->sendMail();
         $telegramSent = $this->sendTelegram();
-        return ['success' => $mailSent && $telegramSent, 'errors' => $this->errors];
-    }
+        if (!$mailSent || !$telegramSent) {
+            throw ApiException::unprocessable('Не удалось отправить заявку', $this->errors);
+        }
 
-    /**
-     * Отправляет JSON-ответ и останавливает выполнение
-     */
-    protected function sendJson(array $data): never
-    {
-        (new JsonResponse())->setData($data)->output();
-        exit;
+        return [];
     }
 
     protected function buildMailBody(): string
@@ -106,12 +97,12 @@ HTML;
         try {
             $sent = Mailer::get()->sendText('Новая заявка с сайта', $to, $html, strip_tags($html));
         } catch (\Throwable $ex) {
-            $this->errors[] = 'mail: ' . $ex->getMessage();
+            $this->errors['mail'] = $ex->getMessage();
             return false;
         }
 
         if (!$sent) {
-            $this->errors[] = 'mail: not sent';
+            $this->errors['mail'] = 'не отправлено';
         }
         return $sent;
     }
