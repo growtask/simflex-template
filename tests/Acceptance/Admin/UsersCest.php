@@ -21,7 +21,7 @@ class UsersCest
         $I->dontSee('№ п/п');
         $I->see('Администратор', '.table__body');
         // справка поля — ещё и подсказка у заголовка колонки списка
-        $title = (string)$I->executeJS("return document.querySelector('.table-data-privilege .table__head-help .tooltip').textContent");
+        $title = (string)$I->executeJS("return document.querySelector('.table-data-privilege .th__help .tooltip').textContent");
         $I->assertStringContainsString('Кто управляет ролью', $title);
 
         $I->amOnPage('/admin/admin/role/?action=form&role_id=2');

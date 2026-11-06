@@ -50,6 +50,17 @@ class FieldsTest extends Unit
         $this->assertStringContainsString('name="filter[active]"', $bool->filter('1'));
         $this->assertSame('Да', $bool->getFilterLabel('1'));
         $this->assertSame('Нет', $bool->getFilterLabel('0'));
+        // меню фильтра в шапке: у bool — значения переключателями, у текста — поле поиска
+        $this->assertSame(['1' => 'Да', '0' => 'Нет'], $bool->getFilterOptions());
+        $this->assertNull($string->getFilterOptions());
+        $this->assertStringContainsString('filter-search', $string->filter('x'));
+        $this->assertStringNotContainsString('data-sf-digits', $string->filter('x'));
+        // фильтр числа — только цифры
+        $int = new FieldInt(['name' => 'id', 'label' => 'ID', 'table' => 't']);
+        $int->filter = true;
+        $html = $int->filter('5');
+        $this->assertStringContainsString('data-sf-digits', $html);
+        $this->assertStringContainsString('inputmode="numeric"', $html);
     }
 
     public function testNumericDefaultsAndFractionalWidths(): void

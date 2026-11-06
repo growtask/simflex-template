@@ -39,9 +39,9 @@ class PrivilegeAssignCest
         // подсказки: что здесь значат роль и привилегия
         $I->assertStringContainsString(
             'получают все пользователи роли',
-            (string)$I->executeJS("return document.querySelector('.table-data-privilege .table__head-help .tooltip').textContent")
+            (string)$I->executeJS("return document.querySelector('.table-data-privilege .th__help .tooltip').textContent")
         );
-        $I->seeElement('.table-data-role_id .table__head-help');
+        $I->seeElement('.table-data-role_id .th__help');
         $I->amOnPage('/admin/admin/role_privilege/?action=form');
         $I->see('Роль, пользователи которой получают привилегию');
         $I->see('Привилегия, которую получают все пользователи роли');

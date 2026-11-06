@@ -4,6 +4,7 @@ namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
 use Simflex\Core\Admin\Page;
+use Simflex\Core\Admin\Fields\FieldBool;
 use Simflex\Core\Admin\Fields\FieldInt;
 use Simflex\Core\Admin\Fields\FieldMultiKey;
 use Simflex\Core\Admin\Fields\FieldString;
@@ -242,6 +243,63 @@ class TableTest extends Unit
         \Simflex\Core\System\Session::set('test_table', []);
     }
 
+    public function testListSearchScope(): void
+    {
+        $title = $this->makeField('title');
+        $alias = $this->makeField('alias');
+        foreach ([$title, $alias] as $field) {
+            $field->filter = true;
+            $field->isVisible = true;
+        }
+        $table = $this->makeTable(['title' => $title, 'alias' => $alias]);
+        try {
+            // «где искать»: колонка поиска из состояния списка, неизвестная колонка — везде
+            \Simflex\Core\System\Session::set('test_table', ['qf' => 'alias']);
+            $this->assertSame('alias', $table->getSearchScope());
+            \Simflex\Core\System\Session::set('test_table', ['qf' => 'unknown']);
+            $this->assertSame('', $table->getSearchScope());
+        } finally {
+            \Simflex\Core\System\Session::set('test_table', []);
+        }
+    }
+
+    public function testListFilterMarkup(): void
+    {
+        $configBackup = Container::get('config');
+        Container::set('config', (object)['theme' => 'default', 'devMode' => false, 'adminPath' => '/admin']);
+        try {
+            $this->mockRows([['cnt' => 1], ['id' => 1, 'title' => 'Первая', 'alias' => 'first', 'active' => 1]]);
+            $title = $this->makeField('title');
+            $alias = $this->makeField('alias');
+            $active = new FieldBool(['name' => 'active', 'label' => 'Active', 'table' => 'test_table']);
+            foreach ([$title, $alias, $active] as $field) {
+                $field->filter = true;
+                $field->isVisible = true;
+            }
+            $table = $this->makeTable(['title' => $title, 'alias' => $alias, 'active' => $active]);
+            $setFilter = fn(Table $table) => $table->isFilter = true;
+            \Closure::bind($setFilter, null, Table::class)($table);
+            \Simflex\Core\System\Session::set('test_table', ['filter' => ['title' => 'Перв'], 'q' => 'x']);
+
+            $html = $table->show();
+            // меню фильтра колонки: у текста — поле поиска, у bool — переключатели; у заданного — бейдж
+            $this->assertStringContainsString('id="sf-th-filter-title"', $html);
+            $this->assertStringContainsString('th-filter th-filter_set', $html);
+            $this->assertMatchesRegularExpression('/type="radio"[^>]*name="filter\[active\]"/', $html);
+            // «Сбросить» у колонки с фильтром, «где искать» при нескольких колонках поиска
+            $this->assertStringContainsString('action=columnReset&amp;column=title', $html);
+            $this->assertStringNotContainsString('action=columnReset&amp;column=alias', $html);
+            $this->assertStringContainsString(' table-scope"', $html);
+            // теги: фильтр колонки и поиск, кнопка окна фильтров с числом заданных
+            $this->assertStringContainsString('Title: Перв', $html);
+            $this->assertStringContainsString('Поиск: x', $html);
+            $this->assertStringContainsString('table-toolbar__filters-count', $html);
+        } finally {
+            \Simflex\Core\System\Session::set('test_table', []);
+            Container::set('config', $configBackup);
+        }
+    }
+
     public function testListMarkup(): void
     {
         $configBackup = Container::get('config');
@@ -258,7 +316,7 @@ class TableTest extends Unit
             $this->assertStringContainsString('class="page-head', $html);
             $this->assertStringContainsString('data-sf="list"', $html);
             $this->assertStringContainsString('aria-sort="none"', $html);
-            $this->assertStringContainsString('href="?o=title&amp;d=1"', $html);
+            $this->assertStringContainsString('href="?o=title&amp;d=0"', $html);
             $this->assertStringContainsString('data-sf-row-delete="?action=delete&amp;rows[]=1"', $html);
             $this->assertStringContainsString('id="btn-control-delete"', $html);
             $this->assertStringContainsString('class="table-bar', $html);
