@@ -2,7 +2,7 @@ FROM php:8.4-apache-bookworm
 
 RUN apt-get update
 
-# Install system dependencies
+# Установить системные зависимости
 RUN apt-get install -y \
     git \
     curl \
@@ -18,24 +18,24 @@ RUN apt-get install -y \
     vim \
     --no-install-recommends
 
-# Install required modules
+# Установить необходимые модули
 RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath intl zip
 RUN docker-php-ext-configure gd --with-webp --with-jpeg && docker-php-ext-install gd zip
 RUN a2enmod rewrite
 
-# Hide X-Powered-By header
+# Скрыть заголовок X-Powered-By
 RUN printf 'expose_php = Off\n' > $PHP_INI_DIR/conf.d/security.ini
-# Hide Apache version (Server header, error pages)
+# Скрыть версию Apache (заголовок Server, страницы ошибок)
 RUN sed -ri -e 's/^ServerTokens .*/ServerTokens Prod/' -e 's/^ServerSignature .*/ServerSignature Off/' \
     /etc/apache2/conf-available/security.conf
 
-# Document root is public/: only index.php and static files are reachable from the web
+# Корневая директория документа — public/: только index.php и статические файлы доступны из веба
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 
-# Create sf executable script to run sf command without ./ prefix
+# Создать исполняемый скрипт sf для запуска команды sf без префикса ./
 RUN printf '#!/bin/sh\nexec php /var/www/html/sf "$@"\n' > /usr/local/bin/sf && chmod +x /usr/local/bin/sf
 
-# Install composer. Usage: docker-compose exec app composer install
+# Установить composer. Использование: docker-compose exec app composer install
 RUN curl https://getcomposer.org/download/latest-stable/composer.phar > /usr/local/bin/composer && chmod +x /usr/local/bin/composer
 RUN mkdir /.composer && chmod -R a+rwX /.composer
