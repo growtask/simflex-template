@@ -56,7 +56,7 @@ class LoginCest
         $I->dontSeeElement('input[name="login[password]"]');
         $I->seeElement('.menu__groups');
         $I->seeElement('.page-head');
-        $I->seeElement('.menu-account__name');
+        $I->seeElementInDOM('.menu-account__name');
         // выход — на странице профиля, в меню ссылка на профиль
         $I->seeElementInDOM('a.menu-account[href="/admin/account"]');
 

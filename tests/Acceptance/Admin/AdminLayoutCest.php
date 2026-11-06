@@ -21,17 +21,25 @@ class AdminLayoutCest
 
     public function tryToCollapseMenu(AcceptanceTester $I): void
     {
-        $I->amOnPage('/admin');
         $isCollapsed = 'return document.documentElement.classList.contains("sf-menu-collapsed")';
-        $I->assertFalse($I->executeJS($isCollapsed));
-        $I->click('[data-sf-menu-collapse]');
-        $I->assertTrue($I->executeJS($isCollapsed));
-        // свёрнутость запоминается
-        $I->reloadPage();
-        $I->waitForElement('[data-sf-menu-collapse]', 5);
-        $I->assertTrue($I->executeJS($isCollapsed));
-        $I->click('[data-sf-menu-collapse]');
-        $I->assertFalse($I->executeJS($isCollapsed));
+        try {
+            // по умолчанию меню свёрнуто, сервер сразу выводит его свёрнутым
+            $I->resetCookie('sf_admin_menu_collapsed');
+            $I->amOnPage('/admin');
+            $I->seeElement('#sf-menu.menu_collapsed');
+            $I->assertTrue($I->executeJS($isCollapsed));
+            $I->click('[data-sf-menu-collapse]');
+            $I->assertFalse($I->executeJS($isCollapsed));
+            // раскрытое запоминается
+            $I->reloadPage();
+            $I->waitForElement('[data-sf-menu-collapse]', 5);
+            $I->dontSeeElement('#sf-menu.menu_collapsed');
+            $I->assertFalse($I->executeJS($isCollapsed));
+            $I->click('[data-sf-menu-collapse]');
+            $I->assertTrue($I->executeJS($isCollapsed));
+        } finally {
+            $I->resetCookie('sf_admin_menu_collapsed');
+        }
     }
 
     public function tryToUseTableBar(AcceptanceTester $I): void
