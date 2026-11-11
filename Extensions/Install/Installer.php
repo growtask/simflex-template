@@ -94,7 +94,7 @@ class Installer extends ConsoleBase
             $migrator->up();
         } catch (Exception $e) {
             Log::critical('Failed to initialize database ({ex})', ['ex' => $e->getMessage()]);
-            throw new \RuntimeException('Не удалось инициализировать БД');
+            throw new \RuntimeException('Не удалось инициализировать БД', previous: $e);
         }
     }
 
