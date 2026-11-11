@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Admin;
+
+use Simflex\Core\Admin\MenuItem;
+
+/**
+ * Меню админки сайта: разделы ядра плюс добавленные здесь. Задаётся как adminMenuClass в config.php
+ *
+ * Новый раздел: static::add(new MenuItem('Блог', '/blog', handler: Handlers\Blog::class, icon: 'notepad-text'));
+ * подпункт группы ядра: static::add(new MenuItem(...), parent: '/site');
+ * перед другим пунктом: static::add(new MenuItem(...), before: '/content');
+ * без раздела ядра: static::remove('/site/seo').
+ */
+class Menu extends \Simflex\Core\Admin\Menu
+{
+    protected static function init(): void
+    {
+        parent::init();
+    }
+}

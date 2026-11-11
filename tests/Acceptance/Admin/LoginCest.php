@@ -1,0 +1,110 @@
+<?php
+
+namespace Tests\Acceptance\Admin;
+
+use Tests\Support\AcceptanceTester;
+
+/**
+ * Вход в админку
+ */
+class LoginCest
+{
+    private const LOGIN = 'codecept_noadmin';
+    private const ROLE_ALIAS = 'codecept_noadmin';
+
+    public function _before(AcceptanceTester $I): void
+    {
+        $this->cleanup($I);
+    }
+
+    public function _after(AcceptanceTester $I): void
+    {
+        $this->cleanup($I);
+    }
+
+    public function tryToSeeLoginForm(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/admin');
+        $I->dontSeeErrors();
+        $I->seeInTitle('Simflex Admin');
+        $I->seeElement('input[name="login[login]"]');
+        $I->seeElement('input[name="login[password]"]');
+        $I->dontSeeElement('.menu');
+    }
+
+    public function tryToLoginWithWrongPassword(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/admin');
+        $I->fillField('login[login]', 'admin');
+        $I->fillField('login[password]', 'wrong-password');
+        $I->click('Войти');
+        $I->wait(1);
+
+        $I->seeElement('input[name="login[login]"]');
+        $I->dontSeeElement('.menu');
+        $I->see('Неверный логин или пароль', '.notice');
+        // пароль не попадает в адрес страницы: форма отправляется POST
+        $I->dontSeeInCurrentUrl('wrong-password');
+    }
+
+    public function tryToLoginAndSeeDashboard(AcceptanceTester $I): void
+    {
+        $I->loginAsAdmin();
+        $I->amOnPage('/admin');
+        $I->dontSeeErrors();
+        $I->seeInTitle('Simflex Admin');
+        $I->dontSeeElement('input[name="login[password]"]');
+        $I->seeElement('.menu__groups');
+        $I->seeElement('.page-head');
+        $I->seeElementInDOM('.menu-account__name');
+        // выход — на странице профиля, в меню ссылка на профиль
+        $I->seeElementInDOM('a.menu-account[href="/admin/account"]');
+
+        // ассеты должны отдаваться по настоящему URL, а не по утёкшему пути файловой системы
+        $I->dontSeeInPageSource('/var/www/');
+
+        $I->dontSeeLogProblems();
+    }
+
+    public function tryToOpenAdminWithoutAdminPrivilege(AcceptanceTester $I): void
+    {
+        // вошедший пользователь без привилегии admin (например, пользователь сайта)
+        $token = md5(uniqid('', true));
+        $I->runSql(
+            "INSERT INTO user_role SET privilege = 'manager', active = 1, name = 'Codecept no admin', alias = ?",
+            [self::ROLE_ALIAS]
+        );
+        $I->runSql(
+            "INSERT INTO user_role_privilege (role_id, privilege) SELECT role_id, 'manager' FROM user_role WHERE alias = ?",
+            [self::ROLE_ALIAS]
+        );
+        $I->runSql(
+            "INSERT INTO user (role_id, active, login, password, email, name, code)
+             SELECT role_id, 1, ?, '', 'noadmin@simflex', 'No admin', '' FROM user_role WHERE alias = ?",
+            [self::LOGIN, self::ROLE_ALIAS]
+        );
+        $I->runSql(
+            "INSERT INTO user_auth (user_id, token, time_expires, useragent, ip)
+             SELECT user_id, ?, NOW() + INTERVAL 1 DAY, '', '' FROM user WHERE login = ?",
+            [$token, self::LOGIN]
+        );
+
+        $I->amOnPage('/admin');
+        $I->setCookie('asft', $token);
+        $I->amOnPage('/admin');
+
+        $I->see('Недостаточно прав для входа в панель управления');
+        $I->dontSeeElement('.menu');
+        $I->seeElement('a[href="/admin/logout"]');
+
+        $I->dontSeeLogProblems();
+    }
+
+    private function cleanup(AcceptanceTester $I): void
+    {
+        $I->runSql('DELETE a FROM user_auth a JOIN user u ON u.user_id = a.user_id WHERE u.login = ?', [self::LOGIN]);
+        $I->runSql('DELETE FROM user WHERE login = ?', [self::LOGIN]);
+        $I->runSql('DELETE p FROM user_role_privilege p JOIN user_role r USING(role_id) WHERE r.alias = ?', [self::ROLE_ALIAS]);
+        $I->runSql('DELETE FROM user_role WHERE alias = ?', [self::ROLE_ALIAS]);
+    }
+}

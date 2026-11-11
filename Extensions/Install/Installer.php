@@ -4,56 +4,48 @@ namespace App\Extensions\Install;
 
 use Exception;
 use Simflex\Core\Console\Command;
-use Simflex\Core\ConsoleBase;
-use Simflex\Core\Container;
-use Simflex\Core\DB;
-use Simflex\Core\Log;
+use Simflex\Core\Console\ConsoleBase;
+use Simflex\Core\System\Container;
+use Simflex\Core\DB\DB;
+use Simflex\Core\DB\Cli\Migrator;
+use Simflex\Core\DB\Schema;
+use Simflex\Core\Logger\Log;
 use Simflex\Core\Models\Migration;
+use Simflex\Core\DB\Migration as CoreMigration;
 
 class Installer extends ConsoleBase
 {
     protected const DIRECTORIES = [
         'cache',
-        'cache/css',
-        'uf/files',
-        'uf/images',
+        'public/cache',
+        'public/uf/files',
+        'public/uf/images',
     ];
 
     #[Command('Installs the framework')]
     public function install(): void
     {
-        $this->initDir('uf', false);
-        $this->initDir('uf/log', false);
+        $this->initDir('public/uf', false);
+        $this->initDir('log', false);
 
-        $config = Container::getConfig();
         Log::info('Testing database connection');
-
-        // check if database works
         try {
             if (!DB::connect()) {
-                $this->initEnv();
+                throw new \RuntimeException('Подключение к БД не установлено');
             }
-        } catch (Exception) {
-            // init env if exception was thrown.
-            $this->initEnv();
+        } catch (Exception $exception) {
+            // Ошибка подключения не означает, что конфигурацию и
+            // секреты нужно пересоздать.
+            throw new \RuntimeException(
+                'Не удалось подключиться к БД. Проверьте DB_* в окружении; .env не изменён.',
+                previous: $exception
+            );
         }
-
-        // force reconnect
-        DB::connect();
 
         Log::info('Checking if database is initialized');
 
-        // test if we need to init database
-        $res = DB::result(
-            'SELECT COUNT(*) c FROM information_schema.TABLES WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?',
-            'c',
-            [
-                'migration',
-                $config->db['name']
-            ]
-        );
-
-        if (!$res) {
+        // проверяем, нужно ли инициализировать базу
+        if (!DB::hasTable('migration')) {
             $this->initDatabase();
         }
 
@@ -65,84 +57,57 @@ class Installer extends ConsoleBase
         Log::notice('Install finished');
     }
 
-    protected function initEnv(): void
-    {
-        Log::info('Initializing environment');
-
-        // initialize environment
-        $config = Container::getConfig();
-        $config->db['host'] = readline('* Database host: ');
-        $config->db['user'] = readline('* Database user: ');
-        $config->db['password'] = readline('* Database password: ');
-        $config->db['name'] = readline('* Database name: ');
-
-        // write to .env
-        file_put_contents(
-            SF_ROOT_PATH . '/.env',
-            implode("\n", [
-                "DB_HOST={$config->db['host']}",
-                "DB_USER={$config->db['user']}",
-                "DB_PASS={$config->db['password']}",
-                "DB_NAME={$config->db['name']}",
-                "DEVELOPER=1", // enabled by default
-            ])
-        );
-    }
-
     protected function initDatabase(): void
     {
         Log::info('Initializing database');
 
-        // check if /database/migrations/00_migration.php exists
-        if (!file_exists(SF_ROOT_PATH . '/database/migrations/00_migration.php')) {
+        // проверяем, есть ли /database/migrations/00_migration.php
+        if (!file_exists(Container::getPaths()->getRoot('database/migrations/00_migration.php'))) {
             Log::critical('Core migration file not found. Please check your installation.');
-            exit;
+            throw new \RuntimeException('Не удалось инициализировать БД');
         }
 
-        /** @var DB\Migration $init */
-        $init = include SF_ROOT_PATH . '/database/migrations/00_migration.php';
+        /** @var CoreMigration $init */
+        $init = include Container::getPaths()->getRoot('database/migrations/00_migration.php');
         if (!$init) {
             Log::critical('Corrupted core migration file. Please check your installation.');
-            exit;
+            throw new \RuntimeException('Не удалось инициализировать БД');
         }
 
-        $schema = new DB\Schema();
+        $schema = new Schema();
         $init->up($schema);
 
         try {
             if (!$schema->commit()) {
                 Log::critical('Failed to initialize database');
-                exit;
+                throw new \RuntimeException('Не удалось инициализировать БД');
             }
 
-            // write to migration table
-            Migration::insertStatic([
+            // пишем в таблицу миграций
+            Migration::insert([
                 'file' => '00_migration',
             ]);
 
-            // run migrations normally
-            $migrator = new DB\Cli\Migrator();
+            // запускаем миграции как обычно, они же пишут начальные
+            // данные
+            $migrator = new Migrator();
             $migrator->up();
-
-            // run seeders as well
-            $seeder = new DB\Cli\Seeder();
-            $seeder->run();
         } catch (Exception $e) {
             Log::critical('Failed to initialize database ({ex})', ['ex' => $e->getMessage()]);
-            exit;
+            throw new \RuntimeException('Не удалось инициализировать БД');
         }
     }
 
-    protected function initDir(string $dir, bool $log = true): void
+    protected function initDir(string $dir, bool $shouldLog = true): void
     {
-        if (!is_dir(SF_ROOT_PATH . '/' . $dir)) {
-            mkdir(SF_ROOT_PATH . '/' . $dir);
-            if ($log) {
+        if (!is_dir(Container::getPaths()->getRoot($dir))) {
+            mkdir(Container::getPaths()->getRoot($dir));
+            if ($shouldLog) {
                 Log::notice('Created directory {dir}', ['dir' => $dir]);
             }
         }
 
-        // set permissions anyway
-        chmod(SF_ROOT_PATH . '/' . $dir, 0777);
+        // права выставляем в любом случае
+        chmod(Container::getPaths()->getRoot($dir), 0777);
     }
 }

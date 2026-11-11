@@ -1,9 +1,9 @@
 <?php
-use Simflex\Admin\Migration\Struct;
-use \Simflex\Core\DB\Schema;
 
-return new class implements \Simflex\Core\DB\Migration {
-    public function up(Schema $s)
+use Simflex\Core\DB\Schema;
+
+return new class () implements \Simflex\Core\DB\Migration {
+    public function up(Schema $s): void
     {
         $s->createTable('log', function (Schema\Table $c) {
             $c->id('log_id');
@@ -12,10 +12,11 @@ return new class implements \Simflex\Core\DB\Migration {
             $c->string('ip');
             $c->string('browser');
             $c->string('data', 1000);
+            $c->noTimestamps();
         });
     }
 
-    public function down(Schema $s)
+    public function down(Schema $s): void
     {
         $s->dropTable('log');
     }

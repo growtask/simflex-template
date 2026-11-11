@@ -1,22 +1,32 @@
 <?php
-use Simflex\Admin\Migration\Struct;
-use Simflex\Core\DB;
-use \Simflex\Core\DB\Schema;
 
-return new class implements \Simflex\Core\DB\Migration {
-    public function up(Schema $s)
+use App\Core\Privilege;
+use Simflex\Core\DB\Schema;
+use Simflex\Core\Models\UserRole;
+
+return new class () implements \Simflex\Core\DB\Migration {
+    public function up(Schema $s): void
     {
         $s->createTable('user_role', function (Schema\Table $c) {
             $c->id('role_id');
-            $c->integer('priv_id')->foreignKey('user_priv');
+            $c->string('privilege', 64);
             $c->boolean('active');
-            $c->integer('npp');
             $c->string('alias');
             $c->string('name');
         });
+
+        // привилегии, которые дают роли, — в 03_user_role_privilege
+        $s->seed(function () {
+            UserRole::bulkInsert([
+                ['privilege' => Privilege::DEV, 'active' => true, 'name' => 'Разработчик', 'alias' => 'dev'],
+                ['privilege' => Privilege::ADMIN, 'active' => true, 'name' => 'Администратор', 'alias' => 'admin'],
+                ['privilege' => Privilege::ADMIN, 'active' => true, 'name' => 'Пользователь', 'alias' => 'user'],
+                ['privilege' => Privilege::ADMIN, 'active' => true, 'name' => 'Менеджер', 'alias' => 'manager'],
+            ]);
+        });
     }
 
-    public function down(Schema $s)
+    public function down(Schema $s): void
     {
         $s->dropTable('user_role');
     }

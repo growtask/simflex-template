@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Support;
 
 /**
- * Inherited Methods
+ * Унаследованные методы
  * @method void wantTo($text)
  * @method void wantToTest($text)
  * @method void execute($callable)
@@ -24,6 +24,6 @@ class UnitTester extends \Codeception\Actor
     use _generated\UnitTesterActions;
 
     /**
-     * Define custom actions here
+     * Здесь объявляются свои действия
      */
 }

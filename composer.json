@@ -3,8 +3,8 @@
   "description": "Simflex CMS",
   "keywords": [
     "php",
-    "simplex-admin",
-    "simplex-cms",
+    "simflex-admin",
+    "simflex-cms",
     "simflex"
   ],
   "homepage": "https://github.com/growtask/simflex-template",
@@ -22,27 +22,30 @@
     }
   ],
   "require": {
-    "php": ">=8.2.0",
+    "php": "^8.4",
     "ext-gd": "*",
-    "growtask/simflex": "3.*",
-    "vlucas/phpdotenv": "^5.4",
-    "scssphp/scssphp": "^1.11",
-    "tubalmartin/cssmin": "^4.1",
+    "simflex/core": "dev-master",
     "ext-readline": "*",
-    "growtask/simflex-file-manager": "dev-master",
+    "simflex/file-manager": "dev-master",
     "ext-pdo": "*",
     "curl/curl": "^2.5"
   },
   "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.86",
     "codeception/module-phpbrowser": "*",
     "codeception/module-asserts": "*",
     "composer/composer": "*",
     "codeception/module-filesystem": "^3.0",
-    "codeception/module-webdriver": "^4.0"
+    "codeception/module-webdriver": "^4.0",
+    "phpstan/phpstan": "^2.1"
   },
   "suggest": {
   },
   "scripts": {
+    "post-create-project-cmd": [
+      "@php -r \"foreach (['CHANGELOG.md', 'AGENTS.md', 'CLAUDE.md'] as \\$file) file_put_contents(\\$file, '');\"",
+      "@php -r \"file_put_contents('.gitignore', preg_replace('/^composer\\\\.lock\\\\R/m', '', file_get_contents('.gitignore')));\""
+    ],
     "post-package-install": [
       "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
     ],
@@ -50,12 +53,11 @@
       "App\\Extensions\\Install\\PackageInstaller::onPackageEvent"
     ],
     "post-install-cmd": [
-      "php console.php install/install",
+      "php sf install/install",
       "./codecept run --steps"
     ],
     "post-update-cmd": [
-      "php console.php migrate/up",
-      "php console.php seed/run"
+      "php sf migrate/up"
     ]
   },
   "autoload": {

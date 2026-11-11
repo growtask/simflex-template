@@ -2,10 +2,7 @@
 
 namespace App\Extensions\Breadcrumbs;
 
-use Simflex\Core\Core;
-use Simflex\Core\ModuleBase;
-
-class Breadcrumbs extends \Simflex\Extensions\Breadcrumbs\Breadcrumbs
+class Breadcrumbs extends \Simflex\Core\Extensions\Breadcrumbs\Breadcrumbs
 {
     public static function getBeforeLast(): array
     {

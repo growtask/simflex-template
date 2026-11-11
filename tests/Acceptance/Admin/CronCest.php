@@ -1,0 +1,79 @@
+<?php
+
+namespace Tests\Acceptance\Admin;
+
+use Tests\Support\AcceptanceTester;
+
+/**
+ * Задачи cron объявлены в коде (provider/cron.php), в БД хранятся только их активность и расписание
+ */
+class CronCest
+{
+    private const JOB = 'cron_log_clean';
+
+    public function _before(AcceptanceTester $I): void
+    {
+        $I->loginAsDev();
+    }
+
+    public function tryToSeeJobsFromCode(AcceptanceTester $I): void
+    {
+        // запись задачи, удалённой из кода, удаляется, недостающая запись объявленной задачи создаётся
+        $I->runSql('DELETE FROM cron');
+        $I->runSql("INSERT INTO cron SET job = 'removed_job', active = 1, timing = '* * * * *'");
+
+        $I->amOnPage('/admin/cron');
+        $I->dontSeeErrors();
+        $I->see('Очистка журнала cron');
+        $I->see('30 0 * * *');
+        $I->dontSee('removed_job');
+        $I->dontSee('Добавить');
+        // задачи установленных расширений тоже в таблице, проверяем задачу сайта и удалённую
+        $I->assertSame(
+            [['job' => self::JOB, 'active' => 1, 'timing' => '30 0 * * *']],
+            $I->grabRowsFromSql('SELECT job, active, timing FROM cron WHERE job IN (?, ?)', [self::JOB, 'removed_job'])
+        );
+        $I->dontSeeLogProblems();
+    }
+
+    public function tryToEditSchedule(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/admin/cron');
+        $id = $I->grabRowsFromSql('SELECT id FROM cron WHERE job = ?', [self::JOB])[0]['id'];
+        try {
+            $I->amOnPage("/admin/cron/?action=form&id=$id");
+            $I->seeInField('job', 'Очистка журнала cron');
+            $I->fillField('timing', '15 3 * * *');
+            $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
+            $I->dontSeeErrors();
+
+            $I->assertSame(
+                [['job' => self::JOB, 'timing' => '15 3 * * *']],
+                $I->grabRowsFromSql('SELECT job, timing FROM cron WHERE job = ?', [self::JOB])
+            );
+        } finally {
+            $I->runSql('UPDATE cron SET active = 1, timing = ? WHERE job = ?', ['30 0 * * *', self::JOB]);
+        }
+        $I->dontSeeLogProblems();
+    }
+
+    public function tryToForbidAdding(AcceptanceTester $I): void
+    {
+        $count = count($I->grabRowsFromSql('SELECT id FROM cron'));
+        $I->amOnPage('/admin/cron/?action=form');
+        $I->see('Недостаточно прав для добавления');
+        $I->assertCount($count, $I->grabRowsFromSql('SELECT id FROM cron'));
+    }
+
+    public function tryToRunJobFromConsole(AcceptanceTester $I): void
+    {
+        $I->runSql('DELETE FROM cron_log WHERE job = ?', [self::JOB]);
+        exec('php sf cron/run --job=' . self::JOB, $output, $code);
+        $I->assertSame(0, $code);
+        $I->assertSame(
+            [['result' => 'ok']],
+            $I->grabRowsFromSql('SELECT result FROM cron_log WHERE job = ?', [self::JOB])
+        );
+        $I->dontSeeLogProblems();
+    }
+}

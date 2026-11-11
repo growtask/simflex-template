@@ -1,8 +1,8 @@
-FROM php:8.3-apache-bookworm
+FROM php:8.4-apache-bookworm
 
 RUN apt-get update
 
-# Install system dependencies
+# Системные пакеты
 RUN apt-get install -y \
     git \
     curl \
@@ -18,11 +18,24 @@ RUN apt-get install -y \
     vim \
     --no-install-recommends
 
-# Install required modules
+# Расширения PHP и модули Apache
 RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath intl zip
 RUN docker-php-ext-configure gd --with-webp --with-jpeg && docker-php-ext-install gd zip
 RUN a2enmod rewrite
 
-# Install composer. Usage: docker-compose exec php composer install
+# Без заголовка X-Powered-By
+RUN printf 'expose_php = Off\n' > $PHP_INI_DIR/conf.d/security.ini
+# Без версии Apache (заголовок Server, страницы ошибок)
+RUN sed -ri -e 's/^ServerTokens .*/ServerTokens Prod/' -e 's/^ServerSignature .*/ServerSignature Off/' \
+    /etc/apache2/conf-available/security.conf
+
+# Корень сайта — public/: из веба доступны только index.php и статика
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+
+# Команда sf из любого каталога (без ./)
+RUN printf '#!/bin/sh\nexec php /var/www/html/sf "$@"\n' > /usr/local/bin/sf && chmod +x /usr/local/bin/sf
+
+# Composer: docker compose exec app composer install
 RUN curl https://getcomposer.org/download/latest-stable/composer.phar > /usr/local/bin/composer && chmod +x /usr/local/bin/composer
 RUN mkdir /.composer && chmod -R a+rwX /.composer

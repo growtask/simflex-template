@@ -1,32 +1,27 @@
 <?php
 
 /*
- * Fill the required services
- * - 'all' => will load for all environments
- * - 'web' => will load only for site/admin environments
- * - 'api' => will load only for api environment
- * - 'cli' => will load only for cli/cron environments
- * - 'dev' => will load only if devMode is enabled
+ * Нужные сервисы
+ * - 'all' => загружаются во всех окружениях
+ * - 'web' => только в окружениях сайта и админки
+ * - 'cli' => только в окружениях cli/cron
+ * - 'dev' => только при включённом devMode
  */
 
 return [
     'all' => [
-        \Simflex\Core\Factory::class,
-        \Simflex\Core\EventManager::class,
+        \Simflex\Core\System\DI\Factory::class,
+        \Simflex\Core\System\EventManager::class,
     ],
     'web' => [
-        \Simflex\Core\Html\HtmlRequest::class,
-        \Simflex\Core\Html\HtmlResponse::class,
-    ],
-    'api' => [
-        \Simflex\Core\Api\JsonRequest::class,
-        \Simflex\Core\Api\JsonResponse::class,
+        \Simflex\Core\Http\Html\HtmlRequest::class,
+        \Simflex\Core\Http\Html\HtmlResponse::class,
     ],
     'cli' => [
         \Simflex\Core\Console\CliRequest::class,
     ],
     'dev' => [
-        \Simflex\Core\Wrapper\DebugBar::class,
-        \Simflex\Core\Wrapper\Whoops::class,
-    ]
+        \Simflex\Core\Debug\DebugBar::class,
+        \Simflex\Core\Debug\Whoops::class,
+    ],
 ];

@@ -1,3 +1,38 @@
+<?php
+
+use Simflex\Core\Layout\Components\Common\Footer\Layout as Footer;
+use Simflex\Core\Layout\Components\Common\Form\Callback\CallbackLayout;
+use Simflex\Core\Layout\Components\Common\Form\Callback\Layout as Callback;
+use Simflex\Core\Layout\Components\Common\Header\Layout as Header;
+use Simflex\Core\Layout\Components\Common\HeaderBanner\Layout as HeaderBanner;
+use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
+use Simflex\Core\Layout\Components\Common\Modal\ModalSize;
+use Simflex\Core\System\Settings;
+
+$socials = ['telegram' => Settings::get('tg'), 'vkontakte' => Settings::get('vk'), 'whatsapp' => Settings::get('whats_app')];
+
+// Компоненты рисуются до вывода <head>: стили и скрипты компонентов собираются в $page->getMeta()
+$headerHtml = Header::drawHeader(
+    banner: HeaderBanner::drawHeaderBanner(
+        text: (string)Settings::get('header_banner_text'),
+        buttonText: (string)Settings::get('header_banner_button'),
+        buttonLink: (string)Settings::get('header_banner_link'),
+    ),
+    items: Header::getMenuItems(),
+    logoName: (string)Settings::get('site_name'),
+    phone: (string)Settings::get('phone'),
+    email: (string)Settings::get('email'),
+    socials: $socials,
+);
+$footerHtml = Footer::drawFooter();
+$modalHtml = Modal::drawModal(
+    id: 'callback',
+    title: 'Связаться с нами',
+    text: 'Оставьте заявку, и мы свяжемся с вами в ближайшее время.',
+    content: Callback::drawCallback(layout: CallbackLayout::Stack),
+    size: ModalSize::Small,
+);
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,9 +42,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon" href="/assets/meta/favicon/apple-touch-icon.png">
-    <link rel="icon" href="/assets/meta/favicon/favicon.ico" sizes="any">
-    <link rel="icon" href="/assets/meta/favicon/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/assets/default/meta/favicon/apple-touch-icon.png">
+    <link rel="icon" href="/assets/default/meta/favicon/favicon.ico" sizes="any">
+    <link rel="icon" href="/assets/default/meta/favicon/icon.svg" type="image/svg+xml">
 
     <!-- Theme -->
     <meta name="theme-color" content="#1975F7">
@@ -17,32 +52,22 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#1975F7">
 
     <!-- Fonts preload -->
-    <link rel="preload" href="/assets/fonts/Inter/InterVariable.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="/assets/fonts/Inter/InterVariable-Italic.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/assets/default/fonts/Inter/InterVariable.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/assets/default/fonts/Inter/InterVariable-Italic.ttf" as="font" type="font/ttf" crossorigin>
 
     <!-- Info data -->
-    <link rel="manifest" href="/assets/meta/manifest.webmanifest">
-    <link rel="yandex-tableau-widget" href="/assets/meta/tableau.json">
+    <link rel="manifest" href="/assets/default/meta/manifest.webmanifest">
+    <link rel="yandex-tableau-widget" href="/assets/default/meta/tableau.json">
 
     <!--  Scripts  -->
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="<?= url(Simflex\Core\Container::getRequest()->getPath()) ?>"/>
+    <link rel="canonical" href="<?= url(Simflex\Core\System\Container::getRequest()->getPath()) ?>"/>
 
-    <!-- Main meta data -->
-    <?php
-    $content = App\Extensions\Content\Content::getStatic(Simflex\Core\Container::getRequest()->getPath());
-
-    $title = Simflex\Core\Page::$override['title'] ?? $content['params']['meta_title'] ?? '';
-    if ($title) {
-        Simflex\Core\Page::$override['uses_meta'] = true;
-    }
-    $description = Simflex\Core\Page::$override['description'] ?? $content['params']['meta_de'] ?? '';
-    $keywords = Simflex\Core\Page::$override['keywords'] ?? $content['params']['meta_kw'] ?? '';
-
-    Simflex\Core\Page::meta(); ?>
-    <meta name="description" content="<?= $description ?>"/>
-    <meta name="keywords" content="<?= $keywords ?>"/>
+    <!-- Main meta data: title, description, keywords, стили -->
+    <?= $page->getMeta() ?>
+    <!-- Стили сайта: после стилей компонентов, чтобы переопределять их -->
+    <link rel="stylesheet" href="<?= asset('css/site.css') ?>">
     <meta name="robots" content="index, follow">
 
     <!-- Structured data -->
@@ -50,40 +75,46 @@
         {
             "@context": "https://schema.org",
             "@type": "WebPage",
-            "name": "{site_name}",
-            "description": "<?= $description ?>",
+            "name": "<?= htmlspecialchars((string)Settings::get('site_name')) ?>",
+            "description": "<?= htmlspecialchars(Simflex\Core\Http\PageSeo::getDescription()) ?>",
             "url": "<?= url('') ?>",
-            "logo": "<?= url('/assets/meta/favicon/icon.svg') ?>",
+            "logo": "<?= url('/assets/default/meta/favicon/icon.svg') ?>",
             "sameAs": [
-                "<?= Simflex\Core\Core::siteParam('tg') ?>",
-                "<?= Simflex\Core\Core::siteParam('vk') ?>",
-                "<?= Simflex\Core\Core::siteParam('whats_app') ?>"
+                "<?= \Simflex\Core\System\Settings::get('tg') ?>",
+                "<?= \Simflex\Core\System\Settings::get('vk') ?>",
+                "<?= \Simflex\Core\System\Settings::get('whats_app') ?>"
             ],
-            "telephone": "{phone}",
-            "email": "{email}",
-            "openingHours": "{workhours}"
+            "telephone": "<?= htmlspecialchars((string)Settings::get('phone')) ?>",
+            "email": "<?= htmlspecialchars((string)Settings::get('email')) ?>",
+            "openingHours": "<?= htmlspecialchars((string)Settings::get('workhours')) ?>"
         }
     </script>
 
     <!-- Open Graph data -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="<?= $title ?>">
-    <meta property="og:url" content="<?= url(Simflex\Core\Container::getRequest()->getPath()) ?>">
-    <meta property="og:description" content="<?= $description ?>">
-    <meta property="og:site_name" content="{site_name}">
-    <meta property="og:logo" content="<?= url('/assets/meta/favicon/icon-192.png') ?>">
+    <meta property="og:title" content="<?= htmlspecialchars(Simflex\Core\Http\PageSeo::getFullTitle()) ?>">
+    <meta property="og:url" content="<?= url(Simflex\Core\System\Container::getRequest()->getPath()) ?>">
+    <meta property="og:description" content="<?= htmlspecialchars(Simflex\Core\Http\PageSeo::getDescription()) ?>">
+    <meta property="og:site_name" content="<?= htmlspecialchars((string)Settings::get('site_name')) ?>">
+    <meta property="og:logo" content="<?= url('/assets/default/meta/favicon/icon-192.png') ?>">
     <meta property="og:locale" content="ru_RU"/>
-    <meta property="og:image" content="<?= url('/assets/meta/og-image.png') ?>">
-    <meta property="vk:image" content="<?= url('/assets/meta/og-image.png') ?>">
+    <meta property="og:image" content="<?= url('/assets/default/meta/og-image.png') ?>">
+    <meta property="vk:image" content="<?= url('/assets/default/meta/og-image.png') ?>">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="<?= url('/assets/meta/og-image.png') ?>">
+    <meta name="twitter:image" content="<?= url('/assets/default/meta/og-image.png') ?>">
 
     <!-- Analytics tools (Yandex.Metrika etc.) -->
 
 </head>
 <body>
-<?php \Simflex\Core\Page::content() ?>
+<?= $headerHtml ?>
+<main>
+<?= $page->getContent() ?>
+</main>
+<?= $footerHtml ?>
+<?= $modalHtml ?>
 
-<?php \Simflex\Core\Page::metaJS() ?>
+
+<?= $page->getMetaJs() ?>
 </body>
 </html>

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Support;
 
 /**
- * Inherited Methods
+ * Унаследованные методы
  * @method void wantTo($text)
  * @method void wantToTest($text)
  * @method void execute($callable)
@@ -24,6 +24,135 @@ class AcceptanceTester extends \Codeception\Actor
     use _generated\AcceptanceTesterActions;
 
     /**
-     * Define custom actions here
+     * Здесь объявляются свои действия
      */
+
+    /**
+     * Входит в админку под учётной записью admin из начальных данных
+     */
+    public function loginAsAdmin(string $adminPath = '/admin'): void
+    {
+        $this->loginAs('admin', $adminPath);
+    }
+
+    /**
+     * Сегодняшний файл лога относительно корня проекта
+     */
+    public function logFile(): string
+    {
+        return 'log/' . date('Y-m-d') . '.log';
+    }
+
+    /**
+     * Проверяет, что на странице нет ошибок PHP
+     */
+    public function dontSeeErrors(): void
+    {
+        foreach (['Fatal', 'error', 'Warning', 'Notice'] as $text) {
+            $this->dontSee($text);
+        }
+    }
+
+    /**
+     * Проверяет, что за тест в лог не попало ничего уровня warning и выше (лог очищается перед каждым тестом)
+     */
+    public function dontSeeLogProblems(): void
+    {
+        clearstatcache();
+        $file = $this->logFile();
+        $log = is_file($file) ? (string)file_get_contents($file) : '';
+
+        foreach (['[error]', '[critical]', '[emergency]', '[warning]'] as $level) {
+            $this->assertStringNotContainsString($level, $log, "Found $level in $file");
+        }
+    }
+
+    /**
+     * Входит в админку под учётной записью dev из начальных данных (полная привилегия "dev")
+     */
+    public function loginAsDev(): void
+    {
+        $this->loginAs('dev');
+    }
+
+    /**
+     * Нажимает кнопку отправки формы и ждёт, пока перезагруженная страница будет готова,
+     * чтобы следующие проверки не попали на элементы выгружаемой страницы
+     */
+    public function submitAndWaitForReload(string $button, string $waitFor): void
+    {
+        $I = $this;
+        // скрипты формы должны инициализироваться до клика, иначе отправка может потеряться
+        $I->waitForJS('return document.readyState === "complete";', 10);
+        $I->waitForElementClickable($button, 10);
+        $I->executeJS('window.__beforeSubmit = true;');
+        $I->click($button);
+        $I->waitForJS('return !window.__beforeSubmit && document.readyState === "complete";', 10);
+        $I->waitForElement($waitFor, 10);
+    }
+
+    /**
+     * XPath собственного выпадающего списка админки (внешние ключи, выбор из реестра) по имени его скрытого поля
+     */
+    public function dropdown(string $name): string
+    {
+        return '//input[@name="' . $name . '"]/ancestor::div[@data-sf-dropdown][1]';
+    }
+
+    /**
+     * XPath пункта собственного выпадающего списка по его значению
+     */
+    public function dropdownItem(string $name, string $value): string
+    {
+        return $this->dropdown($name) . '//*[contains(@class, "dropdown__option") and @data-value="' . $value . '"]';
+    }
+
+    /**
+     * Выбирает значение в собственном выпадающем списке админки
+     */
+    public function chooseInDropdown(string $name, int|string $value): void
+    {
+        $I = $this;
+        $I->click($I->dropdown($name) . '//button[@data-sf-dropdown-trigger]');
+        $I->click($I->dropdownItem($name, (string)$value));
+        $I->seeInField('input[name="' . $name . '"]', (string)$value);
+    }
+
+    private function loginAs(string $login, string $adminPath = '/admin'): void
+    {
+        $I = $this;
+        $I->amOnPage($adminPath);
+        $I->fillField('login[login]', $login);
+        $I->fillField('login[password]', '12345');
+        $I->click('Войти');
+        $I->waitForElement('.menu', 10);
+    }
+
+    /**
+     * Прямой доступ к БД для подготовки и очистки данных теста (например, сброс значения, которое
+     * ненадёжно вводить через WebDriver, вроде нелатинского текста после перехода по странице).
+     */
+    public function runSql(string $sql, array $params = []): void
+    {
+        $this->pdo()->prepare($sql)->execute($params);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function grabRowsFromSql(string $sql, array $params = []): array
+    {
+        $stmt = $this->pdo()->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    private function pdo(): \PDO
+    {
+        return new \PDO(
+            'mysql:host=' . (getenv('DB_HOST') ?: 'db') . ';dbname=' . (getenv('DB_NAME') ?: 'simflex') . ';charset=utf8mb4',
+            getenv('DB_USER') ?: 'simflex',
+            getenv('DB_PASS') ?: 'simflex'
+        );
+    }
 }

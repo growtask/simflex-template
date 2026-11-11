@@ -1,0 +1,206 @@
+<?php
+
+namespace Tests\Acceptance\Admin;
+
+use Tests\Support\AcceptanceTester;
+
+/**
+ * Действия раздела-таблицы (Table\Table), идущие через модель и построитель запросов таблицы:
+ * копирование и порядок (на меню сайта: его записи не нужны другим тестам), сортировка и страницы, фильтры списка,
+ * путь страницы
+ */
+class TableActionsCest
+{
+    private const SECTION = '/admin/site/menu';
+
+    public function _before(AcceptanceTester $I): void
+    {
+        $I->loginAsDev();
+    }
+
+    public function tryToCopyAndReorder(AcceptanceTester $I): void
+    {
+        $I->amOnPage(self::SECTION);
+        $source = $I->grabRowsFromSql('SELECT menu_id, name, npp FROM menu ORDER BY menu_id LIMIT 1')[0];
+        try {
+            $this->fetch($I, self::SECTION . '?action=copy&ids=' . $source['menu_id']);
+            $copies = $I->grabRowsFromSql('SELECT menu_id, name FROM menu WHERE menu_id > ?', [$source['menu_id']]);
+            $I->assertCount(1, $copies);
+            $I->assertSame('Копия ' . $source['name'], $copies[0]['name']);
+            $id = $copies[0]['menu_id'];
+
+            $this->fetch($I, self::SECTION . "?action=change_npp&field=npp&menu_id=$id&val=10");
+            $I->assertSame([['npp' => 10]], $I->grabRowsFromSql('SELECT npp FROM menu WHERE menu_id = ?', [$id]));
+            $this->fetch($I, self::SECTION . "?action=change_npp&field=npp&menu_id=$id&up=1");
+            $I->assertSame([['npp' => 9]], $I->grabRowsFromSql('SELECT npp FROM menu WHERE menu_id = ?', [$id]));
+        } finally {
+            $I->runSql('DELETE FROM menu WHERE menu_id > ?', [$source['menu_id']]);
+        }
+        $I->dontSeeLogProblems();
+    }
+
+    /**
+     * Ajax-действия раздела отвечают конвертом JSON API: данные рядом с error, списки - в items, ошибка - статус
+     */
+    public function tryToCallAjaxActionsWithEnvelope(AcceptanceTester $I): void
+    {
+        $I->amOnPage(self::SECTION);
+
+        $npp = $this->fetchJson($I, self::SECTION . '?action=change_npp&field=npp&menu_id=0&val=1');
+        $I->assertSame(200, $npp['status']);
+        $I->assertSame(['code' => 0, 'message' => ''], $npp['body']['error']);
+
+        $missing = $this->fetchJson($I, self::SECTION . '?action=change_npp&field=nothing&menu_id=1&val=1');
+        $I->assertSame(404, $missing['status']);
+        $I->assertSame('Поле не найдено', $missing['body']['error']['message']);
+        $I->assertSame(404, $this->fetchJson($I, self::SECTION . '?action=change_enum&field=nothing&menu_id=1')['status']);
+
+        $validate = $this->fetchJson($I, self::SECTION . '?action=validate', 'POST');
+        $I->assertSame(200, $validate['status']);
+        $I->assertArrayHasKey('valid', $validate['body']);
+        $I->assertSame(0, $validate['body']['error']['code']);
+
+        // поиск записи для внешнего ключа: список лежит в items
+        $roles = $this->fetchJson($I, '/admin/admin/role_privilege?action=searchInt&name=role_id&text=');
+        $I->assertSame(200, $roles['status']);
+        $I->assertNotEmpty($roles['body']['items']);
+        $I->assertArrayHasKey('id', $roles['body']['items'][0]);
+        $I->assertArrayHasKey('name', $roles['body']['items'][0]);
+        $none = $this->fetchJson($I, '/admin/admin/role_privilege?action=searchInt&name=privilege&text=');
+        $I->assertSame([], $none['body']['items']);
+        $I->dontSeeLogProblems();
+    }
+
+    public function tryToFilterList(AcceptanceTester $I): void
+    {
+        // роль — внешний ключ: её название приходит через join
+        $I->amOnPage('/admin/admin/role_privilege?filter[privilege]=');
+        $I->dontSeeErrors();
+        $I->see('Разработчик', '.table__body');
+        $I->see('Администратор', '.table__body');
+
+        // значения фильтров привязываются: кавычка не ломает запрос
+        $I->amOnPage('/admin/admin/role_privilege?filter[privilege]=manager');
+        $I->see('Администратор', '.table__body');
+        $I->dontSee('Разработчик', '.table__body');
+        $I->amOnPage("/admin/admin/role_privilege?filter[privilege]=a'b");
+        $I->dontSeeErrors();
+        $I->dontSee('Администратор', '.table__body');
+
+        $I->amOnPage('/admin/admin/role_privilege?filter[privilege]=');
+        $I->see('Разработчик', '.table__body');
+
+        // строковое поле фильтруется по подстроке
+        $I->amOnPage('/admin/admin/user?filter[login]=dmi');
+        $I->dontSeeErrors();
+        $I->see('admin', '.table__body');
+        $I->dontSee('dev@simflex', '.table__body');
+        $I->amOnPage("/admin/admin/user?filter[login]=a'b");
+        $I->dontSeeErrors();
+        $I->amOnPage('/admin/admin/user?filter[login]=');
+        $I->see('dev@simflex', '.table__body');
+        $I->dontSeeLogProblems();
+    }
+
+    public function tryToSavePathOfChildPage(AcceptanceTester $I): void
+    {
+        $I->runSql(
+            "INSERT INTO content SET pid = 1, active = 0, title = 'Codecept child', alias = 'codecept-child', path = '',"
+            . " short = '', text = '', params = '', file = '', photo = '', template = '', npp = 0"
+        );
+        $id = $I->grabRowsFromSql("SELECT content_id FROM content WHERE alias = 'codecept-child'")[0]['content_id'];
+        try {
+            $I->amOnPage("/admin/content/page/?action=form&content_id=$id");
+            $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
+            $I->dontSeeErrors();
+            $I->assertSame(
+                [['path' => '/codecept-child']],
+                $I->grabRowsFromSql('SELECT path FROM content WHERE content_id = ?', [$id])
+            );
+        } finally {
+            $I->runSql("DELETE FROM content WHERE alias = 'codecept-child'");
+        }
+        $I->dontSeeLogProblems();
+    }
+
+    public function tryToSortAndPage(AcceptanceTester $I): void
+    {
+        // 25 записей: 20 на первой странице, 5 на второй
+        for ($i = 1; $i <= 25; $i++) {
+            $I->runSql(
+                "INSERT INTO seo SET seo_pid = 0, link = ?, title = ?, description = '', keywords = '', metatags = ''",
+                ['/codecept-page', sprintf('Codecept %02d', $i)]
+            );
+        }
+        try {
+            $I->amOnPage('/admin/site/seo?filter[link]=codecept-page');
+            $I->dontSeeErrors();
+            $I->assertSame(20, $this->rowCount($I));
+            $I->amOnPage('/admin/site/seo?p=1');
+            $I->assertSame(5, $this->rowCount($I));
+
+            // клик по заголовку сортирует по колонке, второй меняет порядок на обратный
+            $I->amOnPage('/admin/site/seo?o=title&p=0');
+            $I->seeElement('th.table-data-title[aria-sort="ascending"] .sort-button.active');
+            $I->assertSame('Codecept 01', $this->firstTitle($I));
+            $I->amOnPage('/admin/site/seo?o=title&p=0');
+            $I->seeElement('th.table-data-title[aria-sort="descending"] .sort-button.active');
+            $I->assertSame('Codecept 25', $this->firstTitle($I));
+
+            // ссылка на запись (?show_id=) открывает её страницу при выбранной сортировке и подсвечивает её:
+            // «Codecept 03» по убыванию — 23-я, на второй странице
+            $id = (int)$I->grabRowsFromSql("SELECT seo_id FROM seo WHERE title = 'Codecept 03'")[0]['seo_id'];
+            $I->amOnPage('/admin/site/seo?show_id=' . $id);
+            $I->assertSame(5, $this->rowCount($I));
+            $I->seeElementInDOM('.table__body-row.tr_saved[data-id="' . $id . '"]');
+            $I->assertSame(1, (int)$I->executeJS("return document.querySelectorAll('.tr_saved').length"));
+
+            // неизвестная колонка игнорируется
+            $I->amOnPage('/admin/site/seo?o=no_such_column');
+            $I->dontSeeErrors();
+            $I->amOnPage('/admin/site/seo?filter[link]=');
+        } finally {
+            $I->runSql("DELETE FROM seo WHERE link = '/codecept-page'");
+        }
+        $I->dontSeeLogProblems();
+    }
+
+    private function rowCount(AcceptanceTester $I): int
+    {
+        // в DOM: список прокручивается, записи за пределами экрана для WebDriver не "видимы"
+        return (int)$I->executeJS("return document.querySelectorAll('.table__body-row').length");
+    }
+
+    private function firstTitle(AcceptanceTester $I): string
+    {
+        return trim($I->grabTextFrom('.table__body-row:first-child td[data-field="title"]'));
+    }
+
+    private function fetch(AcceptanceTester $I, string $url): void
+    {
+        $status = $I->executeAsyncJS(
+            'const done = arguments[arguments.length - 1];
+            fetch(arguments[0], {credentials: "same-origin"}).then(r => done(r.status)).catch(() => done(0));',
+            [$url]
+        );
+        $I->assertSame(200, $status, $url);
+    }
+
+    /**
+     * @return array{status: int, body: array<string, mixed>}
+     */
+    private function fetchJson(AcceptanceTester $I, string $url, string $method = 'GET'): array
+    {
+        $answer = $I->executeAsyncJS(
+            'const done = arguments[arguments.length - 1];
+            fetch(arguments[0], {method: arguments[1], credentials: "same-origin",
+                headers: {"X-Requested-With": "XMLHttpRequest"}})
+                .then(r => r.text().then(body => done({status: r.status, body})))
+                .catch(e => done({status: 0, body: String(e)}));',
+            [$url, $method]
+        );
+        $answer['body'] = json_decode($answer['body'], true) ?? [];
+
+        return $answer;
+    }
+}
