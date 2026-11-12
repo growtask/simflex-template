@@ -37,7 +37,12 @@ class TelegramTest extends Unit
         $this->checkRequest(null);
     }
 
-    private function checkRequest(?string $proxy): void
+    public function testThreadIdIsSentAsMessageThread(): void
+    {
+        $this->checkRequest(null, 1320);
+    }
+
+    private function checkRequest(?string $proxy, ?int $threadId = null): void
     {
         $config = new class () extends ConfigBase {
             public function load(): void
@@ -60,7 +65,8 @@ class TelegramTest extends Unit
         }
         $client->expects($this->once())->method('post')->with(
             'https://api.telegram.org/bottest-token/sendMessage',
-            ['chat_id' => '123', 'parse_mode' => 'MarkdownV2', 'text' => 'test'],
+            ['chat_id' => '123', 'parse_mode' => 'MarkdownV2', 'text' => 'test']
+                + ($threadId !== null ? ['message_thread_id' => $threadId] : []),
         );
         $client->method('getResponse')->willReturn('{"ok":true}');
         $telegram = new class ($client) extends TelegramApi {
@@ -73,6 +79,6 @@ class TelegramTest extends Unit
                 return $this->client;
             }
         };
-        $this->assertTrue($telegram->send('123', 'test'));
+        $this->assertTrue($telegram->send('123', 'test', $threadId));
     }
 }
