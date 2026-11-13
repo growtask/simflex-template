@@ -23,11 +23,18 @@ RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath intl 
 RUN docker-php-ext-configure gd --with-webp --with-jpeg && docker-php-ext-install gd zip
 RUN a2enmod rewrite
 
+# Рабочие настройки PHP: ошибки не выводятся в страницу, а пишутся в журнал контейнера
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
 # Без заголовка X-Powered-By
 RUN printf 'expose_php = Off\n' > $PHP_INI_DIR/conf.d/security.ini
 # Без версии Apache (заголовок Server, страницы ошибок)
 RUN sed -ri -e 's/^ServerTokens .*/ServerTokens Prod/' -e 's/^ServerSignature .*/ServerSignature Off/' \
     /etc/apache2/conf-available/security.conf
+
+# Apache без root: хостинг-панель запускает контейнер от UID клиента, служебные каталоги Apache
+# доступны на запись любому пользователю
+RUN chmod 1777 /var/run/apache2 /var/lock/apache2 /var/log/apache2
 
 # Корень сайта — public/: из веба доступны только index.php и статика
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public

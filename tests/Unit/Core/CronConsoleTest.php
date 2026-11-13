@@ -7,7 +7,7 @@ use Simflex\Core\Cron\ConsoleCron;
 
 /**
  * ./sf cron/install, cron/uninstall: строка сайта в crontab текущего пользователя. crontab подменён скриптом,
- * который хранит таблицу в файле
+ * который хранит таблицу в файле. ./sf cron/worker: ожидание начала следующей минуты
  */
 class CronConsoleTest extends Unit
 {
@@ -73,5 +73,13 @@ class CronConsoleTest extends Unit
             ob_end_clean();
         }
         $this->assertSame(ConsoleCron::getLine() . "\n", file_get_contents($this->dir . '/tab'));
+    }
+
+    public function testWorkerWaitsForNextMinute(): void
+    {
+        $minute = 1_700_000_040;
+        $this->assertSame(60, ConsoleCron::getSecondsToNextMinute($minute));
+        $this->assertSame(59, ConsoleCron::getSecondsToNextMinute($minute + 1));
+        $this->assertSame(1, ConsoleCron::getSecondsToNextMinute($minute + 59));
     }
 }

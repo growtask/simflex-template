@@ -7,6 +7,13 @@
 
 ## [4.0.0] — не выпущена
 
+- Сервис `cron` в `docker-compose.yml` выполняет `php sf cron/worker` вместо shell-цикла с `sleep`
+  и останавливается SIGTERM (`stop_signal`: образ php:apache по умолчанию шлёт SIGWINCH для Apache).
+  Сайтам: заменить `command` сервиса `cron` и добавить `stop_signal: SIGTERM`.
+- Образ PHP (`docker/php/Dockerfile`) работает без root: служебные каталоги Apache (`/var/run/apache2`,
+  `/var/lock/apache2`, `/var/log/apache2`) доступны на запись любому пользователю — хостинг-панель запускает
+  контейнер от UID клиента. Рабочие настройки PHP — `php.ini-production` (ошибки не выводятся в страницу).
+  Сайтам: перенести эти строки в свой `docker/php/Dockerfile`.
 - Ошибка начальной миграции сохраняет исходное исключение (`previous`) установщика.
 - Регрессия страниц проверяет отправку заголовков Response до обычной темы, печати и AJAX-тела.
 

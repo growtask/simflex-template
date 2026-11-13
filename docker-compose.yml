@@ -14,13 +14,15 @@ services:
     ports:
       - "${APP_PORT:-480}:80"
 
-  # Планировщик: ./sf cron/run в начале каждой минуты, вместо системного crontab.
+  # Планировщик: ./sf cron/worker запускает ./sf cron/run в начале каждой минуты, вместо системного crontab.
   # Включается профилем cron: COMPOSE_PROFILES=cron (или dev,cron) в .env
   cron:
     build: docker/php
     volumes: *app-volumes
     working_dir: /var/www/html
-    command: sh -c 'while :; do sleep $$((60 - $$(date +%s) % 60)); php sf cron/run; done'
+    command: [php, sf, cron/worker]
+    # образ php:apache останавливается SIGWINCH (Apache), cron/worker завершается по SIGTERM
+    stop_signal: SIGTERM
     restart: unless-stopped
     profiles:
       - cron
