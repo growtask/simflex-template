@@ -32,7 +32,7 @@ RUN printf 'expose_php = Off\n' > $PHP_INI_DIR/conf.d/security.ini
 RUN sed -ri -e 's/^ServerTokens .*/ServerTokens Prod/' -e 's/^ServerSignature .*/ServerSignature Off/' \
     /etc/apache2/conf-available/security.conf
 
-# Apache без root: хостинг-панель запускает контейнер от UID клиента, служебные каталоги Apache
+# Apache без root: контейнер можно запускать от любого UID (user в compose), служебные каталоги Apache
 # доступны на запись любому пользователю
 RUN chmod 1777 /var/run/apache2 /var/lock/apache2 /var/log/apache2
 
