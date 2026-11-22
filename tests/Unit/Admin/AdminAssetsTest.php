@@ -140,6 +140,26 @@ class AdminAssetsTest extends Unit
         }
     }
 
+    public function testFaviconFromSiteTheme(): void
+    {
+        $theme = Container::getConfig()->theme;
+        try {
+            // иконка сайта из статики темы: ICO для браузеров без SVG-иконок и SVG
+            $html = Page::get()->drawFavicon();
+            $this->assertStringContainsString('href="/assets/' . $theme . '/meta/favicon/favicon.ico', $html);
+            $this->assertStringContainsString('href="/assets/' . $theme . '/meta/favicon/icon.svg', $html);
+            $this->assertStringNotContainsString('favicon-admin.ico', $html);
+
+            // в теме нет иконки — иконка Simflex CMS из статики ядра
+            Container::getConfig()->theme = 'no-favicon-theme';
+            $html = Page::get()->drawFavicon();
+            $this->assertMatchesRegularExpression('#href="[^"]*/Admin/theme/img/favicon-admin\.ico#', $html);
+            $this->assertStringNotContainsString('meta/favicon', $html);
+        } finally {
+            Container::getConfig()->theme = $theme;
+        }
+    }
+
     public function testCoreJsModuleIsModuleScript(): void
     {
         $page = Page::get();
