@@ -62,6 +62,26 @@ class SchemaTest extends Unit
         $this->assertFalse($s->commit());
     }
 
+    public function testAlterTableAddsConstraintsAndIndexes(): void
+    {
+        $table = new Table('client', true);
+        $table->integer('id')->primaryKey();
+        $table->keepParams();
+
+        $table->addColumn('hosting_client_id', 'int')->setNull();
+        $table->addConstraint('client_hosting_client_id_unique')->unique('hosting_client_id');
+        $table->addIndex('client_name_idx')->index('name');
+
+        $sql = $table->toString();
+        $this->assertStringStartsWith('ALTER TABLE `client` ADD COLUMN `hosting_client_id`', $sql);
+        $this->assertStringContainsString(
+            ', ADD CONSTRAINT client_hosting_client_id_unique UNIQUE KEY (hosting_client_id)',
+            $sql
+        );
+        $this->assertStringContainsString(', ADD  INDEX `client_name_idx` (name)', $sql);
+        $this->assertStringNotContainsString('ADD COLUMN `id`', $sql);
+    }
+
     private function schema(array &$queries): Schema
     {
         $this->mockDb()->method('query')->willReturnCallback(function (string $q) use (&$queries) {
