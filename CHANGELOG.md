@@ -7,6 +7,16 @@
 
 ## [4.0.0] — не выпущена
 
+- Acceptance-тесты открывают сайт по `http://simflex-site/` — псевдониму сервиса `app` в `docker-compose.yml`.
+  Свежий Chrome (образ `selenium/standalone-chrome:latest`) открывает хост `app` только по https: `.app` —
+  домен из списка HSTS preload, и `http://app/` давал `ERR_CONNECTION_REFUSED`. Сайтам: добавить сервису `app`
+  `networks: default: aliases: [simflex-site]` и сменить `url` в `tests/Acceptance.suite.yml`.
+- `public/uf/.htaccess`: в каталоге загруженных файлов не выполняются скрипты (`php_flag engine off`, запрет
+  `.php`, `.phtml`, `.cgi` и т. п.), `nosniff`, CSP `sandbox` — HTML или SVG, открытые напрямую, не выполняют
+  скрипты. Сайтам: скопировать файл в `public/uf/` и добавить `!/public/uf/.htaccess` в `.gitignore`.
+- Acceptance-тесты `Admin/FileManagerCest`: изменяющие действия API — только POST с CSRF-токеном (GET
+  и картинка в тексте ничего не меняют), корень и соседние с `uf` папки недоступны, загрузка не перезаписывает
+  файл и сжимает картинку в WebP.
 - Acceptance-тесты `Admin/FileManagerCest`: отмена выбора (Esc, крестик, подложка, повторный `open()`,
   `close()`), фильтр `accept` (неподходящий файл не выбирается и не загружается), подтверждение поверх окна
   менеджера и Esc только для верхнего окна.

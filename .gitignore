@@ -3,6 +3,7 @@
 !/.idea/icon.svg
 /public/uf/*
 !/public/uf/.gitkeep
+!/public/uf/.htaccess
 /public/cache
 /vendor
 docker/data

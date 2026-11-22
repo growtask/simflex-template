@@ -46,15 +46,15 @@ class FileManagerCest
 
             // загрузка: файл появляется выбранным, «Готово» отдаёт его
             $I->attachFile(self::WINDOW . ' [data-fm-input]', 'upload.png');
-            $file = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/upload.png"]';
+            $file = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/upload.webp"]';
             $I->waitForElementVisible($file, 10);
             $I->seeElement($file . '.file-card_style_new.file-card_active');
-            $I->see('upload.png', self::WINDOW . ' [data-fm-info-name]');
+            $I->see('upload.webp', self::WINDOW . ' [data-fm-info-name]');
             $I->click(self::WINDOW . ' .file-window__done');
             $I->waitForElementNotVisible(self::WINDOW, 5);
             $picked = $I->executeJS('return window.__picked');
-            $I->assertSame(self::FOLDER . '/upload.png', $picked[0]['path']);
-            $I->assertSame('/uf' . self::FOLDER . '/upload.png', $picked[0]['url']);
+            $I->assertSame(self::FOLDER . '/upload.webp', $picked[0]['path']);
+            $I->assertSame('/uf' . self::FOLDER . '/upload.webp', $picked[0]['url']);
             $I->assertTrue($picked[0]['isImage']);
 
             // переименование из контекстного меню
@@ -64,12 +64,12 @@ class FileManagerCest
             $I->waitForElementVisible(self::WINDOW . ' [data-fm-menu="file"] [data-fm-action="rename"]', 5);
             $I->click(self::WINDOW . ' [data-fm-menu="file"] [data-fm-action="rename"]');
             $I->waitForElementVisible('#sf-file-manager-rename [data-fm-name]', 5);
-            $I->seeInField('#sf-file-manager-rename [data-fm-name]', 'upload.png');
-            $I->fillField('#sf-file-manager-rename [data-fm-name]', 'renamed.png');
+            $I->seeInField('#sf-file-manager-rename [data-fm-name]', 'upload.webp');
+            $I->fillField('#sf-file-manager-rename [data-fm-name]', 'renamed.webp');
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
-            $renamed = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/renamed.png"]';
+            $renamed = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/renamed.webp"]';
             $I->waitForElementVisible($renamed, 5);
-            $I->assertFileExists($dir . '/renamed.png');
+            $I->assertFileExists($dir . '/renamed.webp');
 
             // недопустимое имя — ошибка, файл не меняется
             $I->clickWithRightButton($renamed);
@@ -79,7 +79,7 @@ class FileManagerCest
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
             $I->waitForText('Недопустимое имя', 5);
             $I->click('#sf-file-manager-rename [data-modal-close]');
-            $I->assertFileExists($dir . '/renamed.png');
+            $I->assertFileExists($dir . '/renamed.webp');
 
             // удаление папки — после подтверждения, окно возвращается в /images
             $I->click(self::WINDOW . ' .file-window__tools [data-fm-action="delete-folder"]');
@@ -253,6 +253,15 @@ class FileManagerCest
         $I->assertSame(0, $tree['json']['error']['code']);
         $I->assertContains('/images', array_column($tree['json']['items'], 'path'));
 
+        // дерево по уровням: depth=1 — только вложенные папки, есть ли у них свои — has_children
+        $level = $fetch('/admin/fm?method=getTree&path=/images&depth=1');
+        $I->assertSame(200, $level['status']);
+        foreach ($level['json']['items'] as $node) {
+            $I->assertNull($node['data']);
+            $I->assertIsBool($node['has_children']);
+            $I->assertStringStartsWith('/images/', $node['path']);
+        }
+
         $unknown = $fetch('/admin/fm?method=nope');
         $I->assertSame(404, $unknown['status']);
         $I->assertSame('Неизвестное действие', $unknown['json']['error']['message']);
@@ -260,14 +269,109 @@ class FileManagerCest
         $missing = $fetch('/admin/fm?method=getFileList&path=/codecept-no-dir');
         $I->assertSame(404, $missing['status']);
 
-        $badName = $fetch('/admin/fm?method=createDir&path=/images&name=.evil', ['method' => 'POST']);
+        // изменяющий запрос — POST с CSRF-токеном админки
+        $token = $I->executeJS('return document.querySelector(\'meta[name="csrf-token"]\').content');
+        $post = ['method' => 'POST', 'headers' => ['X-CSRF-Token' => $token]];
+
+        $badName = $fetch('/admin/fm?method=createDir&path=/images&name=.evil', $post);
         $I->assertSame(422, $badName['status']);
         $I->assertSame('Недопустимое имя', $badName['json']['error']['message']);
         $I->assertDirectoryDoesNotExist(codecept_root_dir('public/uf/images/.evil'));
 
-        $notFound = $fetch('/admin/fm?method=delete&path=/codecept-no-file', ['method' => 'POST']);
+        $notFound = $fetch('/admin/fm?method=delete&path=/codecept-no-file', $post);
         $I->assertSame(404, $notFound['status']);
         $I->assertSame(404, $notFound['json']['error']['code']);
+    }
+
+    public function tryToRejectForgedAndUnsafeRequests(AcceptanceTester $I): void
+    {
+        // GET (картинка или ссылка в тексте страницы) и POST без CSRF-токена файлы не меняют; корень, соседние
+        // с uf папки и выход за корень недоступны
+        $dir = codecept_root_dir('public/uf/images/codecept-fm-safe');
+        $sibling = codecept_root_dir('public/uf_codecept');
+        mkdir($dir, 0777, true);
+        mkdir($sibling, 0777, true);
+        try {
+            $I->amOnPage('/admin');
+            $fetch = fn(string $url, array $options = []): array => $I->executeAsyncJS(
+                'const done = arguments[arguments.length - 1];
+                fetch(arguments[0], arguments[1]).then(r => r.json().then(json => done({status: r.status, json})));',
+                [$url, $options]
+            );
+            $token = $I->executeJS('return document.querySelector(\'meta[name="csrf-token"]\').content');
+            $post = ['method' => 'POST', 'headers' => ['X-CSRF-Token' => $token]];
+            $target = '&path=/images/codecept-fm-safe&name=codecept-fm-moved';
+
+            foreach (['rename' . $target, 'delete&path=/images/codecept-fm-safe', 'createDir&path=/images&name=x'] as $query) {
+                $I->assertSame(405, $fetch('/admin/fm?method=' . $query)['status'], $query);
+            }
+            // картинка в тексте шлёт GET с cookies — ничего не меняется
+            $I->executeAsyncJS('const done = arguments[arguments.length - 1]; const image = new Image();
+                image.onload = image.onerror = () => done(true); image.src = arguments[0];',
+                ['/admin/fm?method=rename' . $target]);
+            $I->assertSame(403, $fetch('/admin/fm?method=rename' . $target, ['method' => 'POST'])['status']);
+            $I->assertSame(403, $fetch('/admin/fm?method=rename' . $target, ['method' => 'POST', 'headers' => ['X-CSRF-Token' => 'x']])['status']);
+            $I->assertDirectoryExists($dir);
+
+            // корень не переименовывается и не удаляется
+            foreach (['rename&path=&name=uf-x', 'rename&path=/&name=uf-x', 'delete&path=', 'delete&path=/', 'delete&path=/.'] as $query) {
+                $I->assertSame(400, $fetch('/admin/fm?method=' . $query, $post)['status'], $query);
+            }
+            $I->assertDirectoryExists(codecept_root_dir('public/uf/images'));
+
+            // соседняя с uf папка (uf_codecept) и выход за корень
+            foreach (['getFileList&path=_codecept', 'getFileList&path=/../', 'delete&path=/images/../../uf_codecept'] as $query) {
+                $options = str_starts_with($query, 'delete') ? $post : [];
+                $I->assertSame(400, $fetch('/admin/fm?method=' . $query, $options)['status'], $query);
+            }
+            $I->assertDirectoryExists($sibling);
+        } finally {
+            foreach ([$dir, codecept_root_dir('public/uf/images/codecept-fm-moved'), $sibling] as $path) {
+                if (is_dir($path)) {
+                    rmdir($path);
+                }
+            }
+        }
+    }
+
+    public function tryToUploadWithoutOverwrite(AcceptanceTester $I): void
+    {
+        // загрузка: имя латиницей, PNG сжимается в WebP (не больше 2560 px), занятое имя не перезаписывается
+        $dir = codecept_root_dir('public/uf/images/codecept-fm-upload');
+        mkdir($dir, 0777, true);
+        // тест и веб-сервер — разные пользователи: папка доступна на запись сайту (mkdir урезает права по umask)
+        chmod($dir, 0777);
+        try {
+            $I->amOnPage('/admin');
+            // сжатие большой картинки на сервере — дольше обычного ожидания скрипта
+            $I->executeInSelenium(fn($driver) => $driver->manage()->timeouts()->setScriptTimeout(60));
+            $upload = fn(): array => $I->executeAsyncJS(
+                'const done = arguments[arguments.length - 1];
+                const canvas = document.createElement("canvas");
+                canvas.width = 3000;
+                canvas.height = 1000;
+                canvas.getContext("2d").fillRect(0, 0, 10, 10);
+                canvas.toBlob((blob) => {
+                    const body = new FormData();
+                    body.append("file[]", new File([blob], "Фото Отпуска.PNG", {type: "image/png"}));
+                    fetch("/admin/fm?method=upload&path=/images/codecept-fm-upload", {method: "POST", body,
+                        headers: {"X-CSRF-Token": document.querySelector(\'meta[name="csrf-token"]\').content}})
+                        .then(r => r.json()).then(json => done(json.items));
+                }, "image/png");'
+            );
+
+            $I->assertSame(['/images/codecept-fm-upload/foto-otpuska.webp'], $upload());
+            $I->assertSame(['/images/codecept-fm-upload/foto-otpuska-2.webp'], $upload());
+            $size = getimagesize($dir . '/foto-otpuska.webp');
+            $I->assertSame([2560, 853, IMAGETYPE_WEBP], [$size[0], $size[1], $size[2]]);
+        } finally {
+            foreach (glob($dir . '/*') ?: [] as $path) {
+                unlink($path);
+            }
+            if (is_dir($dir)) {
+                rmdir($dir);
+            }
+        }
     }
 
     public function tryToPickFileForTableRow(AcceptanceTester $I): void
