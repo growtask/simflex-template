@@ -104,6 +104,141 @@ class FileManagerCest
         $I->dontSeeLogProblems();
     }
 
+    public function tryToCancelPicking(AcceptanceTester $I): void
+    {
+        // закрытие без выбора — onCancel и null в Promise open(); ответ на одно открытие ровно один
+        $I->amOnPage('/admin');
+        $I->waitForJS('return typeof window.fileManager === "object"', 10);
+        $I->executeJS('window.__fm = [];
+            window.__open = (name) => window.fileManager.open({
+                onSelect: () => window.__fm.push(name + ":select"),
+                onCancel: () => window.__fm.push(name + ":cancel"),
+            }).then((files) => window.__fm.push(name + ":" + JSON.stringify(files)));');
+        $answers = fn(): array => $I->executeJS('return window.__fm');
+        $waitAnswers = fn(int $count) => $I->waitForJS('return window.__fm.length === ' . $count, 5);
+
+        // Esc
+        $I->executeJS('window.__open("esc")');
+        $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
+        $I->pressKey(self::WINDOW . ' .modal__dialog', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+        $I->waitForElementNotVisible(self::WINDOW, 5);
+        $waitAnswers(2);
+        $I->assertSame(['esc:cancel', 'esc:null'], $answers());
+
+        // крестик
+        $I->executeJS('window.__open("close")');
+        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 5);
+        $I->click(self::WINDOW . ' .file-window__close');
+        $I->waitForElementNotVisible(self::WINDOW, 5);
+        $waitAnswers(4);
+
+        // подложка
+        $I->executeJS('window.__open("overlay")');
+        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 5);
+        $I->executeJS('document.querySelector(arguments[0]).click()', [self::WINDOW . ' [data-modal-overlay]']);
+        $I->waitForElementNotVisible(self::WINDOW, 5);
+        $waitAnswers(6);
+
+        // новый open() при открытом окне: прежний получает отмену, окно остаётся открытым; close() — отмена нового
+        $I->executeJS('window.__open("first")');
+        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 5);
+        $I->executeJS('window.__open("second")');
+        $waitAnswers(8);
+        $I->seeElement(self::WINDOW . '.is-open');
+        $I->executeJS('window.fileManager.close()');
+        $waitAnswers(10);
+        $I->assertSame([
+            'esc:cancel', 'esc:null',
+            'close:cancel', 'close:null',
+            'overlay:cancel', 'overlay:null',
+            'first:cancel', 'first:null',
+            'second:cancel', 'second:null',
+        ], $answers());
+    }
+
+    public function tryToPickOnlyAcceptedFiles(AcceptanceTester $I): void
+    {
+        // accept: неподходящий файл виден, но не выбирается; загрузить через окно можно только подходящий
+        $dir = codecept_root_dir('public/uf' . self::FOLDER);
+        $pdf = codecept_data_dir('codecept-fm.pdf');
+        mkdir($dir, 0777, true);
+        copy(codecept_data_dir('upload.png'), $dir . '/photo.png');
+        file_put_contents($dir . '/doc.pdf', '%PDF-1.4');
+        file_put_contents($pdf, '%PDF-1.4');
+        try {
+            $I->amOnPage('/admin');
+            $I->waitForJS('return typeof window.fileManager === "object"', 10);
+            $I->executeJS('window.fileManager.open({select: true, accept: ["jpg", "png"]})'
+                . '.then((files) => { window.__picked = files; })');
+            $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
+            $I->executeJS('document.querySelector(arguments[0]).click()', [self::WINDOW . ' .file-tree-row[data-fm-path="/images"]']);
+            $folder = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '"]';
+            $I->waitForElementVisible($folder, 5);
+            $I->dontSeeElement($folder . '.file-card_disabled');
+            $I->doubleClick($folder);
+
+            $doc = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/doc.pdf"]';
+            $photo = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/photo.png"]';
+            $I->waitForElementVisible($doc, 5);
+            $I->seeElement($doc . '.file-card_disabled[aria-disabled="true"]');
+            $I->dontSeeElement($photo . '.file-card_disabled');
+
+            // pdf не выбирается ни кликом, ни двойным кликом
+            $I->click($doc);
+            $I->dontSeeElement($doc . '[aria-selected="true"]');
+            $I->seeElement(self::WINDOW . ' .file-window__done[disabled]');
+            $I->doubleClick($doc);
+            $I->seeElement(self::WINDOW . '.is-open');
+
+            // неподходящий файл не загружается
+            $I->assertSame('.jpg,.png', $I->executeJS('return document.querySelector(arguments[0]).accept', [self::WINDOW . ' [data-fm-input]']));
+            $I->attachFile(self::WINDOW . ' [data-fm-input]', 'codecept-fm.pdf');
+            $I->waitForText('Не загружено: codecept-fm.pdf', 5);
+            $I->assertFileDoesNotExist($dir . '/codecept-fm.pdf');
+
+            // картинка выбирается, Promise получает её
+            $I->click($photo);
+            $I->seeElement($photo . '[aria-selected="true"]');
+            $I->click(self::WINDOW . ' .file-window__done');
+            $I->waitForElementNotVisible(self::WINDOW, 5);
+            $I->waitForJS('return Array.isArray(window.__picked)', 5);
+            $picked = $I->executeJS('return window.__picked');
+            $I->assertSame(['/uf' . self::FOLDER . '/photo.png'], array_column($picked, 'url'));
+        } finally {
+            foreach (glob($dir . '/*') ?: [] as $path) {
+                unlink($path);
+            }
+            if (is_dir($dir)) {
+                rmdir($dir);
+            }
+            if (is_file($pdf)) {
+                unlink($pdf);
+            }
+        }
+    }
+
+    public function tryToConfirmAboveWindow(AcceptanceTester $I): void
+    {
+        // окно, открытое последним, — сверху (подтверждение поверх менеджера); Esc закрывает только верхнее
+        $I->amOnPage('/admin');
+        $I->waitForJS('return typeof window.fileManager === "object"', 10);
+        $I->executeJS('window.fileManager.open()');
+        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 10);
+        $I->executeJS('window.sfAdmin.confirm("Проверка слоёв", {title: "Слои"})');
+        $I->waitForElementVisible('#sf-modal-confirm [data-sf-confirm="yes"]', 5);
+        $I->assertTrue($I->executeJS(
+            'const dialog = document.querySelector("#sf-modal-confirm .modal__dialog").getBoundingClientRect();
+            const top = document.elementFromPoint(dialog.left + dialog.width / 2, dialog.top + dialog.height / 2);
+            return top.closest("#sf-modal-confirm") !== null;'
+        ));
+        $I->pressKey('#sf-modal-confirm .modal__dialog', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+        $I->waitForElementNotVisible('#sf-modal-confirm', 5);
+        $I->seeElement(self::WINDOW . '.is-open');
+        $I->assertFalse($I->executeJS('return document.querySelector(arguments[0]).hasAttribute("inert")', [self::WINDOW]));
+        $I->executeJS('window.fileManager.close()');
+        $I->waitForElementNotVisible(self::WINDOW, 5);
+    }
+
     public function tryToGetApiEnvelope(AcceptanceTester $I): void
     {
         $I->amOnPage('/admin');

@@ -7,6 +7,9 @@
 
 ## [4.0.0] — не выпущена
 
+- Acceptance-тесты `Admin/FileManagerCest`: отмена выбора (Esc, крестик, подложка, повторный `open()`,
+  `close()`), фильтр `accept` (неподходящий файл не выбирается и не загружается), подтверждение поверх окна
+  менеджера и Esc только для верхнего окна.
 - Сервис `cron` в `docker-compose.yml` выполняет `php sf cron/worker` вместо shell-цикла с `sleep`
   и останавливается SIGTERM (`stop_signal`: образ php:apache по умолчанию шлёт SIGWINCH для Apache).
   Сайтам: заменить `command` сервиса `cron` и добавить `stop_signal: SIGTERM`.
