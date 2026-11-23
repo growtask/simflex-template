@@ -7,6 +7,9 @@
 
 ## [4.0.0] — не выпущена
 
+- Acceptance-тест `Admin/FileManagerCest::tryToMoveFilesAndFolders`: «Переместить» нескольких отмеченных через
+  окно выбора папки, ошибки API `move` (в саму себя, имя занято, корень, без токена); `tryToCheckSeveral`
+  проверяет, что галочка выбранного кликом файла не ставится сама.
 - В образе PHP (`docker/php/Dockerfile`) — ffmpeg: файловый менеджер сжимает видео при загрузке (по согласию
   пользователя). Сайтам: добавить `RUN apt-get install -y ffmpeg --no-install-recommends` в свой Dockerfile,
   без него видео загружается как есть.

@@ -363,18 +363,24 @@ class FileManagerCest
             $card = fn(string $name) => self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-fm-check/' . $name . '.png"]';
             $I->waitForElementVisible($card('c'), 10);
 
+            $checkIcon = fn(string $name) => $I->grabAttributeFrom($card($name) . ' .fm-card__check use', 'href');
+
+            // выбранный кликом файл — без галочки (не ставится сама)
             $I->click($card('a'));
             $I->seeElement($card('a') . '[aria-selected="true"]');
             $I->dontSeeElement(self::WINDOW . ' .fm-files_multi');
+            $I->assertStringEndsWith('#fm-checkbox-off', $checkIcon('a'));
 
-            // галочка на b: режим отметки, a остаётся отмеченной
+            // галочка на b: режим отметки только с b — a без галочки в него не попадает
             $I->moveMouseOver($card('b'));
             $I->wait(0.4);
             $I->click($card('b') . ' .fm-card__check');
             $I->seeElement(self::WINDOW . ' .fm-files_multi');
-            $I->seeElement($card('a') . '[aria-selected="true"]');
+            $I->seeElement($card('a') . '[aria-selected="false"]');
             $I->seeElement($card('b') . '[aria-selected="true"]');
+            $I->assertStringEndsWith('#fm-checkbox-on', $checkIcon('b'));
             $I->waitForElementVisible(self::WINDOW . ' .fm-tools__cancel', 5);
+            $I->click($card('a'));
 
             // дальше — клик по карточке; клик мимо карточек выбор не сбрасывает
             $I->click($card('c'));
@@ -393,6 +399,100 @@ class FileManagerCest
             if (is_dir($dir)) {
                 rmdir($dir);
             }
+        }
+    }
+
+    public function tryToMoveFilesAndFolders(AcceptanceTester $I): void
+    {
+        // «Переместить» в меню: окно выбора папки по шагам (вложенные папки, «назад», путь), перемещаемая папка
+        // недоступна, «Переместить сюда» — не в ту же папку; несколько отмеченных — вместе
+        $dir = codecept_root_dir('public/uf/images/codecept-fm-move');
+        // права на запись и веб-серверу: тест создаёт папки от своего пользователя
+        foreach (['dest/deeper', 'sub'] as $path) {
+            mkdir($dir . '/' . $path, 0777, true);
+        }
+        foreach ([$dir, $dir . '/dest', $dir . '/dest/deeper', $dir . '/sub'] as $path) {
+            chmod($path, 0777);
+        }
+        foreach (['a.png', 'b.png', 'sub/c.png'] as $name) {
+            copy(codecept_data_dir('upload.png'), $dir . '/' . $name);
+        }
+        $moveDialog = '#sf-file-manager-move';
+        $base = '/images/codecept-fm-move';
+        try {
+            $I->amOnPage('/admin');
+            $I->waitForJS('return typeof window.fileManager === "object"', 10);
+            $I->executeJS('window.fileManager.open({select: true, multiple: true})');
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+            $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $folder = self::WINDOW . ' .fm-card[data-fm-path="' . $base . '"]';
+            $I->waitForElementVisible($folder, 10);
+            $I->click($folder);
+            $card = fn(string $name) => self::WINDOW . ' .fm-card[data-fm-path="' . $base . '/' . $name . '"]';
+            $I->waitForElementVisible($card('b.png'), 10);
+
+            // отмечены a.png и папка sub
+            $I->moveMouseOver($card('a.png'));
+            $I->wait(0.4);
+            $I->click($card('a.png') . ' .fm-card__check');
+            $I->click($card('sub'));
+            $I->see('Выбрано: 2', self::WINDOW . ' [data-fm-info-name]');
+
+            $I->clickWithRightButton($card('a.png'));
+            $I->click(self::WINDOW . ' [data-fm-menu="file"] [data-fm-action="move"]');
+            $I->waitForElementVisible($moveDialog, 5);
+            $I->see('Выбрано: 2', $moveDialog . ' [data-fm-text]');
+            $I->waitForElementVisible($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest"]', 10);
+            $I->seeElement($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/sub"][disabled]');
+            $I->seeElement($moveDialog . ' [data-fm-action="move-here"][disabled]');
+            $I->see('сейчас здесь', $moveDialog);
+
+            // в dest, «назад» — обратно, снова в dest
+            $I->click($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest"]');
+            $I->waitForElementVisible($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest/deeper"]', 10);
+            $I->click($moveDialog . ' [data-fm-move-back]');
+            $I->waitForElementVisible($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest"]', 10);
+            $I->click($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest"]');
+            $I->waitForElementVisible($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest/deeper"]', 10);
+            $I->click($moveDialog . ' [data-fm-action="move-here"]');
+            $I->waitForElementNotVisible($moveDialog, 10);
+            $I->waitForElementNotVisible($card('a.png'), 10);
+            $I->assertFileExists($dir . '/dest/a.png');
+            $I->assertFileExists($dir . '/dest/sub/c.png');
+            $I->assertFileExists($dir . '/b.png');
+            $I->dontSeeElement(self::WINDOW . ' .fm-files_multi');
+
+            // API: папка — не в саму себя и не во вложенную, имя занято, корень, без токена
+            $token = $I->executeJS('return document.querySelector(\'meta[name="csrf-token"]\').content');
+            $move = fn(string $path, array $items, string $csrf = '') => $I->executeAsyncJS(
+                'const done = arguments[arguments.length - 1]; const body = new FormData();
+                arguments[1].forEach((item) => body.append("items[]", item));
+                fetch("/admin/fm?method=move&path=" + encodeURIComponent(arguments[0]),
+                    {method: "POST", body, headers: {"X-CSRF-Token": arguments[2]}}).then((r) => done(r.status));',
+                [$path, $items, $csrf ?: $token]
+            );
+            copy(codecept_data_dir('upload.png'), $dir . '/dest/b.png');
+            $I->assertSame(422, $move($base . '/dest/sub', [$base . '/dest']));
+            $I->assertSame(422, $move($base . '/dest', [$base . '/dest']));
+            $I->assertSame(422, $move($base . '/dest', [$base . '/dest/a.png']));
+            $I->assertSame(409, $move($base . '/dest', [$base . '/b.png']));
+            $I->assertSame(400, $move($base, ['/']));
+            $I->assertSame(400, $move($base, [$base . '/../codecept-fm-move/b.png']));
+            $I->assertSame(400, $move($base, []));
+            $I->assertSame(403, $move($base, [$base . '/dest/a.png'], 'x'));
+            $I->assertFileExists($dir . '/b.png');
+            $I->assertFileExists($dir . '/dest/a.png');
+            $I->executeJS('window.fileManager.close()');
+        } finally {
+            $rm = function (string $path) use (&$rm): void {
+                foreach (glob($path . '/*') ?: [] as $item) {
+                    is_dir($item) ? $rm($item) : unlink($item);
+                }
+                if (is_dir($path)) {
+                    rmdir($path);
+                }
+            };
+            $rm($dir);
         }
     }
 
