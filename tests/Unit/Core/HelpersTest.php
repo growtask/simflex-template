@@ -43,6 +43,17 @@ class HelpersTest extends Unit
         $this->assertSame('cafe-strasse', Str::translite('Café Straße'));
     }
 
+    public function testToUnderscoreKeepsOneLetterWords(): void
+    {
+        $this->assertSame('a_records', Str::toUnderscore('aRecords'));
+        $this->assertSame('dns_a_records', Str::toUnderscore('dnsARecords'));
+        $this->assertSame('user_id', Str::toUnderscore('userId'));
+        $this->assertSame('is_x', Str::toUnderscore('isX'));
+        $this->assertSame('html_parser', Str::toUnderscore('HTMLParser'));
+        $this->assertSame('a', Str::toUnderscore('a'));
+        $this->assertSame('ip_v4_address', Str::toUnderscore('ipV4Address'));
+    }
+
     public function testPluralizeFeminine(): void
     {
         $this->assertSame('2 ночи', Str::pluralize(2, 'ноч', false));
