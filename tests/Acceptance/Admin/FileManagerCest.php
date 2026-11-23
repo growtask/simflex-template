@@ -25,32 +25,31 @@ class FileManagerCest
             $I->amOnPage('/admin');
             $I->waitForJS('return typeof window.fileManager === "object"', 10);
             $I->executeJS('window.fileManager.open({onSelect: (files) => { window.__picked = files; }})');
-            $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
             $I->dontSee('.gitkeep', self::WINDOW);
 
             // новая папка в /images
-            $I->click(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]');
-            $I->waitForElement(self::WINDOW . ' .file-window__crumb_current', 5);
-            $I->see('images', self::WINDOW . ' .file-window__crumb_current');
-            $I->click(self::WINDOW . ' .file-window__tools [data-fm-action="create"]');
+            $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $I->waitForElement(self::WINDOW . ' .fm-crumbs__item[aria-current="page"]', 5);
+            $I->see('images', self::WINDOW . ' .fm-crumbs__item[aria-current="page"]');
+            $I->click(self::WINDOW . ' .fm-tools [data-fm-action="create"]');
             $I->waitForElementVisible('#sf-file-manager-create [data-fm-name]', 5);
             $I->fillField('#sf-file-manager-create [data-fm-name]', 'codecept-fm');
             $I->click('#sf-file-manager-create [data-fm-action="create-save"]');
-            $I->waitForElementVisible(self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '"]', 5);
+            $I->waitForElementVisible(self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '"]', 5);
             $I->assertDirectoryExists($dir);
 
-            // папка открывается двойным кликом; пустая — состояние «Папка пуста»
-            $I->doubleClick(self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '"]');
-            $I->waitForElementVisible(self::WINDOW . ' [data-fm-state]', 5);
-            $I->see('Папка пуста', self::WINDOW);
+            // папка открывается кликом; пустая — сначала загрузка, потом «В папке пока нет файлов»
+            $I->click(self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '"]');
+            $I->waitForText('В папке пока нет файлов', 10, self::WINDOW);
 
             // загрузка: файл появляется выбранным, «Готово» отдаёт его
             $I->attachFile(self::WINDOW . ' [data-fm-input]', 'upload.png');
-            $file = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/upload.webp"]';
+            $file = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '/upload.webp"]';
             $I->waitForElementVisible($file, 10);
-            $I->seeElement($file . '.file-card_style_new.file-card_active');
+            $I->seeElement($file . '.fm-card_new[aria-selected="true"]');
             $I->see('upload.webp', self::WINDOW . ' [data-fm-info-name]');
-            $I->click(self::WINDOW . ' .file-window__done');
+            $I->click(self::WINDOW . ' .fm-done');
             $I->waitForElementNotVisible(self::WINDOW, 5);
             $picked = $I->executeJS('return window.__picked');
             $I->assertSame(self::FOLDER . '/upload.webp', $picked[0]['path']);
@@ -67,7 +66,7 @@ class FileManagerCest
             $I->seeInField('#sf-file-manager-rename [data-fm-name]', 'upload.webp');
             $I->fillField('#sf-file-manager-rename [data-fm-name]', 'renamed.webp');
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
-            $renamed = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/renamed.webp"]';
+            $renamed = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '/renamed.webp"]';
             $I->waitForElementVisible($renamed, 5);
             $I->assertFileExists($dir . '/renamed.webp');
 
@@ -78,18 +77,18 @@ class FileManagerCest
             $I->fillField('#sf-file-manager-rename [data-fm-name]', 'evil.php');
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
             $I->waitForText('Недопустимое имя', 5);
-            $I->click('#sf-file-manager-rename [data-modal-close]');
+            $I->click('#sf-file-manager-rename [data-fm-close]');
             $I->assertFileExists($dir . '/renamed.webp');
 
             // удаление папки — после подтверждения, окно возвращается в /images
-            $I->click(self::WINDOW . ' .file-window__tools [data-fm-action="delete-folder"]');
-            $I->waitForElementVisible('#sf-modal-confirm [data-sf-confirm="yes"]', 5);
-            $I->see('Удалить папку?', '#sf-modal-confirm');
-            $I->click('#sf-modal-confirm [data-sf-confirm="yes"]');
+            $I->click(self::WINDOW . ' .fm-tools [data-fm-action="delete-folder"]');
+            $I->waitForElementVisible('#sf-file-manager-confirm [data-fm-action="confirm-yes"]', 5);
+            $I->see('Удалить папку?', '#sf-file-manager-confirm');
+            $I->click('#sf-file-manager-confirm [data-fm-action="confirm-yes"]');
             // крошки и список перерисовываются: ждём скриптом, без ссылок на элементы
             $I->waitForJS(
-                'return document.querySelector("#sf-file-manager .file-window__crumb_current")?.textContent === "images"'
-                . ' && !document.querySelector(\'#sf-file-manager .file-card[data-fm-path="' . self::FOLDER . '"]\')',
+                'return document.querySelector("#sf-file-manager .fm-crumbs__item[aria-current=page]")?.textContent === "images"'
+                . ' && !document.querySelector(\'#sf-file-manager .fm-card[data-fm-path="' . self::FOLDER . '"]\')',
                 5
             );
             $I->assertDirectoryDoesNotExist($dir);
@@ -119,29 +118,29 @@ class FileManagerCest
 
         // Esc
         $I->executeJS('window.__open("esc")');
-        $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
-        $I->pressKey(self::WINDOW . ' .modal__dialog', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+        $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+        $I->pressKey(self::WINDOW . ' [data-fm-search]', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
         $I->waitForElementNotVisible(self::WINDOW, 5);
         $waitAnswers(2);
         $I->assertSame(['esc:cancel', 'esc:null'], $answers());
 
         // крестик
         $I->executeJS('window.__open("close")');
-        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 5);
-        $I->click(self::WINDOW . ' .file-window__close');
+        $I->waitForElementVisible(self::WINDOW . ' .fm-window__head [data-fm-close]', 5);
+        $I->click(self::WINDOW . ' .fm-window__head [data-fm-close]');
         $I->waitForElementNotVisible(self::WINDOW, 5);
         $waitAnswers(4);
 
         // подложка
         $I->executeJS('window.__open("overlay")');
-        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 5);
-        $I->executeJS('document.querySelector(arguments[0]).click()', [self::WINDOW . ' [data-modal-overlay]']);
+        $I->waitForElementVisible(self::WINDOW . ' .fm-window__head [data-fm-close]', 5);
+        $I->executeJS('document.querySelector(arguments[0]).dispatchEvent(new MouseEvent("click", {bubbles: true}))', [self::WINDOW]);
         $I->waitForElementNotVisible(self::WINDOW, 5);
         $waitAnswers(6);
 
         // новый open() при открытом окне: прежний получает отмену, окно остаётся открытым; close() — отмена нового
         $I->executeJS('window.__open("first")');
-        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 5);
+        $I->waitForElementVisible(self::WINDOW . ' .fm-window__head [data-fm-close]', 5);
         $I->executeJS('window.__open("second")');
         $waitAnswers(8);
         $I->seeElement(self::WINDOW . '.is-open');
@@ -170,23 +169,23 @@ class FileManagerCest
             $I->waitForJS('return typeof window.fileManager === "object"', 10);
             $I->executeJS('window.fileManager.open({select: true, accept: ["jpg", "png"]})'
                 . '.then((files) => { window.__picked = files; })');
-            $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
-            $I->executeJS('document.querySelector(arguments[0]).click()', [self::WINDOW . ' .file-tree-row[data-fm-path="/images"]']);
-            $folder = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '"]';
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+            $I->executeJS('document.querySelector(arguments[0]).click()', [self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]']);
+            $folder = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '"]';
             $I->waitForElementVisible($folder, 5);
-            $I->dontSeeElement($folder . '.file-card_disabled');
-            $I->doubleClick($folder);
+            $I->dontSeeElement($folder . '.fm-card_disabled');
+            $I->click($folder);
 
-            $doc = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/doc.pdf"]';
-            $photo = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/photo.png"]';
+            $doc = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '/doc.pdf"]';
+            $photo = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '/photo.png"]';
             $I->waitForElementVisible($doc, 5);
-            $I->seeElement($doc . '.file-card_disabled[aria-disabled="true"]');
-            $I->dontSeeElement($photo . '.file-card_disabled');
+            $I->seeElement($doc . '.fm-card_disabled[aria-disabled="true"]');
+            $I->dontSeeElement($photo . '.fm-card_disabled');
 
             // pdf не выбирается ни кликом, ни двойным кликом
             $I->click($doc);
             $I->dontSeeElement($doc . '[aria-selected="true"]');
-            $I->seeElement(self::WINDOW . ' .file-window__done[disabled]');
+            $I->seeElement(self::WINDOW . ' .fm-done[disabled]');
             $I->doubleClick($doc);
             $I->seeElement(self::WINDOW . '.is-open');
 
@@ -199,7 +198,7 @@ class FileManagerCest
             // картинка выбирается, Promise получает её
             $I->click($photo);
             $I->seeElement($photo . '[aria-selected="true"]');
-            $I->click(self::WINDOW . ' .file-window__done');
+            $I->click(self::WINDOW . ' .fm-done');
             $I->waitForElementNotVisible(self::WINDOW, 5);
             $I->waitForJS('return Array.isArray(window.__picked)', 5);
             $picked = $I->executeJS('return window.__picked');
@@ -219,23 +218,27 @@ class FileManagerCest
 
     public function tryToConfirmAboveWindow(AcceptanceTester $I): void
     {
-        // окно, открытое последним, — сверху (подтверждение поверх менеджера); Esc закрывает только верхнее
+        // окна менеджера — свои (<dialog>): подтверждение поверх окна менеджера, Esc закрывает только верхнее
         $I->amOnPage('/admin');
         $I->waitForJS('return typeof window.fileManager === "object"', 10);
         $I->executeJS('window.fileManager.open()');
-        $I->waitForElementVisible(self::WINDOW . ' .file-window__close', 10);
-        $I->executeJS('window.sfAdmin.confirm("Проверка слоёв", {title: "Слои"})');
-        $I->waitForElementVisible('#sf-modal-confirm [data-sf-confirm="yes"]', 5);
+        $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+        $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+        $I->waitForElement(self::WINDOW . ' .fm-crumbs__item[aria-current="page"]', 5);
+        $I->click(self::WINDOW . ' .fm-tools [data-fm-action="delete-folder"]');
+        $confirm = '#sf-file-manager-confirm';
+        $I->waitForElementVisible($confirm . ' [data-fm-action="confirm-yes"]', 5);
+        $I->see('Удалить папку?', $confirm);
         $I->assertTrue($I->executeJS(
-            'const dialog = document.querySelector("#sf-modal-confirm .modal__dialog").getBoundingClientRect();
-            const top = document.elementFromPoint(dialog.left + dialog.width / 2, dialog.top + dialog.height / 2);
-            return top.closest("#sf-modal-confirm") !== null;'
+            'const box = document.querySelector("#sf-file-manager-confirm .fm-modal__box").getBoundingClientRect();
+            const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+            return top.closest("#sf-file-manager-confirm") !== null;'
         ));
-        $I->pressKey('#sf-modal-confirm .modal__dialog', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
-        $I->waitForElementNotVisible('#sf-modal-confirm', 5);
+        $I->pressKey($confirm . ' [data-fm-action="confirm-yes"]', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+        $I->waitForElementNotVisible($confirm, 5);
         $I->seeElement(self::WINDOW . '.is-open');
-        $I->assertFalse($I->executeJS('return document.querySelector(arguments[0]).hasAttribute("inert")', [self::WINDOW]));
-        $I->executeJS('window.fileManager.close()');
+        $I->assertDirectoryExists(codecept_root_dir('public/uf/images'));
+        $I->pressKey(self::WINDOW . ' [data-fm-search]', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
         $I->waitForElementNotVisible(self::WINDOW, 5);
     }
 
@@ -334,6 +337,47 @@ class FileManagerCest
         }
     }
 
+    public function tryToWarnAboutUsage(AcceptanceTester $I): void
+    {
+        // файл стоит в записи: API usage находит таблицу, подтверждение удаления предупреждает
+        $file = codecept_root_dir('public/uf/images/codecept-usage.png');
+        copy(codecept_data_dir('upload.png'), $file);
+        $I->runSql('CREATE TABLE codecept_usage (id INT PRIMARY KEY, body TEXT)');
+        $I->runSql('INSERT INTO codecept_usage VALUES (1, ?)', ['<p><img src="/uf/images/codecept-usage.png" alt=""></p>']);
+        try {
+            $I->amOnPage('/admin');
+            $usage = $I->executeAsyncJS(
+                'const done = arguments[arguments.length - 1];
+                fetch(arguments[0]).then(r => r.json()).then(json => done(json.items ?? []));',
+                ['/admin/fm?method=usage&path=/images/codecept-usage.png']
+            );
+            $I->assertEquals([['table' => 'codecept_usage', 'count' => 1]], $usage);
+            $free = $I->executeAsyncJS(
+                'const done = arguments[arguments.length - 1];
+                fetch(arguments[0]).then(r => r.json()).then(json => done(json.items ?? []));',
+                ['/admin/fm?method=usage&path=/images']
+            );
+            $I->assertTrue(in_array(['table' => 'codecept_usage', 'count' => 1], $free), 'ссылка на файл папки — ссылка на папку');
+
+            $I->executeJS('window.fileManager.open()');
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+            $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $card = self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-usage.png"]';
+            $I->waitForElementVisible($card, 10);
+            $I->clickWithRightButton($card);
+            $I->click(self::WINDOW . ' [data-fm-menu="file"] [data-fm-action="delete"]');
+            $I->waitForText('Ссылки на файл есть в 1 записи (codecept_usage)', 10, '#sf-file-manager-confirm');
+            $I->click('#sf-file-manager-confirm [data-fm-close].fm-button');
+            $I->waitForElementNotVisible('#sf-file-manager-confirm', 5);
+            $I->assertFileExists($file);
+        } finally {
+            $I->runSql('DROP TABLE IF EXISTS codecept_usage');
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+    }
+
     public function tryToUploadWithoutOverwrite(AcceptanceTester $I): void
     {
         // загрузка: имя латиницей, PNG сжимается в WebP (не больше 2560 px), занятое имя не перезаписывается
@@ -388,12 +432,12 @@ class FileManagerCest
             $I->executeJS('document.querySelector(arguments[0]).click()', [$slides . ' [data-sf-table-add]']);
             $I->waitForElementVisible($modal . ' [data-sf-table-library]', 5);
             $I->click($modal . ' [data-sf-table-library]');
-            $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
-            $I->click(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]');
-            $card = self::WINDOW . ' .file-card[data-fm-path="/images/codecept-pick.png"]';
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+            $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $card = self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-pick.png"]';
             $I->waitForElementVisible($card, 5);
             $I->click($card);
-            $I->click(self::WINDOW . ' .file-window__done');
+            $I->click(self::WINDOW . ' .fm-done');
             $I->waitForElementNotVisible(self::WINDOW, 5);
             $I->seeElement($modal . ' .edit-table-file__preview[src="/uf/images/codecept-pick.png"]');
             $I->assertSame('/uf/images/codecept-pick.png', $I->executeJS(
@@ -418,9 +462,9 @@ class FileManagerCest
             $I->amOnPage('/admin/content/page/?action=form&content_id=1');
             $I->waitForElement('.tox-tbtn[aria-label="Файлы"]', 10);
             $I->executeJS('document.querySelector(\'.tox-tbtn[aria-label="Файлы"]\').click()');
-            $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
-            $I->click(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]');
-            $card = self::WINDOW . ' .file-card[data-fm-path="/images/codecept-pick.png"]';
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+            $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $card = self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-pick.png"]';
             $I->waitForElementVisible($card, 5);
             $I->doubleClick($card);
             $I->waitForElementNotVisible(self::WINDOW, 5);

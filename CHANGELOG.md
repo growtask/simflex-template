@@ -14,6 +14,8 @@
 - `public/uf/.htaccess`: в каталоге загруженных файлов не выполняются скрипты (`php_flag engine off`, запрет
   `.php`, `.phtml`, `.cgi` и т. п.), `nosniff`, CSP `sandbox` — HTML или SVG, открытые напрямую, не выполняют
   скрипты. Сайтам: скопировать файл в `public/uf/` и добавить `!/public/uf/.htaccess` в `.gitignore`.
+- Acceptance-тест `Admin/FileManagerCest::tryToWarnAboutUsage`: ссылка на файл в записи — API `usage` находит таблицу,
+  подтверждение удаления предупреждает. Тесты менеджера — под его свой интерфейс (`fm-*`, окна `<dialog>`).
 - Acceptance-тесты `Admin/FileManagerCest`: изменяющие действия API — только POST с CSRF-токеном (GET
   и картинка в тексте ничего не меняют), корень и соседние с `uf` папки недоступны, загрузка не перезаписывает
   файл и сжимает картинку в WebP.
