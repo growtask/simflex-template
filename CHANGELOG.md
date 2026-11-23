@@ -7,6 +7,11 @@
 
 ## [4.0.0] — не выпущена
 
+- В образе PHP (`docker/php/Dockerfile`) — ffmpeg: файловый менеджер сжимает видео при загрузке (по согласию
+  пользователя). Сайтам: добавить `RUN apt-get install -y ffmpeg --no-install-recommends` в свой Dockerfile,
+  без него видео загружается как есть.
+- Acceptance-тесты `Admin/FileManagerCest`: режим отметки (`tryToCheckSeveral`), вопрос о сжатии при загрузке
+  через окно, загрузка через API с `compress=1` и без него.
 - Acceptance-тесты открывают сайт по `http://simflex-site/` — псевдониму сервиса `app` в `docker-compose.yml`.
   Свежий Chrome (образ `selenium/standalone-chrome:latest`) открывает хост `app` только по https: `.app` —
   домен из списка HSTS preload, и `http://app/` давал `ERR_CONNECTION_REFUSED`. Сайтам: добавить сервису `app`

@@ -18,6 +18,9 @@ RUN apt-get install -y \
     vim \
     --no-install-recommends
 
+# ffmpeg: сжатие видео при загрузке в файловом менеджере (по согласию пользователя), без него видео — как есть
+RUN apt-get install -y ffmpeg --no-install-recommends
+
 # Расширения PHP и модули Apache
 RUN docker-php-ext-install pdo pdo_mysql mysqli mbstring exif pcntl bcmath intl zip
 RUN docker-php-ext-configure gd --with-webp --with-jpeg && docker-php-ext-install gd zip

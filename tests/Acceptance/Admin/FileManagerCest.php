@@ -44,7 +44,12 @@ class FileManagerCest
             $I->waitForText('В папке пока нет файлов', 10, self::WINDOW);
 
             // загрузка: файл появляется выбранным, «Готово» отдаёт его
+            // картинку можно сжать — окно спрашивает; ответ «Сжать»
+            $I->executeJS('sessionStorage.removeItem("sf-file-manager-compress")');
             $I->attachFile(self::WINDOW . ' [data-fm-input]', 'upload.png');
+            $I->waitForElementVisible('#sf-file-manager-compress [data-fm-action="compress-yes"]', 10);
+            $I->see('Картинки (1)', '#sf-file-manager-compress');
+            $I->click('#sf-file-manager-compress [data-fm-action="compress-yes"]');
             $file = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '/upload.webp"]';
             $I->waitForElementVisible($file, 10);
             $I->seeElement($file . '.fm-card_new[aria-selected="true"]');
@@ -337,6 +342,60 @@ class FileManagerCest
         }
     }
 
+    public function tryToCheckSeveral(AcceptanceTester $I): void
+    {
+        // клик по файлу — выбор одного без галочек; галочка включает режим отметки, дальше клик по карточке отмечает
+        // её, клик мимо не сбрасывает; «Отменить выбор» (вместо кнопок папки) — выход
+        $dir = codecept_root_dir('public/uf/images/codecept-fm-check');
+        mkdir($dir, 0777, true);
+        foreach (['a', 'b', 'c'] as $name) {
+            copy(codecept_data_dir('upload.png'), $dir . '/' . $name . '.png');
+        }
+        try {
+            $I->amOnPage('/admin');
+            $I->waitForJS('return typeof window.fileManager === "object"', 10);
+            $I->executeJS('window.fileManager.open({select: true, multiple: true})');
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+            $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $folder = self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-fm-check"]';
+            $I->waitForElementVisible($folder, 10);
+            $I->click($folder);
+            $card = fn(string $name) => self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-fm-check/' . $name . '.png"]';
+            $I->waitForElementVisible($card('c'), 10);
+
+            $I->click($card('a'));
+            $I->seeElement($card('a') . '[aria-selected="true"]');
+            $I->dontSeeElement(self::WINDOW . ' .fm-files_multi');
+
+            // галочка на b: режим отметки, a остаётся отмеченной
+            $I->moveMouseOver($card('b'));
+            $I->wait(0.4);
+            $I->click($card('b') . ' .fm-card__check');
+            $I->seeElement(self::WINDOW . ' .fm-files_multi');
+            $I->seeElement($card('a') . '[aria-selected="true"]');
+            $I->seeElement($card('b') . '[aria-selected="true"]');
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tools__cancel', 5);
+
+            // дальше — клик по карточке; клик мимо карточек выбор не сбрасывает
+            $I->click($card('c'));
+            $I->seeElement($card('c') . '[aria-selected="true"]');
+            $I->click(self::WINDOW . ' .fm-board');
+            $I->see('Выбрано: 3', self::WINDOW . ' [data-fm-info-name]');
+
+            $I->click(self::WINDOW . ' .fm-tools__cancel');
+            $I->dontSeeElement(self::WINDOW . ' .fm-card[aria-selected="true"]');
+            $I->dontSeeElement(self::WINDOW . ' .fm-files_multi');
+            $I->executeJS('window.fileManager.close()');
+        } finally {
+            foreach (glob($dir . '/*') ?: [] as $path) {
+                unlink($path);
+            }
+            if (is_dir($dir)) {
+                rmdir($dir);
+            }
+        }
+    }
+
     public function tryToWarnAboutUsage(AcceptanceTester $I): void
     {
         // файл стоит в записи: API usage находит таблицу, подтверждение удаления предупреждает
@@ -380,7 +439,7 @@ class FileManagerCest
 
     public function tryToUploadWithoutOverwrite(AcceptanceTester $I): void
     {
-        // загрузка: имя латиницей, PNG сжимается в WebP (не больше 2560 px), занятое имя не перезаписывается
+        // загрузка: имя латиницей, занятое не перезаписывается; PNG сжимается в WebP (до 2560 px) только с согласия
         $dir = codecept_root_dir('public/uf/images/codecept-fm-upload');
         mkdir($dir, 0777, true);
         // тест и веб-сервер — разные пользователи: папка доступна на запись сайту (mkdir урезает права по umask)
@@ -389,8 +448,9 @@ class FileManagerCest
             $I->amOnPage('/admin');
             // сжатие большой картинки на сервере — дольше обычного ожидания скрипта
             $I->executeInSelenium(fn($driver) => $driver->manage()->timeouts()->setScriptTimeout(60));
-            $upload = fn(): array => $I->executeAsyncJS(
+            $upload = fn(string $compress): array => $I->executeAsyncJS(
                 'const done = arguments[arguments.length - 1];
+                const compress = arguments[0];
                 const canvas = document.createElement("canvas");
                 canvas.width = 3000;
                 canvas.height = 1000;
@@ -398,16 +458,23 @@ class FileManagerCest
                 canvas.toBlob((blob) => {
                     const body = new FormData();
                     body.append("file[]", new File([blob], "Фото Отпуска.PNG", {type: "image/png"}));
+                    body.append("compress", compress);
                     fetch("/admin/fm?method=upload&path=/images/codecept-fm-upload", {method: "POST", body,
                         headers: {"X-CSRF-Token": document.querySelector(\'meta[name="csrf-token"]\').content}})
                         .then(r => r.json()).then(json => done(json.items));
-                }, "image/png");'
+                }, "image/png");',
+                [$compress]
             );
 
-            $I->assertSame(['/images/codecept-fm-upload/foto-otpuska.webp'], $upload());
-            $I->assertSame(['/images/codecept-fm-upload/foto-otpuska-2.webp'], $upload());
+            // с согласия — WebP до 2560 px
+            $I->assertSame(['/images/codecept-fm-upload/foto-otpuska.webp'], $upload('1'));
+            $I->assertSame(['/images/codecept-fm-upload/foto-otpuska-2.webp'], $upload('1'));
             $size = getimagesize($dir . '/foto-otpuska.webp');
             $I->assertSame([2560, 853, IMAGETYPE_WEBP], [$size[0], $size[1], $size[2]]);
+            // без согласия — как есть
+            $I->assertSame(['/images/codecept-fm-upload/foto-otpuska.png'], $upload('0'));
+            $size = getimagesize($dir . '/foto-otpuska.png');
+            $I->assertSame([3000, 1000, IMAGETYPE_PNG], [$size[0], $size[1], $size[2]]);
         } finally {
             foreach (glob($dir . '/*') ?: [] as $path) {
                 unlink($path);
