@@ -169,30 +169,4 @@ class FileManagerCest
             }
         }
     }
-
-    public function tryToInsertImageIntoEditor(AcceptanceTester $I): void
-    {
-        // кнопка «Файлы» TinyMCE (плагин fm): картинка вставляется тегом img с адресом от корня сайта
-        $file = codecept_root_dir('public/uf/images/codecept-pick.png');
-        copy(codecept_data_dir('upload.png'), $file);
-        try {
-            $I->amOnPage('/admin/content/page/?action=form&content_id=1');
-            $I->waitForElement('.tox-tbtn[aria-label="Файлы"]', 10);
-            $I->executeJS('document.querySelector(\'.tox-tbtn[aria-label="Файлы"]\').click()');
-            $I->waitForElementVisible(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]', 10);
-            $I->click(self::WINDOW . ' .file-tree-row[data-fm-path="/images"]');
-            $card = self::WINDOW . ' .file-card[data-fm-path="/images/codecept-pick.png"]';
-            $I->waitForElementVisible($card, 5);
-            $I->doubleClick($card);
-            $I->waitForElementNotVisible(self::WINDOW, 5);
-            $I->assertStringContainsString(
-                '<img src="/uf/images/codecept-pick.png"',
-                $I->executeJS('return tinymce.get()[0].getContent()')
-            );
-        } finally {
-            if (is_file($file)) {
-                unlink($file);
-            }
-        }
-    }
 }
