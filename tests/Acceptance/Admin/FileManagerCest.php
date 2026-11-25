@@ -92,7 +92,8 @@ class FileManagerCest
             $I->click('#sf-file-manager-confirm [data-fm-action="confirm-yes"]');
             // крошки и список перерисовываются: ждём скриптом, без ссылок на элементы
             $I->waitForJS(
-                'return document.querySelector("#sf-file-manager .fm-crumbs__item[aria-current=page]")?.textContent === "images"'
+                'return document.querySelector("#sf-file-manager .fm-crumbs__item[aria-current=page]")'
+                . '?.textContent === "images"'
                 . ' && !document.querySelector(\'#sf-file-manager .fm-card[data-fm-path="' . self::FOLDER . '"]\')',
                 5
             );
@@ -139,7 +140,10 @@ class FileManagerCest
         // подложка
         $I->executeJS('window.__open("overlay")');
         $I->waitForElementVisible(self::WINDOW . ' .fm-window__head [data-fm-close]', 5);
-        $I->executeJS('document.querySelector(arguments[0]).dispatchEvent(new MouseEvent("click", {bubbles: true}))', [self::WINDOW]);
+        $I->executeJS(
+            'document.querySelector(arguments[0]).dispatchEvent(new MouseEvent("click", {bubbles: true}))',
+            [self::WINDOW]
+        );
         $I->waitForElementNotVisible(self::WINDOW, 5);
         $waitAnswers(6);
 
@@ -175,7 +179,10 @@ class FileManagerCest
             $I->executeJS('window.fileManager.open({select: true, accept: ["jpg", "png"]})'
                 . '.then((files) => { window.__picked = files; })');
             $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
-            $I->executeJS('document.querySelector(arguments[0]).click()', [self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]']);
+            $I->executeJS(
+                'document.querySelector(arguments[0]).click()',
+                [self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]']
+            );
             $folder = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '"]';
             $I->waitForElementVisible($folder, 5);
             $I->dontSeeElement($folder . '.fm-card_disabled');
@@ -195,7 +202,10 @@ class FileManagerCest
             $I->seeElement(self::WINDOW . '.is-open');
 
             // неподходящий файл не загружается
-            $I->assertSame('.jpg,.png', $I->executeJS('return document.querySelector(arguments[0]).accept', [self::WINDOW . ' [data-fm-input]']));
+            $I->assertSame('.jpg,.png', $I->executeJS(
+                'return document.querySelector(arguments[0]).accept',
+                [self::WINDOW . ' [data-fm-input]']
+            ));
             $I->attachFile(self::WINDOW . ' [data-fm-input]', 'codecept-fm.pdf');
             $I->waitForText('Не загружено: codecept-fm.pdf', 5);
             $I->assertFileDoesNotExist($dir . '/codecept-fm.pdf');
@@ -294,11 +304,13 @@ class FileManagerCest
     public function tryToRejectForgedAndUnsafeRequests(AcceptanceTester $I): void
     {
         // GET (картинка или ссылка в тексте страницы) и POST без CSRF-токена файлы не меняют; корень, соседние
-        // с uf папки и выход за корень недоступны
+        // с uf папки, выход за корень и символическая ссылка наружу недоступны
         $dir = codecept_root_dir('public/uf/images/codecept-fm-safe');
         $sibling = codecept_root_dir('public/uf_codecept');
+        $link = codecept_root_dir('public/uf/images/codecept-fm-link');
         mkdir($dir, 0777, true);
         mkdir($sibling, 0777, true);
+        symlink($sibling, $link);
         try {
             $I->amOnPage('/admin');
             $fetch = fn(string $url, array $options = []): array => $I->executeAsyncJS(
@@ -310,30 +322,43 @@ class FileManagerCest
             $post = ['method' => 'POST', 'headers' => ['X-CSRF-Token' => $token]];
             $target = '&path=/images/codecept-fm-safe&name=codecept-fm-moved';
 
-            foreach (['rename' . $target, 'delete&path=/images/codecept-fm-safe', 'createDir&path=/images&name=x'] as $query) {
+            $getQueries = ['rename' . $target, 'delete&path=/images/codecept-fm-safe', 'createDir&path=/images&name=x'];
+            foreach ($getQueries as $query) {
                 $I->assertSame(405, $fetch('/admin/fm?method=' . $query)['status'], $query);
             }
             // картинка в тексте шлёт GET с cookies — ничего не меняется
-            $I->executeAsyncJS('const done = arguments[arguments.length - 1]; const image = new Image();
+            $I->executeAsyncJS(
+                'const done = arguments[arguments.length - 1]; const image = new Image();
                 image.onload = image.onerror = () => done(true); image.src = arguments[0];',
-                ['/admin/fm?method=rename' . $target]);
+                ['/admin/fm?method=rename' . $target]
+            );
             $I->assertSame(403, $fetch('/admin/fm?method=rename' . $target, ['method' => 'POST'])['status']);
-            $I->assertSame(403, $fetch('/admin/fm?method=rename' . $target, ['method' => 'POST', 'headers' => ['X-CSRF-Token' => 'x']])['status']);
+            $badToken = ['method' => 'POST', 'headers' => ['X-CSRF-Token' => 'x']];
+            $I->assertSame(403, $fetch('/admin/fm?method=rename' . $target, $badToken)['status']);
             $I->assertDirectoryExists($dir);
 
             // корень не переименовывается и не удаляется
-            foreach (['rename&path=&name=uf-x', 'rename&path=/&name=uf-x', 'delete&path=', 'delete&path=/', 'delete&path=/.'] as $query) {
+            $rootQueries = ['rename&path=&name=uf-x', 'rename&path=/&name=uf-x', 'delete&path=', 'delete&path=/',
+                'delete&path=/.'];
+            foreach ($rootQueries as $query) {
                 $I->assertSame(400, $fetch('/admin/fm?method=' . $query, $post)['status'], $query);
             }
             $I->assertDirectoryExists(codecept_root_dir('public/uf/images'));
 
-            // соседняя с uf папка (uf_codecept) и выход за корень
-            foreach (['getFileList&path=_codecept', 'getFileList&path=/../', 'delete&path=/images/../../uf_codecept'] as $query) {
-                $options = str_starts_with($query, 'delete') ? $post : [];
+            // соседняя с uf папка (uf_codecept), выход за корень и символическая ссылка на соседнюю папку
+            $outsideQueries = ['getFileList&path=_codecept', 'getFileList&path=/../',
+                'delete&path=/images/../../uf_codecept', 'getFileList&path=/images/codecept-fm-link',
+                'delete&path=/images/codecept-fm-link', 'rename&path=/images/codecept-fm-link&name=x'];
+            foreach ($outsideQueries as $query) {
+                $options = str_starts_with($query, 'getFileList') ? [] : $post;
                 $I->assertSame(400, $fetch('/admin/fm?method=' . $query, $options)['status'], $query);
             }
             $I->assertDirectoryExists($sibling);
+            $I->assertTrue(is_link($link), 'ссылка не удалена и не переименована');
         } finally {
+            if (is_link($link)) {
+                unlink($link);
+            }
             foreach ([$dir, codecept_root_dir('public/uf/images/codecept-fm-moved'), $sibling] as $path) {
                 if (is_dir($path)) {
                     rmdir($path);
@@ -360,7 +385,8 @@ class FileManagerCest
             $folder = self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-fm-check"]';
             $I->waitForElementVisible($folder, 10);
             $I->click($folder);
-            $card = fn(string $name) => self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-fm-check/' . $name . '.png"]';
+            $card = fn(string $name) => self::WINDOW
+                . ' .fm-card[data-fm-path="/images/codecept-fm-check/' . $name . '.png"]';
             $I->waitForElementVisible($card('c'), 10);
 
             $checkIcon = fn(string $name) => $I->grabAttributeFrom($card($name) . ' .fm-card__check use', 'href');
@@ -502,7 +528,10 @@ class FileManagerCest
         $file = codecept_root_dir('public/uf/images/codecept-usage.png');
         copy(codecept_data_dir('upload.png'), $file);
         $I->runSql('CREATE TABLE codecept_usage (id INT PRIMARY KEY, body TEXT)');
-        $I->runSql('INSERT INTO codecept_usage VALUES (1, ?)', ['<p><img src="/uf/images/codecept-usage.png" alt=""></p>']);
+        $I->runSql(
+            'INSERT INTO codecept_usage VALUES (1, ?)',
+            ['<p><img src="/uf/images/codecept-usage.png" alt=""></p>']
+        );
         try {
             $I->amOnPage('/admin');
             $usage = $I->executeAsyncJS(
@@ -516,7 +545,10 @@ class FileManagerCest
                 fetch(arguments[0]).then(r => r.json()).then(json => done(json.items ?? []));',
                 ['/admin/fm?method=usage&path=/images']
             );
-            $I->assertTrue(in_array(['table' => 'codecept_usage', 'count' => 1], $free), 'ссылка на файл папки — ссылка на папку');
+            $I->assertTrue(
+                in_array(['table' => 'codecept_usage', 'count' => 1], $free),
+                'ссылка на файл папки — ссылка на папку'
+            );
 
             $I->executeJS('window.fileManager.open()');
             $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
@@ -612,7 +644,10 @@ class FileManagerCest
                 [$modal . ' [data-sf-column="image"]']
             ));
             // окно строки доступно: не осталось под inert
-            $I->assertFalse($I->executeJS('return document.querySelector(arguments[0]).hasAttribute("inert")', [$modal]));
+            $I->assertFalse($I->executeJS(
+                'return document.querySelector(arguments[0]).hasAttribute("inert")',
+                [$modal]
+            ));
         } finally {
             if (is_file($file)) {
                 unlink($file);
