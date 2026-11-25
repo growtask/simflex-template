@@ -32,13 +32,14 @@ class ExtensionsCest
         $I->dontSeeErrors();
         $I->chooseInDropdown('module', 'Simflex\Core\Extensions\Block\Block');
         // параметры модуля: группа «Контент» с визуальным редактором — в основную колонку на всю строку
-        $I->waitForElement('.ajax-params-left .form-input_wide .tox-tinymce', 10);
+        $I->waitForElement('.ajax-params-left .form-input_wide .ted-ui', 10);
         $I->dontSeeErrors();
 
         // другой модуль: параметры прежнего и его редактор убираются
         $I->chooseInDropdown('module', 'Simflex\Core\Extensions\Code\Code');
-        $I->waitForElementNotVisible('.tox-tinymce', 5);
-        $I->dontSeeElementInDOM('.tox-tinymce');
+        $I->waitForElementNotVisible('.ted-ui', 5);
+        $I->dontSeeElementInDOM('.ted-ui');
+        $I->assertSame(0, $I->executeJS('return Ted.editors.length'));
         $I->dontSeeLogProblems();
     }
 
@@ -56,8 +57,8 @@ class ExtensionsCest
             $I->dontSeeCheckboxIsChecked('is_title');
             $I->dontSeeCheckboxIsChecked('is_wrap');
             // текст редактора параметров сохраняется вместе с формой
-            $I->waitForElement('.ajax-params-left .tox-tinymce', 10);
-            $I->executeJS("tinymce.get()[0].setContent('<p>Codecept text</p>')");
+            $I->waitForElement('.ajax-params-left .ted-ui', 10);
+            $I->executeJS("Ted.editors[0].setHTML('<p>Codecept text</p>')");
             $I->submitAndWaitForReload('.edit-bar button[name="submit_apply"]', '.menu');
             $I->dontSeeErrors();
 
