@@ -79,7 +79,15 @@ class LayoutShowcaseTest extends Unit
         $this->assertSame('UI/Other/BadgeStock', $keys[count($figmaKeys)]);
         $this->assertSame('Other', $components['UI/Other/Logo']['group']);
         // раздел фильтрует список
-        $this->assertSame($components, LayoutShowcase::getComponents('UI'));
+        $this->assertSame(
+            array_filter($components, static fn(array $component): bool => $component['section'] === 'UI'),
+            LayoutShowcase::getComponents('UI')
+        );
+        // раздел Parts: блок States (Figma), без группы
+        $states = $components['Parts/States'];
+        $this->assertSame('Parts', $states['section']);
+        $this->assertSame('', $states['group']);
+        $this->assertSame(['Parts/States'], array_keys(LayoutShowcase::getComponents('Parts')));
         $this->assertSame([], LayoutShowcase::getComponents('Nope'));
     }
 
@@ -102,7 +110,7 @@ class LayoutShowcaseTest extends Unit
     public function testDemoCoversEveryEnumOfComponent(): void
     {
         $root = dirname((string)(new \ReflectionClass(LayoutShowcase::class))->getFileName()) . '/Components/';
-        foreach (LayoutShowcase::getComponents('UI') as $key => $component) {
+        foreach (LayoutShowcase::getComponents() as $key => $component) {
             $demo = (string)file_get_contents($component['demo']);
             foreach (glob($root . $key . '/*.php') ?: [] as $file) {
                 $name = basename($file, '.php');
