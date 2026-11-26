@@ -3,20 +3,20 @@
 namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
-use Simflex\Core\Layout\Components\Parts\System\AgeGate\AgeGateTheme;
-use Simflex\Core\Layout\Components\Parts\System\AgeGate\Layout as AgeGate;
-use Simflex\Core\Layout\Components\Parts\System\BrowserSupport\BrowserSupportTheme;
-use Simflex\Core\Layout\Components\Parts\System\BrowserSupport\Layout as BrowserSupport;
-use Simflex\Core\Layout\Components\Parts\System\Consent\ConsentTheme;
-use Simflex\Core\Layout\Components\Parts\System\Consent\Layout as Consent;
-use Simflex\Core\Layout\Components\Parts\System\Cookie\CookiePosition;
-use Simflex\Core\Layout\Components\Parts\System\Cookie\CookieState;
-use Simflex\Core\Layout\Components\Parts\System\Cookie\CookieTheme;
-use Simflex\Core\Layout\Components\Parts\System\Cookie\Layout as Cookie;
-use Simflex\Core\Layout\Components\Parts\System\Maintenance\Layout as Maintenance;
-use Simflex\Core\Layout\Components\Parts\System\Maintenance\MaintenanceTheme;
-use Simflex\Core\Layout\Components\Parts\System\Preloader\Layout as Preloader;
-use Simflex\Core\Layout\Components\Parts\System\Preloader\PreloaderTheme;
+use Simflex\Core\Layout\Components\Parts\System\SystemAgeGate\AgeGateTheme;
+use Simflex\Core\Layout\Components\Parts\System\SystemAgeGate\Layout as AgeGate;
+use Simflex\Core\Layout\Components\Parts\System\SystemBrowserSupport\BrowserSupportTheme;
+use Simflex\Core\Layout\Components\Parts\System\SystemBrowserSupport\Layout as BrowserSupport;
+use Simflex\Core\Layout\Components\Parts\System\SystemConsent\ConsentTheme;
+use Simflex\Core\Layout\Components\Parts\System\SystemConsent\Layout as Consent;
+use Simflex\Core\Layout\Components\Parts\System\SystemCookie\CookiePosition;
+use Simflex\Core\Layout\Components\Parts\System\SystemCookie\CookieState;
+use Simflex\Core\Layout\Components\Parts\System\SystemCookie\CookieTheme;
+use Simflex\Core\Layout\Components\Parts\System\SystemCookie\Layout as Cookie;
+use Simflex\Core\Layout\Components\Parts\System\SystemMaintenance\Layout as Maintenance;
+use Simflex\Core\Layout\Components\Parts\System\SystemMaintenance\MaintenanceTheme;
+use Simflex\Core\Layout\Components\Parts\System\SystemPreloader\Layout as Preloader;
+use Simflex\Core\Layout\Components\Parts\System\SystemPreloader\PreloaderTheme;
 use Simflex\Core\System\Container;
 use Simflex\Core\System\Location;
 

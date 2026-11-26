@@ -88,11 +88,11 @@ class LayoutShowcaseTest extends Unit
         $this->assertSame('Parts', $states['section']);
         $this->assertSame('', $states['group']);
         // блок System лежит в группе System
-        $this->assertSame('System', $components['Parts/System/Cookie']['group']);
+        $this->assertSame('System', $components['Parts/System/SystemCookie']['group']);
         $this->assertSame(
             [
-                'Parts/States', 'Parts/System/Cookie', 'Parts/System/Consent', 'Parts/System/AgeGate',
-                'Parts/System/BrowserSupport', 'Parts/System/Preloader', 'Parts/System/Maintenance',
+                'Parts/States', 'Parts/System/SystemCookie', 'Parts/System/SystemConsent', 'Parts/System/SystemAgeGate',
+                'Parts/System/SystemBrowserSupport', 'Parts/System/SystemPreloader', 'Parts/System/SystemMaintenance',
             ],
             array_keys(LayoutShowcase::getComponents('Parts'))
         );
