@@ -4,7 +4,7 @@ namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
 use Simflex\Core\Admin\Page;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonTheme;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainTheme;
 use Simflex\Core\Layout\Components\UI\Button\ButtonMain\Layout as Button;
 use Simflex\Core\Http\Request;
 use Simflex\Core\Layout\LayoutManager;
@@ -43,7 +43,7 @@ class AdminAssetsTest extends Unit
     public function testAdminStylesCompiledToOwnCacheInPixels(): void
     {
         // компонент Layout, выведенный в админке, попадает в стили админки
-        Button::drawButton(text: 'Сохранить');
+        Button::drawButtonMain(text: 'Сохранить');
         $cachePath = LayoutManager::init();
         $file = Container::getPaths()->getPublic() . $cachePath;
         try {
@@ -104,7 +104,7 @@ class AdminAssetsTest extends Unit
             foreach ($cases as [$cookies, $theme]) {
                 Container::set('request', Request::create('/admin', cookies: $cookies));
                 // значение темы - значение enum темы компонентов Layout
-                $this->assertSame($theme, ButtonTheme::from(Page::get()->getTheme())->value);
+                $this->assertSame($theme, ButtonMainTheme::from(Page::get()->getTheme())->value);
             }
         } finally {
             Container::set('request', $requestBackup);

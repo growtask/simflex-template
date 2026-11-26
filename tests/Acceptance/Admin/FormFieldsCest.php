@@ -5,7 +5,7 @@ namespace Tests\Acceptance\Admin;
 use Tests\Support\AcceptanceTester;
 
 /**
- * Поля формы на компонентах Layout: дата (TextInputKind::Date + Calendar), теги (TagsInput), картинка
+ * Поля формы на компонентах Layout: дата (InputMainKind::Date + Calendar), теги (TagsInput), картинка
  * «Из библиотеки» (Uploader + файловый менеджер)
  */
 class FormFieldsCest

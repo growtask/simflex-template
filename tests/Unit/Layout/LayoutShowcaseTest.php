@@ -166,7 +166,7 @@ class LayoutShowcaseTest extends Unit
 
     /**
      * Демо компонента со style.scss подключает ассеты своего Layout (draw* вызывает draw() или useLayout()):
-     * иначе стили не попадут на страницу и компонент станет невидимым, как было у LoaderSkeleton::drawSkeleton()
+     * иначе стили не попадут на страницу и компонент станет невидимым, как было у LoaderSkeleton::drawLoaderSkeleton()
      */
     public function testEveryComponentDemoRegistersItsAssets(): void
     {

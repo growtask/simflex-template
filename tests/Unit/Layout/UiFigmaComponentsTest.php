@@ -3,7 +3,7 @@
 namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonSize;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainSize;
 use Simflex\Core\Layout\Components\UI\Button\ButtonMain\Layout as Button;
 use Simflex\Core\Layout\Components\UI\Button\ButtonMenu\ButtonMenuDirection;
 use Simflex\Core\Layout\Components\UI\Button\ButtonMenu\Layout as ButtonMenu;
@@ -21,35 +21,35 @@ use Simflex\Core\Layout\Components\UI\Loader\LoaderProgressLabel\Layout as Progr
 use Simflex\Core\Layout\Components\UI\Loader\LoaderRing\Layout as Ring;
 use Simflex\Core\Layout\Components\UI\Loader\LoaderSkeletonCard\Layout as SkeletonCard;
 use Simflex\Core\Layout\Components\UI\Loader\LoaderSteps\Layout as Steps;
-use Simflex\Core\Layout\Components\UI\Loader\LoaderProgress\ProgressType;
+use Simflex\Core\Layout\Components\UI\Loader\LoaderProgress\LoaderProgressType;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchRadioColor\Layout as RadioColor;
-use Simflex\Core\Layout\Components\UI\Switch\SwitchRadioColor\RadioColorValue;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchRadioColor\SwitchRadioColorValue;
 use Simflex\Core\Layout\Components\UI\Loader\LoaderSkeleton\Layout as Skeleton;
-use Simflex\Core\Layout\Components\UI\Loader\LoaderSkeleton\SkeletonShape;
+use Simflex\Core\Layout\Components\UI\Loader\LoaderSkeleton\LoaderSkeletonShape;
 use Simflex\Core\Layout\Components\UI\Range\RangeMain\Layout as Range;
-use Simflex\Core\Layout\Components\UI\Range\RangeMain\RangeType;
-use Simflex\Core\Layout\Components\UI\Range\RangeMain\RangeWidth;
+use Simflex\Core\Layout\Components\UI\Range\RangeMain\RangeMainType;
+use Simflex\Core\Layout\Components\UI\Range\RangeMain\RangeMainWidth;
 use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarMain\Layout as Scrollbar;
-use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarMain\ScrollbarDirection;
-use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarMain\ScrollbarSize;
-use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarMain\ScrollbarStyle;
+use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarMain\ScrollbarMainDirection;
+use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarMain\ScrollbarMainSize;
+use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarMain\ScrollbarMainStyle;
 use Simflex\Core\Layout\Components\UI\Selector\SelectorMain\Layout as Selector;
-use Simflex\Core\Layout\Components\UI\Selector\SelectorMain\SelectorSize;
-use Simflex\Core\Layout\Components\UI\Selector\SelectorMain\SelectorStyle;
+use Simflex\Core\Layout\Components\UI\Selector\SelectorMain\SelectorMainSize;
+use Simflex\Core\Layout\Components\UI\Selector\SelectorMain\SelectorMainStyle;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchTree\Layout as Tree;
-use Simflex\Core\Layout\Components\UI\Calendar\CalendarMain\CalendarFormat;
-use Simflex\Core\Layout\Components\UI\Calendar\CalendarMain\CalendarMode;
-use Simflex\Core\Layout\Components\UI\Calendar\CalendarMain\CalendarSelection;
+use Simflex\Core\Layout\Components\UI\Calendar\CalendarMain\CalendarMainFormat;
+use Simflex\Core\Layout\Components\UI\Calendar\CalendarMain\CalendarMainMode;
+use Simflex\Core\Layout\Components\UI\Calendar\CalendarMain\CalendarMainSelection;
 use Simflex\Core\Layout\Components\UI\Calendar\CalendarMain\Layout as Calendar;
-use Simflex\Core\Layout\Components\UI\Input\InputCode\CodeInputState;
+use Simflex\Core\Layout\Components\UI\Input\InputCode\InputCodeState;
 use Simflex\Core\Layout\Components\UI\Input\InputCode\Layout as CodeInput;
 use Simflex\Core\Layout\Components\UI\Dropdown\DropdownMain\Layout as Dropdown;
 use Simflex\Core\Layout\Components\UI\Input\InputLogin\Layout as LoginInput;
 use Simflex\Core\Layout\Components\UI\Input\InputPhone\Layout as PhoneInput;
-use Simflex\Core\Layout\Components\UI\Input\InputPhone\PhoneCountry;
+use Simflex\Core\Layout\Components\UI\Input\InputPhone\InputPhoneCountry;
 use Simflex\Core\Layout\Components\UI\Input\InputSearch\Layout as SearchInput;
 use Simflex\Core\Layout\Components\UI\Stepper\StepperMain\Layout as Stepper;
-use Simflex\Core\Layout\Components\UI\Stepper\StepperMain\StepperStyle;
+use Simflex\Core\Layout\Components\UI\Stepper\StepperMain\StepperMainStyle;
 use Simflex\Core\Layout\Components\UI\Tab\TabHeading\Layout as TabHeading;
 use Simflex\Core\Layout\Components\UI\Tab\TabHeading\TabHeadingSize;
 use Simflex\Core\Layout\Components\UI\Tab\TabHeading\TabHeadingStyle;
@@ -60,15 +60,15 @@ use Simflex\Core\Layout\Components\UI\Tab\TabMarker\Layout as TabMarker;
 use Simflex\Core\Layout\Components\UI\Tab\TabMarker\TabMarkerSize;
 use Simflex\Core\Layout\Components\UI\Tab\TabMarker\TabMarkerStyle;
 use Simflex\Core\Layout\Components\UI\Input\InputMain\Layout as TextInput;
-use Simflex\Core\Layout\Components\UI\Input\InputMain\TextInputLabelPos;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\InputMainLabelPos;
 use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\Layout as Tooltip;
-use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipPosition;
-use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipSide;
-use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipTheme;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipMainPosition;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipMainSide;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipMainTheme;
 use Simflex\Core\System\Container;
 use Simflex\Core\System\Location;
 use Simflex\Core\Layout\Components\UI\Tooltip\TooltipRich\Layout as TooltipRich;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonState;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainState;
 use Simflex\Core\Layout\Components\UI\Tab\TabDisabled\Layout as TabDisabled;
 use Simflex\Core\Layout\Components\UI\Stepper\StepperQuantity\Layout as StepperQuantity;
 use Simflex\Core\Layout\Components\UI\Dropdown\DropdownInput\Layout as DropdownInput;
@@ -88,8 +88,8 @@ use Simflex\Core\Layout\Components\UI\Calendar\CalendarItem\Layout as CalendarIt
 use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarArrow\Layout as ScrollbarArrow;
 use Simflex\Core\Layout\Components\UI\Scrollbar\ScrollbarArrow\ScrollbarArrowStyle;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchTreeItem\Layout as TreeItem;
-use Simflex\Core\Layout\Components\UI\Switch\SwitchTreeItem\TreeItemExpand;
-use Simflex\Core\Layout\Components\UI\Switch\SwitchTreeItem\TreeItemState;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchTreeItem\SwitchTreeItemExpand;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchTreeItem\SwitchTreeItemState;
 
 /**
  * Компоненты UI, добавленные и обновлённые по Figma (страница UI): варианты, которых не было в ядре
@@ -126,7 +126,7 @@ class UiFigmaComponentsTest extends Unit
 
     public function testButtonWithIconOnlyUsesCenterIcon(): void
     {
-        $html = Button::drawButton(iconLeft: 'plus', size: ButtonSize::Small, attributes: ['aria-label' => 'Добавить']);
+        $html = Button::drawButtonMain(iconLeft: 'plus', size: ButtonMainSize::Small, attributes: ['aria-label' => 'Добавить']);
 
         $this->assertStringContainsString('btn__icon_center', $html);
         $this->assertStringNotContainsString('btn__icon_left', $html);
@@ -134,7 +134,7 @@ class UiFigmaComponentsTest extends Unit
 
     public function testStepperAmongShowsCurrentOfTotal(): void
     {
-        $html = Stepper::drawStepper('page', 2, min: 1, max: 8, style: StepperStyle::Among);
+        $html = Stepper::drawStepperMain('page', 2, min: 1, max: 8, style: StepperMainStyle::Among);
 
         $this->assertStringContainsString('stepper_style_among', $html);
         $this->assertStringContainsString('data-sf-stepper-counter', $html);
@@ -146,21 +146,21 @@ class UiFigmaComponentsTest extends Unit
         $this->assertStringContainsString('value="2"', $html);
 
         // у остальных стилей счётчика нет
-        $this->assertStringNotContainsString('data-sf-stepper-counter', Stepper::drawStepper('qty', 1));
+        $this->assertStringNotContainsString('data-sf-stepper-counter', Stepper::drawStepperMain('qty', 1));
     }
 
     public function testRichTooltip(): void
     {
-        $html = TooltipRich::drawRich(
+        $html = TooltipRich::drawTooltipRich(
             '<button type="button">Помощь</button>',
             title: 'Заголовок <b>',
             text: 'Пояснение',
             actionText: 'Подробнее',
             actionLink: '/help',
             icon: 'notify-info',
-            position: TooltipPosition::Bottom,
-            side: TooltipSide::Left,
-            theme: TooltipTheme::Dark,
+            position: TooltipMainPosition::Bottom,
+            side: TooltipMainSide::Left,
+            theme: TooltipMainTheme::Dark,
         );
 
         $this->assertStringContainsString('tooltip_rich', $html);
@@ -174,7 +174,7 @@ class UiFigmaComponentsTest extends Unit
         $this->assertStringContainsString('<a class="tooltip__action" href="/help">', $html);
         $this->assertStringContainsString('tooltip__icon', $html);
 
-        $plain = TooltipRich::drawRich('<span>i</span>', title: 'Только заголовок');
+        $plain = TooltipRich::drawTooltipRich('<span>i</span>', title: 'Только заголовок');
         $this->assertStringNotContainsString('tooltip__action', $plain);
         $this->assertStringNotContainsString('tooltip__text', $plain);
         $this->assertStringNotContainsString('tooltip__icon', $plain);
@@ -182,9 +182,9 @@ class UiFigmaComponentsTest extends Unit
 
     public function testTextInputLabelInside(): void
     {
-        $html = TextInput::drawInput(
+        $html = TextInput::drawInputMain(
             labelText: 'Имя',
-            labelPos: TextInputLabelPos::Inside,
+            labelPos: InputMainLabelPos::Inside,
             icon: 'user',
             attributes: ['name' => 'name'],
         );
@@ -197,7 +197,7 @@ class UiFigmaComponentsTest extends Unit
 
     public function testLoginAndSearchInputsComposeTextInput(): void
     {
-        $login = LoginInput::drawLoginInput(value: 'ivan', error: 'Занято');
+        $login = LoginInput::drawInputLogin(value: 'ivan', error: 'Занято');
         $this->assertStringContainsString('login-input', $login);
         $this->assertStringContainsString('icon-user', $login);
         $this->assertStringContainsString('name="login"', $login);
@@ -205,7 +205,7 @@ class UiFigmaComponentsTest extends Unit
         $this->assertStringContainsString('text-input_error', $login);
         $this->assertStringContainsString('text-input__reset', $login);
 
-        $search = SearchInput::drawSearchInput(name: 'query');
+        $search = SearchInput::drawInputSearch(name: 'query');
         $this->assertStringContainsString('search-input', $search);
         $this->assertStringContainsString('icon-search', $search);
         $this->assertStringContainsString('name="query"', $search);
@@ -215,15 +215,15 @@ class UiFigmaComponentsTest extends Unit
 
     public function testCalendarSelectionAndFormat(): void
     {
-        $default = Calendar::drawCalendar(value: '2026-11-19');
+        $default = Calendar::drawCalendarMain(value: '2026-11-19');
         $this->assertStringContainsString('data-selection="single"', $default);
         $this->assertStringContainsString('data-format="24h"', $default);
 
-        $range = Calendar::drawCalendar(
+        $range = Calendar::drawCalendarMain(
             value: '2026-11-17/2026-11-21',
-            selection: CalendarSelection::Range,
-            format: CalendarFormat::H12,
-            mode: CalendarMode::DateTime,
+            selection: CalendarMainSelection::Range,
+            format: CalendarMainFormat::H12,
+            mode: CalendarMainMode::DateTime,
         );
         $this->assertStringContainsString('data-selection="range"', $range);
         $this->assertStringContainsString('data-format="12h"', $range);
@@ -234,13 +234,13 @@ class UiFigmaComponentsTest extends Unit
     {
         $options = ['a' => 'A', 'b' => 'B'];
 
-        $this->assertStringNotContainsString('dropdown_scroll_off', Dropdown::drawSelect('x', $options));
-        $this->assertStringContainsString('dropdown_scroll_off', Dropdown::drawSelect('x', $options, scroll: false));
+        $this->assertStringNotContainsString('dropdown_scroll_off', Dropdown::drawDropdownMainSelect('x', $options));
+        $this->assertStringContainsString('dropdown_scroll_off', Dropdown::drawDropdownMainSelect('x', $options, scroll: false));
     }
 
     public function testPhoneInputCountryAndMask(): void
     {
-        $html = PhoneInput::drawPhoneInput(name: 'tel', value: '+375291234567');
+        $html = PhoneInput::drawInputPhone(name: 'tel', value: '+375291234567');
 
         // страна определяется по коду в номере, номер форматируется по маске, в форму уходит полный номер
         $this->assertStringContainsString('phone-flag_by', $html);
@@ -248,18 +248,18 @@ class UiFigmaComponentsTest extends Unit
         $this->assertStringContainsString('name="tel" value="375291234567"', $html);
         $this->assertStringContainsString('placeholder="(__) ___-__-__"', $html);
         $this->assertStringContainsString('autocomplete="tel-national"', $html);
-        $this->assertSame(count(PhoneCountry::cases()), substr_count($html, 'role="option"'));
+        $this->assertSame(count(InputPhoneCountry::cases()), substr_count($html, 'role="option"'));
         $this->assertStringContainsString('aria-label="Страна: Беларусь +375"', $html);
 
-        $empty = PhoneInput::drawPhoneInput(country: PhoneCountry::Ge, countries: [PhoneCountry::Ru, PhoneCountry::Am]);
+        $empty = PhoneInput::drawInputPhone(country: InputPhoneCountry::Ge, countries: [InputPhoneCountry::Ru, InputPhoneCountry::Am]);
         // страны нет в списке — берётся первая
         $this->assertStringContainsString('phone-flag_ru', $empty);
         $this->assertStringContainsString('value=""', $empty);
 
-        $this->assertSame('(916) 123-45-67', PhoneCountry::Ru->format('9161234567999'));
-        $this->assertSame('(91', PhoneCountry::Ru->format('91'));
+        $this->assertSame('(916) 123-45-67', InputPhoneCountry::Ru->format('9161234567999'));
+        $this->assertSame('(91', InputPhoneCountry::Ru->format('91'));
 
-        $disabled = PhoneInput::drawPhoneInput(value: '79161234567', attributes: ['disabled' => 'disabled']);
+        $disabled = PhoneInput::drawInputPhone(value: '79161234567', attributes: ['disabled' => 'disabled']);
         $this->assertStringContainsString('phone-input_disabled', $disabled);
     }
 
@@ -361,7 +361,7 @@ class UiFigmaComponentsTest extends Unit
 
     public function testRadioColor(): void
     {
-        $html = RadioColor::drawRadioColor('color', 'red', 'Красный', RadioColorValue::Red, checked: true);
+        $html = RadioColor::drawSwitchRadioColor('color', 'red', 'Красный', SwitchRadioColorValue::Red, checked: true);
         $this->assertStringContainsString('type="radio"', $html);
         $this->assertStringContainsString('name="color"', $html);
         $this->assertStringContainsString('checked', $html);
@@ -370,8 +370,8 @@ class UiFigmaComponentsTest extends Unit
 
     public function testLoaders(): void
     {
-        $this->assertStringContainsString('loader_static', LoaderIcon::drawLoader(animation: false));
-        $this->assertStringNotContainsString('loader_static', LoaderIcon::drawLoader());
+        $this->assertStringContainsString('loader_static', LoaderIcon::drawLoaderMain(animation: false));
+        $this->assertStringNotContainsString('loader_static', LoaderIcon::drawLoaderMain());
 
         $this->assertStringContainsString('loader-dots', LoaderDots::drawLoaderDots());
         $this->assertStringContainsString('Ищем', LoaderInline::drawLoaderInline('Ищем'));
@@ -385,48 +385,48 @@ class UiFigmaComponentsTest extends Unit
 
     public function testSkeleton(): void
     {
-        $circle = Skeleton::drawSkeleton(SkeletonShape::Circle, width: '50%');
+        $circle = Skeleton::drawLoaderSkeleton(LoaderSkeletonShape::Circle, width: '50%');
         $this->assertStringContainsString('skeleton_shape_circle', $circle);
         $this->assertStringContainsString('aria-hidden="true"', $circle);
         $this->assertStringNotContainsString('width:', $circle);
 
-        $this->assertStringContainsString('style="width:50%"', Skeleton::drawSkeleton(width: '50%'));
-        $this->assertStringContainsString('skeleton_static', Skeleton::drawSkeleton(animation: false));
-        $this->assertStringContainsString('skeleton_shape_rect', SkeletonCard::drawSkeletonCard());
+        $this->assertStringContainsString('style="width:50%"', Skeleton::drawLoaderSkeleton(width: '50%'));
+        $this->assertStringContainsString('skeleton_static', Skeleton::drawLoaderSkeleton(animation: false));
+        $this->assertStringContainsString('skeleton_shape_rect', SkeletonCard::drawLoaderSkeletonCard());
     }
 
     public function testProgress(): void
     {
-        $bar = Progress::drawProgress(150);
+        $bar = Progress::drawLoaderProgress(150);
         $this->assertStringContainsString('aria-valuenow="100"', $bar);
         $this->assertStringContainsString('width:100%', $bar);
-        $this->assertStringContainsString('aria-valuenow="0"', Progress::drawProgress(-5));
+        $this->assertStringContainsString('aria-valuenow="0"', Progress::drawLoaderProgress(-5));
 
-        $indeterminate = Progress::drawProgress(type: ProgressType::Indeterminate, animation: false);
+        $indeterminate = Progress::drawLoaderProgress(type: LoaderProgressType::Indeterminate, animation: false);
         $this->assertStringContainsString('progress_indeterminate', $indeterminate);
         $this->assertStringContainsString('progress_static', $indeterminate);
         $this->assertStringNotContainsString('aria-valuenow', $indeterminate);
 
-        $label = ProgressLabel::drawProgressLabel(40, 'report.pdf');
+        $label = ProgressLabel::drawLoaderProgressLabel(40, 'report.pdf');
         $this->assertStringContainsString('40%', $label);
         $this->assertStringContainsString('report.pdf', $label);
 
-        $ring = Ring::drawRing(75);
+        $ring = Ring::drawLoaderRing(75);
         $this->assertStringContainsString('stroke-dasharray="75 100"', $ring);
-        $this->assertStringNotContainsString('progress-ring__value', Ring::drawRing(75, showValue: false));
+        $this->assertStringNotContainsString('progress-ring__value', Ring::drawLoaderRing(75, showValue: false));
 
-        $steps = Steps::drawSteps(9, 7, true);
+        $steps = Steps::drawLoaderSteps(9, 7, true);
         $this->assertStringContainsString('aria-valuetext="Шаг 5 из 5"', $steps);
         $this->assertSame(5, preg_match_all('/class="progress-steps__segment[ "]/', $steps));
-        $this->assertSame(3, substr_count(Steps::drawSteps(1, 3), 'progress-steps__segment_done'));
+        $this->assertSame(3, substr_count(Steps::drawLoaderSteps(1, 3), 'progress-steps__segment_done'));
     }
 
     public function testSelector(): void
     {
-        $html = Selector::drawSelector(
+        $html = Selector::drawSelectorMain(
             [['text' => 'Выкл', 'disabled' => true], ['text' => 'День', 'badge' => '-20%'], ['text' => 'Неделя', 'value' => 'week']],
-            SelectorStyle::Primary,
-            SelectorSize::Small,
+            SelectorMainStyle::Primary,
+            SelectorMainSize::Small,
             fill: true,
             name: 'period',
         );
@@ -440,12 +440,12 @@ class UiFigmaComponentsTest extends Unit
         $this->assertStringContainsString('selector-item__badge">-20%', $html);
         $this->assertMatchesRegularExpression('/<input type="hidden" class="selector__input" name="period" value="День">/u', $html);
 
-        $this->assertStringNotContainsString('selector__input', Selector::drawSelector([['text' => 'A']]));
+        $this->assertStringNotContainsString('selector__input', Selector::drawSelectorMain([['text' => 'A']]));
     }
 
     public function testTreeDerivesParentState(): void
     {
-        $tree = static fn(array $children) => Tree::drawTree([
+        $tree = static fn(array $children) => Tree::drawSwitchTree([
             ['label' => 'Родитель', 'count' => 7, 'expanded' => true, 'children' => $children],
         ], name: 'cat');
 
@@ -462,12 +462,12 @@ class UiFigmaComponentsTest extends Unit
         $none = $tree([['label' => 'Один'], ['label' => 'Два', 'disabled' => true]]);
         $this->assertStringNotContainsString('checked="checked"', $none);
         $this->assertStringContainsString('tree-item_disabled', $none);
-        $this->assertStringContainsString(' hidden', Tree::drawTree([['label' => 'A', 'children' => [['label' => 'B']]]]));
+        $this->assertStringContainsString(' hidden', Tree::drawSwitchTree([['label' => 'A', 'children' => [['label' => 'B']]]]));
     }
 
     public function testRange(): void
     {
-        $html = Range::drawRange(0, 100, 150, -20, 5, name: 'price', labels: true, marks: true);
+        $html = Range::drawRangeMain(0, 100, 150, -20, 5, name: 'price', labels: true, marks: true);
         // значения ограничены шкалой, «от» не больше «до»
         $this->assertStringContainsString('aria-valuenow="0"', $html);
         $this->assertStringContainsString('aria-valuenow="100"', $html);
@@ -477,13 +477,13 @@ class UiFigmaComponentsTest extends Unit
         $this->assertSame(5, substr_count($html, 'class="range__mark"'));
         $this->assertStringContainsString('range__labels', $html);
 
-        $single = Range::drawRange(0, 200, 50, type: RangeType::Single, width: RangeWidth::Fill, name: 'size');
+        $single = Range::drawRangeMain(0, 200, 50, type: RangeMainType::Single, width: RangeMainWidth::Fill, name: 'size');
         $this->assertSame(1, substr_count($single, 'role="slider"'));
         $this->assertStringContainsString('range-width_fill', $single);
         $this->assertStringContainsString('name="size"', $single);
         $this->assertStringContainsString('left:25%', $single);
 
-        $hidden = Range::drawRange(inputs: false, disabled: true, name: 'p');
+        $hidden = Range::drawRangeMain(inputs: false, disabled: true, name: 'p');
         $this->assertStringNotContainsString('range__inputs', $hidden);
         $this->assertStringContainsString('<input type="hidden" name="p_from"', $hidden);
         $this->assertStringContainsString('range_disabled', $hidden);
@@ -492,11 +492,11 @@ class UiFigmaComponentsTest extends Unit
 
     public function testScrollbar(): void
     {
-        $html = Scrollbar::drawScrollbar(
+        $html = Scrollbar::drawScrollbarMain(
             '<p>Текст</p>',
-            ScrollbarStyle::Overlay,
-            ScrollbarDirection::Horizontal,
-            ScrollbarSize::Large,
+            ScrollbarMainStyle::Overlay,
+            ScrollbarMainDirection::Horizontal,
+            ScrollbarMainSize::Large,
             arrows: true,
             height: '120px',
             label: 'Список',
@@ -509,14 +509,14 @@ class UiFigmaComponentsTest extends Unit
         $this->assertSame(2, substr_count($html, 'data-scrollbar-step'));
         $this->assertStringContainsString('<p>Текст</p>', $html);
 
-        $plain = Scrollbar::drawScrollbar('x');
+        $plain = Scrollbar::drawScrollbarMain('x');
         $this->assertStringNotContainsString('data-scrollbar-step', $plain);
         $this->assertStringContainsString('scrollbar_vertical', $plain);
     }
 
     public function testCodeInput(): void
     {
-        $html = CodeInput::drawCodeInput(name: 'otp', length: 5, value: '12-3');
+        $html = CodeInput::drawInputCode(name: 'otp', length: 5, value: '12-3');
 
         $this->assertSame(5, substr_count($html, 'class="code-input__digit"'));
         $this->assertStringContainsString('name="otp" value="123"', $html);
@@ -525,10 +525,10 @@ class UiFigmaComponentsTest extends Unit
         $this->assertMatchesRegularExpression('/<p class="code-input__message"[^>]* hidden>/', $html);
 
         // длина ограничена 4–6 цифрами
-        $this->assertSame(6, substr_count(CodeInput::drawCodeInput(length: 12), 'class="code-input__digit"'));
-        $this->assertSame(4, substr_count(CodeInput::drawCodeInput(length: 1), 'class="code-input__digit"'));
+        $this->assertSame(6, substr_count(CodeInput::drawInputCode(length: 12), 'class="code-input__digit"'));
+        $this->assertSame(4, substr_count(CodeInput::drawInputCode(length: 1), 'class="code-input__digit"'));
 
-        $error = CodeInput::drawCodeInput(state: CodeInputState::Error, message: 'Неверный <код>');
+        $error = CodeInput::drawInputCode(state: InputCodeState::Error, message: 'Неверный <код>');
         $this->assertStringContainsString('code-input_state_error', $error);
         $this->assertStringContainsString('aria-invalid="true"', $error);
         $this->assertStringContainsString('Неверный &lt;код&gt;', $error);
@@ -537,11 +537,11 @@ class UiFigmaComponentsTest extends Unit
 
     public function testSplitSetsAreSeparateComponents(): void
     {
-        $this->assertStringContainsString('btn-state_success', Button::drawButton(text: 'Готово', state: ButtonState::Success));
-        $disabled = Button::drawButton(text: 'Нельзя', disabled: true);
+        $this->assertStringContainsString('btn-state_success', Button::drawButtonMain(text: 'Готово', state: ButtonMainState::Success));
+        $disabled = Button::drawButtonMain(text: 'Нельзя', disabled: true);
         $this->assertStringContainsString(' disabled', $disabled);
         $this->assertStringNotContainsString('btn-state_', $disabled);
-        $this->assertStringNotContainsString('btn-state_', Button::drawButton(text: 'Основная'));
+        $this->assertStringNotContainsString('btn-state_', Button::drawButtonMain(text: 'Основная'));
 
         $this->assertStringContainsString(' disabled', TabDisabled::drawTabDisabled('Раздел'));
         $this->assertStringContainsString('value="1"', StepperQuantity::drawStepperQuantity(value: 0, stock: 3));
@@ -559,9 +559,9 @@ class UiFigmaComponentsTest extends Unit
 
     public function testPartsRenderWithParentClasses(): void
     {
-        $this->assertStringContainsString('phone-flag_kz', InputFlag::drawInputFlag(PhoneCountry::Kz));
-        $this->assertStringContainsString('+7', InputCountryItem::drawInputCountryItem(PhoneCountry::Ru, true));
-        $this->assertStringContainsString('phone-input__panel', InputCountry::drawInputCountry(PhoneCountry::Ru, open: true));
+        $this->assertStringContainsString('phone-flag_kz', InputFlag::drawInputFlag(InputPhoneCountry::Kz));
+        $this->assertStringContainsString('+7', InputCountryItem::drawInputCountryItem(InputPhoneCountry::Ru, true));
+        $this->assertStringContainsString('phone-input__panel', InputCountry::drawInputCountry(InputPhoneCountry::Ru, open: true));
         $this->assertStringNotContainsString('phone-input__panel', InputCountry::drawInputCountry());
         $this->assertStringContainsString('selector-item_active', SelectorItem::drawSelectorItem('Месяц', active: true));
         $this->assertStringContainsString('aria-valuenow="30"', RangeDot::drawRangeDot(30));
@@ -569,7 +569,7 @@ class UiFigmaComponentsTest extends Unit
         $this->assertStringContainsString('aria-current="date"', CalendarDay::drawCalendarDay(3, CalendarDayState::Today));
         $this->assertStringContainsString('calendar__item_current', CalendarItem::drawCalendarItem('Март', current: true));
         $this->assertStringContainsString('chevron-s-left', ScrollbarArrow::drawScrollbarArrow(ScrollbarArrowStyle::Left));
-        $item = TreeItem::drawTreeItem('Категория', '5', 1, TreeItemExpand::Collapsed, TreeItemState::Partial);
+        $item = TreeItem::drawSwitchTreeItem('Категория', '5', 1, SwitchTreeItemExpand::Collapsed, SwitchTreeItemState::Partial);
         $this->assertStringContainsString('data-indeterminate', $item);
         $this->assertStringContainsString('tree-item__count', $item);
     }

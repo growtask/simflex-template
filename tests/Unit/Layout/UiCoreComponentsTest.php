@@ -4,16 +4,16 @@ namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
 use Simflex\Core\System\Container;
-use Simflex\Core\Layout\Components\UI\Link\LinkContact\ContactSize;
-use Simflex\Core\Layout\Components\UI\Link\LinkContact\ContactStyle;
-use Simflex\Core\Layout\Components\UI\Link\LinkContact\ContactType;
+use Simflex\Core\Layout\Components\UI\Link\LinkContact\LinkContactSize;
+use Simflex\Core\Layout\Components\UI\Link\LinkContact\LinkContactStyle;
+use Simflex\Core\Layout\Components\UI\Link\LinkContact\LinkContactType;
 use Simflex\Core\Layout\Components\UI\Link\LinkContact\Layout as Contact;
 use Simflex\Core\Layout\Components\UI\Link\LinkMain\Layout as Link;
-use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkSize;
-use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkStyle;
+use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkMainSize;
+use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkMainStyle;
 use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\Layout as Social;
-use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\SocialNetwork;
-use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\SocialStyle;
+use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\ButtonSocialSmallNetwork;
+use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\ButtonSocialSmallStyle;
 use Simflex\Core\Layout\Components\UI\Other\StepIndicator\Layout as StepIndicator;
 use Simflex\Core\Layout\Components\UI\Other\StepIndicator\StepIndicatorSize;
 use Simflex\Core\Layout\Components\UI\Textarea\Layout as Textarea;
@@ -85,12 +85,12 @@ class UiCoreComponentsTest extends Unit
 
     public function testLinkExternalAndEscaping(): void
     {
-        $html = Link::drawLink(
+        $html = Link::drawLinkMain(
             text: '<b>Подробнее</b>',
             href: '/a?x=1&y=2',
             external: true,
-            style: LinkStyle::Underline,
-            size: LinkSize::ExtraLarge
+            style: LinkMainStyle::Underline,
+            size: LinkMainSize::ExtraLarge
         );
 
         $this->assertStringContainsString('link-underline', $html);
@@ -104,7 +104,7 @@ class UiCoreComponentsTest extends Unit
 
     public function testLinkInternalHasNoTarget(): void
     {
-        $html = Link::drawLink(text: 'Каталог', href: '/catalog/', iconRight: 'chevron-s-right');
+        $html = Link::drawLinkMain(text: 'Каталог', href: '/catalog/', iconRight: 'chevron-s-right');
 
         $this->assertStringNotContainsString('target=', $html);
         $this->assertStringContainsString('link__icon-right', $html);
@@ -113,15 +113,15 @@ class UiCoreComponentsTest extends Unit
 
     public function testContactBuildsTelAndMailto(): void
     {
-        $phone = Contact::drawContact(text: '+7 (999) 123-45-67', value: '+7 (999) 123-45-67');
+        $phone = Contact::drawLinkContact(text: '+7 (999) 123-45-67', value: '+7 (999) 123-45-67');
         $this->assertStringContainsString('href="tel:+79991234567"', $phone);
         $this->assertStringContainsString('+7 (999) 123-45-67</span>', $phone);
 
-        $mail = Contact::drawContact(
+        $mail = Contact::drawLinkContact(
             value: 'info@example.com',
-            type: ContactType::Email,
-            style: ContactStyle::Filled,
-            size: ContactSize::Large
+            type: LinkContactType::Email,
+            style: LinkContactStyle::Filled,
+            size: LinkContactSize::Large
         );
         $this->assertStringContainsString('href="mailto:info@example.com"', $mail);
         $this->assertStringContainsString('contact-filled', $mail);
@@ -131,7 +131,7 @@ class UiCoreComponentsTest extends Unit
 
     public function testSocialLabelIconsAndRel(): void
     {
-        $html = Social::drawSocial(SocialNetwork::Vkontakte, 'https://vk.com/x');
+        $html = Social::drawButtonSocialSmall(ButtonSocialSmallNetwork::Vkontakte, 'https://vk.com/x');
 
         $this->assertStringContainsString('aria-label="VK"', $html);
         $this->assertStringContainsString('social-network_vkontakte', $html);
@@ -139,7 +139,7 @@ class UiCoreComponentsTest extends Unit
         $this->assertStringContainsString('#icon-social-monochrome-vkontakte', $html);
         $this->assertStringContainsString('rel="noopener"', $html);
 
-        $brand = Social::drawSocial(SocialNetwork::YandexZen, '/z', label: 'Наш Дзен', style: SocialStyle::Brand);
+        $brand = Social::drawButtonSocialSmall(ButtonSocialSmallNetwork::YandexZen, '/z', label: 'Наш Дзен', style: ButtonSocialSmallStyle::Brand);
         $this->assertStringContainsString('aria-label="Наш Дзен"', $brand);
         $this->assertStringContainsString('social-network_yandex-zen', $brand);
         $this->assertStringNotContainsString('#icon-social-yandex-zen"', $brand);

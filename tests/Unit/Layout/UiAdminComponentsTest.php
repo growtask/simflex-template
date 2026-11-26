@@ -6,38 +6,38 @@ use Codeception\Test\Unit;
 use Simflex\Core\Layout\Components\Common\Breadcrumbs\Layout as Breadcrumbs;
 use Simflex\Core\Layout\Components\Common\Pagination\Layout as Pagination;
 use Simflex\Core\Layout\Components\Common\Pagination\PaginationType;
-use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderAvatar\AvatarStyle;
+use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderAvatar\PlaceholderAvatarStyle;
 use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderAvatar\Layout as Placeholder;
-use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconStyle;
-use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconTheme;
+use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconSmallStyle;
+use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconSmallTheme;
 use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\Layout as ButtonIcon;
 use Simflex\Core\Layout\Components\UI\Dropdown\DropdownMain\Layout as Dropdown;
 use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
 use Simflex\Core\Layout\Components\UI\Badge\BadgeStyle;
 use Simflex\Core\Layout\Components\UI\Badge\Layout as Badge;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonStyle;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainStyle;
 use Simflex\Core\Layout\Components\UI\Button\ButtonMain\Layout as Button;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonState;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainState;
 use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\Layout as Notice;
 use Simflex\Core\Layout\Components\UI\Tag\Layout as Tag;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchToggle\Layout as Toggle;
 use Simflex\Core\Layout\Components\UI\Loader\LoaderMain\Layout as LoaderIcon;
-use Simflex\Core\Layout\Components\UI\Loader\LoaderMain\LoaderSize;
+use Simflex\Core\Layout\Components\UI\Loader\LoaderMain\LoaderMainSize;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchSortButton\Layout as SortButton;
-use Simflex\Core\Layout\Components\UI\Switch\SwitchSortButton\SortButtonStyle;
-use Simflex\Core\Layout\Components\UI\Switch\SwitchSort\SortDirection;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchSortButton\SwitchSortButtonStyle;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchSort\SwitchSortDirection;
 use Simflex\Core\Layout\Components\UI\Stepper\StepperMain\Layout as Stepper;
 use Simflex\Core\Layout\Components\UI\Input\InputMain\Layout as TextInput;
-use Simflex\Core\Layout\Components\UI\Input\InputMain\TextInputKind;
-use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\NoticeStyle;
-use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\NoticeTheme;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\InputMainKind;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\FeedbackNoticeStyle;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\FeedbackNoticeTheme;
 use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\Layout as Toast;
-use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\ToastStyle;
-use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\ToastWidth;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\FeedbackToastStyle;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\FeedbackToastWidth;
 use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\Layout as Tooltip;
-use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipPosition;
-use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipStyle;
-use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipTheme;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipMainPosition;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipMainStyle;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipMainTheme;
 use Simflex\Core\System\Container;
 use Simflex\Core\Layout\Components\UI\Tooltip\TooltipInfo\Layout as TooltipInfo;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchSort\Layout as Sort;
@@ -64,11 +64,11 @@ class UiAdminComponentsTest extends Unit
 
     public function testButtonIconHasAccessibleName(): void
     {
-        $html = ButtonIcon::drawButtonIcon(
+        $html = ButtonIcon::drawButtonIconSmall(
             icon: 'close',
             label: 'Закрыть "окно"',
-            style: ButtonIconStyle::Secondary,
-            theme: ButtonIconTheme::Dark,
+            style: ButtonIconSmallStyle::Secondary,
+            theme: ButtonIconSmallTheme::Dark,
         );
 
         $this->assertStringContainsString('<button type="button"', $html);
@@ -80,7 +80,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testButtonIconLinkDisabled(): void
     {
-        $html = ButtonIcon::drawButtonIcon(icon: 'copy', label: 'Копировать', link: '/copy', disabled: true);
+        $html = ButtonIcon::drawButtonIconSmall(icon: 'copy', label: 'Копировать', link: '/copy', disabled: true);
 
         $this->assertStringStartsWith('<a', trim($html));
         $this->assertStringNotContainsString('<a href=', $html);
@@ -90,12 +90,12 @@ class UiAdminComponentsTest extends Unit
 
     public function testTooltipDescribesTrigger(): void
     {
-        $html = Tooltip::drawTooltip(
+        $html = Tooltip::drawTooltipMain(
             '<button type="button">Сохранить</button>',
             'Сохранить <и выйти>',
-            position: TooltipPosition::Left,
-            style: TooltipStyle::Error,
-            theme: TooltipTheme::Dark,
+            position: TooltipMainPosition::Left,
+            style: TooltipMainStyle::Error,
+            theme: TooltipMainTheme::Dark,
         );
 
         $this->assertMatchesRegularExpression('/<button aria-describedby="(sf-tooltip-\d+)" type="button">/', $html);
@@ -109,15 +109,15 @@ class UiAdminComponentsTest extends Unit
 
     public function testTooltipIdsAreUnique(): void
     {
-        preg_match('/id="(sf-tooltip-\d+)"/', Tooltip::drawTooltip('<span></span>', 'a'), $first);
-        preg_match('/id="(sf-tooltip-\d+)"/', Tooltip::drawTooltip('<span></span>', 'b'), $second);
+        preg_match('/id="(sf-tooltip-\d+)"/', Tooltip::drawTooltipMain('<span></span>', 'a'), $first);
+        preg_match('/id="(sf-tooltip-\d+)"/', Tooltip::drawTooltipMain('<span></span>', 'b'), $second);
 
         $this->assertNotSame($first[1], $second[1]);
     }
 
     public function testTooltipInfoIsIconButton(): void
     {
-        $html = TooltipInfo::drawInfo('Пояснение');
+        $html = TooltipInfo::drawTooltipInfo('Пояснение');
 
         $this->assertStringContainsString('tooltip-info', $html);
         $this->assertStringContainsString('aria-label="Подсказка"', $html);
@@ -127,14 +127,14 @@ class UiAdminComponentsTest extends Unit
 
     public function testNoticeRoleAndIconByStyle(): void
     {
-        $error = Notice::drawNotice('Ошибка', 'Проверьте поля', NoticeStyle::Error, NoticeTheme::Dark, close: true);
+        $error = Notice::drawFeedbackNotice('Ошибка', 'Проверьте поля', FeedbackNoticeStyle::Error, FeedbackNoticeTheme::Dark, close: true);
         $this->assertStringContainsString('role="alert"', $error);
         $this->assertStringContainsString('notice notice_style_error notice-theme_dark', $error);
         $this->assertStringContainsString('#icon-notify-close', $error);
         $this->assertStringContainsString('aria-label="Закрыть"', $error);
         $this->assertStringContainsString('Проверьте поля', $error);
 
-        $info = Notice::drawNotice('Готово <b>', style: NoticeStyle::Success, icon: false);
+        $info = Notice::drawFeedbackNotice('Готово <b>', style: FeedbackNoticeStyle::Success, icon: false);
         $this->assertStringContainsString('role="status"', $info);
         $this->assertStringNotContainsString('notice__icon', $info);
         $this->assertStringNotContainsString('data-sf-notice-close', $info);
@@ -144,7 +144,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testToastTimeoutAndAction(): void
     {
-        $html = Toast::drawToast('Сохранено', ToastStyle::Error, ToastWidth::Fill, actionText: 'Повторить', timeout: 1000);
+        $html = Toast::drawFeedbackToast('Сохранено', FeedbackToastStyle::Error, FeedbackToastWidth::Fill, actionText: 'Повторить', timeout: 1000);
 
         $this->assertStringContainsString('role="alert"', $html);
         $this->assertStringContainsString('toast toast_style_error toast_width_fill', $html);
@@ -157,10 +157,10 @@ class UiAdminComponentsTest extends Unit
 
     public function testToastStackHasTemplatesOfAllStyles(): void
     {
-        $html = Toast::drawStack(Toast::drawToast('Есть', ToastStyle::Success));
+        $html = Toast::drawFeedbackToastStack(Toast::drawFeedbackToast('Есть', FeedbackToastStyle::Success));
 
         $this->assertStringContainsString('data-sf-toast-stack aria-live="polite"', $html);
-        foreach (ToastStyle::cases() as $style) {
+        foreach (FeedbackToastStyle::cases() as $style) {
             $this->assertStringContainsString('data-sf-toast-template="' . $style->value . '"', $html);
         }
         // тосты вне шаблонов — только переданный
@@ -228,24 +228,24 @@ class UiAdminComponentsTest extends Unit
         $this->assertSame('ИП', Placeholder::getInitials('иван петров сидоров'));
         $this->assertSame('A', Placeholder::getInitials(' admin '));
 
-        $initials = Placeholder::drawAvatar('Иван Петров');
+        $initials = Placeholder::drawPlaceholderAvatar('Иван Петров');
         $this->assertStringContainsString('role="img" aria-label="Иван Петров"', $initials);
         $this->assertStringContainsString('>ИП<', $initials);
 
-        $silhouette = Placeholder::drawAvatar('', style: AvatarStyle::Initials);
+        $silhouette = Placeholder::drawPlaceholderAvatar('', style: PlaceholderAvatarStyle::Initials);
         $this->assertStringContainsString('avatar_style_silhouette', $silhouette);
         $this->assertStringContainsString('#icon-user', $silhouette);
 
-        $image = Placeholder::drawAvatar('Иван', image: '/uf/a.jpg');
+        $image = Placeholder::drawPlaceholderAvatar('Иван', image: '/uf/a.jpg');
         $this->assertStringContainsString('<img class="avatar', $image);
         $this->assertStringContainsString('alt="Иван"', $image);
 
-        $this->assertStringContainsString('aria-label="Нет изображения"', Placeholder::drawNoImage());
+        $this->assertStringContainsString('aria-label="Нет изображения"', Placeholder::drawPlaceholderAvatarNoImage());
     }
 
     public function testDropdownSelect(): void
     {
-        $html = Dropdown::drawSelect('status', ['new' => 'Новый', 'work' => 'В <работе>'], 'work', search: true);
+        $html = Dropdown::drawDropdownMainSelect('status', ['new' => 'Новый', 'work' => 'В <работе>'], 'work', search: true);
 
         $this->assertStringContainsString('<input type="hidden" name="status"', $html);
         $this->assertStringContainsString('value="work"', $html);
@@ -257,7 +257,7 @@ class UiAdminComponentsTest extends Unit
         $this->assertStringContainsString('>В &lt;работе&gt;</span>', $html);
         $this->assertStringContainsString('data-sf-dropdown-search', $html);
 
-        $empty = Dropdown::drawSelect('status', ['new' => 'Новый'], placeholder: 'Статус');
+        $empty = Dropdown::drawDropdownMainSelect('status', ['new' => 'Новый'], placeholder: 'Статус');
         $this->assertStringContainsString('dropdown__value_placeholder', $empty);
         $this->assertStringContainsString('>Статус</span>', $empty);
         $this->assertStringNotContainsString('aria-selected="true"', $empty);
@@ -265,7 +265,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testDropdownMenu(): void
     {
-        $html = Dropdown::drawMenu('<button type="button">Ещё</button>', [
+        $html = Dropdown::drawDropdownMainMenu('<button type="button">Ещё</button>', [
             ['text' => 'Редактировать', 'link' => '/edit'],
             ['text' => 'Удалить', 'attributes' => ['data-action' => 'delete'], 'disabled' => true],
         ]);
@@ -283,7 +283,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testSortShowsActiveDirection(): void
     {
-        $html = Sort::drawSort('Название', '?sort=name', '?sort=-name', SortDirection::Descending);
+        $html = Sort::drawSwitchSort('Название', '?sort=name', '?sort=-name', SwitchSortDirection::Descending);
 
         $this->assertStringContainsString('>Название</span>', $html);
         $this->assertStringContainsString('href="?sort=name"', $html);
@@ -291,16 +291,16 @@ class UiAdminComponentsTest extends Unit
         $this->assertMatchesRegularExpression('/href="\?sort=-name" class="[^"]* active"[^>]*aria-pressed="true"/', $html);
         $this->assertSame(1, substr_count($html, 'aria-pressed'));
         $this->assertStringContainsString('#icon-triangle-down', $html);
-        $this->assertSame('descending', SortDirection::Descending->value);
+        $this->assertSame('descending', SwitchSortDirection::Descending->value);
 
-        $line = SortButton::drawSortButton(true, 'Вверх', style: SortButtonStyle::Line);
+        $line = SortButton::drawSwitchSortButton(true, 'Вверх', style: SwitchSortButtonStyle::Line);
         $this->assertStringContainsString('<button type="button"', $line);
         $this->assertStringContainsString('#icon-chevron-s-up', $line);
     }
 
     public function testStepperLimits(): void
     {
-        $html = Stepper::drawStepper('npp', 1, min: 1, max: 10, step: 1, label: 'Порядок');
+        $html = Stepper::drawStepperMain('npp', 1, min: 1, max: 10, step: 1, label: 'Порядок');
 
         $this->assertStringContainsString('name="npp"', $html);
         $this->assertStringContainsString('value="1"', $html);
@@ -311,7 +311,7 @@ class UiAdminComponentsTest extends Unit
         $this->assertMatchesRegularExpression('/aria-label="Уменьшить"[^>]*disabled/', $html);
         $this->assertDoesNotMatchRegularExpression('/aria-label="Увеличить"[^>]*disabled/', $html);
 
-        $error = Stepper::drawStepper('qty', 5, max: 5, error: 'Осталось 5', loading: true);
+        $error = Stepper::drawStepperMain('qty', 5, max: 5, error: 'Осталось 5', loading: true);
         $this->assertStringContainsString('aria-invalid="true"', $error);
         $this->assertMatchesRegularExpression('/aria-describedby="(sf-stepper-\d+)-error"/', $error);
         $this->assertStringContainsString('aria-busy="true"', $error);
@@ -321,7 +321,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testTextInputPasswordAndSuccess(): void
     {
-        $html = TextInput::drawInput(placeholder: 'Пароль', attributes: ['name' => 'pass'], kind: TextInputKind::Password);
+        $html = TextInput::drawInputMain(placeholder: 'Пароль', attributes: ['name' => 'pass'], kind: InputMainKind::Password);
 
         $this->assertStringContainsString('type="password"', $html);
         $this->assertStringContainsString('autocomplete="current-password"', $html);
@@ -332,10 +332,10 @@ class UiAdminComponentsTest extends Unit
         $this->assertStringContainsString('text-input__slot', $html);
         $this->assertStringNotContainsString('text-input__reset', $html);
 
-        $success = TextInput::drawInput(placeholder: 'Логин', value: 'admin', success: true);
+        $success = TextInput::drawInputMain(placeholder: 'Логин', value: 'admin', success: true);
         $this->assertStringContainsString('text-input_success', $success);
         $this->assertStringContainsString('aria-label="Очистить"', $success);
-        $this->assertStringNotContainsString('text-input_success', TextInput::drawInput(success: true, error: 'Ошибка'));
+        $this->assertStringNotContainsString('text-input_success', TextInput::drawInputMain(success: true, error: 'Ошибка'));
     }
 
     public function testTagRemovableHasSeparateButton(): void
@@ -353,7 +353,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testToggleLabelAndDisabled(): void
     {
-        $html = Toggle::drawToggle(text: 'Активность', attributes: ['disabled' => 'disabled', 'name' => 'active']);
+        $html = Toggle::drawSwitchToggle(text: 'Активность', attributes: ['disabled' => 'disabled', 'name' => 'active']);
 
         // подпись внутри label: имя переключателя
         $this->assertMatchesRegularExpression('#^<label class="toggle[^"]*toggle_disabled">.*Активность</span>\s*</label>$#s', trim($html));
@@ -366,13 +366,13 @@ class UiAdminComponentsTest extends Unit
     {
         $this->assertStringContainsString('role="alertdialog"', Modal::drawModal('confirm', 'Удалить?', alert: true));
         $this->assertStringContainsString('role="dialog"', Modal::drawModal('info', 'Информация'));
-        $this->assertStringContainsString('btn-state_success', Button::drawButton(text: 'Готово', state: ButtonState::Success));
-        $this->assertStringContainsString('btn-state_error', Button::drawButton(text: 'Ошибка', state: ButtonState::Error));
+        $this->assertStringContainsString('btn-state_success', Button::drawButtonMain(text: 'Готово', state: ButtonMainState::Success));
+        $this->assertStringContainsString('btn-state_error', Button::drawButtonMain(text: 'Ошибка', state: ButtonMainState::Error));
     }
 
     public function testLoader(): void
     {
-        $html = LoaderIcon::drawLoader(LoaderSize::Large, label: 'Сохранение');
+        $html = LoaderIcon::drawLoaderMain(LoaderMainSize::Large, label: 'Сохранение');
         $this->assertStringContainsString('class="loader loader_size_l loader_style_primary loader-theme_light"', $html);
         $this->assertStringContainsString('role="status" aria-label="Сохранение"', $html);
         $this->assertStringContainsString('<svg class="loader-icon', $html);

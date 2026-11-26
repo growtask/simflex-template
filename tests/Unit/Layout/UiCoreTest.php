@@ -7,11 +7,11 @@ use Simflex\Core\System\Container;
 use Simflex\Core\Layout\Components\UI\Badge\BadgeSize;
 use Simflex\Core\Layout\Components\UI\Badge\BadgeStyle;
 use Simflex\Core\Layout\Components\UI\Badge\Layout as Badge;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonIconPos;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonSize;
-use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonStyle;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainIconPos;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainSize;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainStyle;
 use Simflex\Core\Layout\Components\UI\Button\ButtonMain\Layout as Button;
-use Simflex\Core\Layout\Components\UI\Switch\SwitchCheckbox\CheckboxSize;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchCheckbox\SwitchCheckboxSize;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchCheckbox\Layout as Checkbox;
 use Simflex\Core\Layout\Components\UI\Dropdown\DropdownTab\DropdownTabStyle;
 use Simflex\Core\Layout\Components\UI\Dropdown\DropdownTab\Layout as DropdownTab;
@@ -22,11 +22,11 @@ use Simflex\Core\Layout\Components\UI\Marker\MarkerTheme;
 use Simflex\Core\Layout\Components\UI\Other\Separator\Layout as Separator;
 use Simflex\Core\Layout\Components\UI\Other\Separator\SeparatorOrientation;
 use Simflex\Core\Layout\Components\UI\Tab\TabMain\Layout as Tab;
-use Simflex\Core\Layout\Components\UI\Tab\TabMain\TabSize;
-use Simflex\Core\Layout\Components\UI\Tab\TabMain\TabStyle;
+use Simflex\Core\Layout\Components\UI\Tab\TabMain\TabMainSize;
+use Simflex\Core\Layout\Components\UI\Tab\TabMain\TabMainStyle;
 use Simflex\Core\Layout\Components\UI\Input\InputMain\Layout as TextInput;
-use Simflex\Core\Layout\Components\UI\Input\InputMain\TextInputKind;
-use Simflex\Core\Layout\Components\UI\Input\InputMain\TextInputLabelPos;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\InputMainKind;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\InputMainLabelPos;
 
 /**
  * Базовые UI-элементы ядра (UI): классы, атрибуты, aria, экранирование, варианты enum
@@ -49,7 +49,7 @@ class UiCoreTest extends Unit
 
     public function testButtonIsButtonByDefault(): void
     {
-        $html = Button::drawButton(text: 'Отправить');
+        $html = Button::drawButtonMain(text: 'Отправить');
 
         $this->assertStringContainsString('<button', $html);
         $this->assertStringContainsString('type="button"', $html);
@@ -60,7 +60,7 @@ class UiCoreTest extends Unit
 
     public function testButtonTypeIsNotDuplicated(): void
     {
-        $html = Button::drawButton(text: 'Ok', attributes: ['type' => 'submit', 'data-x' => 'a"b']);
+        $html = Button::drawButtonMain(text: 'Ok', attributes: ['type' => 'submit', 'data-x' => 'a"b']);
 
         $this->assertSame(1, substr_count($html, 'type="submit"'));
         $this->assertStringContainsString('data-x="a&quot;b"', $html);
@@ -68,11 +68,11 @@ class UiCoreTest extends Unit
 
     public function testButtonLinkWithIcons(): void
     {
-        $html = Button::drawButton(
+        $html = Button::drawButtonMain(
             text: 'Подробнее',
             link: '/more/?a=1&b=2',
-            style: ButtonStyle::Flat,
-            size: ButtonSize::Small,
+            style: ButtonMainStyle::Flat,
+            size: ButtonMainSize::Small,
             iconLeft: 'phone',
             iconRight: 'arrow-up-right',
         );
@@ -89,22 +89,22 @@ class UiCoreTest extends Unit
 
     public function testButtonOldIconParametersStillWork(): void
     {
-        $right = Button::drawButton(text: 'Далее', icon: 'arrow-right', iconPos: ButtonIconPos::Right);
+        $right = Button::drawButtonMain(text: 'Далее', icon: 'arrow-right', iconPos: ButtonMainIconPos::Right);
         $this->assertStringContainsString('btn__icon_right', $right);
         $this->assertStringNotContainsString('btn__icon_left', $right);
 
-        $only = Button::drawButton(icon: 'close', attributes: ['aria-label' => 'Закрыть']);
+        $only = Button::drawButtonMain(icon: 'close', attributes: ['aria-label' => 'Закрыть']);
         $this->assertStringContainsString('btn__icon_center', $only);
         $this->assertStringContainsString('aria-label="Закрыть"', $only);
     }
 
     public function testButtonDisabled(): void
     {
-        $button = Button::drawButton(text: 'Нельзя', disabled: true);
+        $button = Button::drawButtonMain(text: 'Нельзя', disabled: true);
         $this->assertStringContainsString(' disabled', $button);
         $this->assertStringContainsString('aria-disabled="true"', $button);
 
-        $link = Button::drawButton(text: 'Нельзя', link: '/x/', disabled: true);
+        $link = Button::drawButtonMain(text: 'Нельзя', link: '/x/', disabled: true);
         $this->assertStringNotContainsString('href=', $link);
         $this->assertStringContainsString('aria-disabled="true"', $link);
         $this->assertStringContainsString('tabindex="-1"', $link);
@@ -112,7 +112,7 @@ class UiCoreTest extends Unit
 
     public function testButtonLoad(): void
     {
-        $html = Button::drawButton(text: 'Отправка', load: true);
+        $html = Button::drawButtonMain(text: 'Отправка', load: true);
 
         $this->assertStringContainsString('aria-busy="true"', $html);
         $this->assertMatchesRegularExpression('/class="[^"]*\bloading\b/', $html);
@@ -121,28 +121,28 @@ class UiCoreTest extends Unit
 
     public function testTabLinkActiveAndFigmaStyles(): void
     {
-        $html = Tab::drawTab(text: 'Услуги', link: '/services/', style: TabStyle::Soft, size: TabSize::ExtraSmall, active: true);
+        $html = Tab::drawTabMain(text: 'Услуги', link: '/services/', style: TabMainStyle::Soft, size: TabMainSize::ExtraSmall, active: true);
 
         $this->assertStringContainsString('tab-soft tab-size_xs', $html);
         $this->assertStringContainsString('active', $html);
         $this->assertStringContainsString('aria-current="page"', $html);
-        $this->assertSame('filled', TabStyle::Filled->value);
+        $this->assertSame('filled', TabMainStyle::Filled->value);
     }
 
     public function testTabButtonRoleAndDisabled(): void
     {
-        $html = Tab::drawTab(text: 'Отзывы', attributes: ['role' => 'tab'], active: true);
+        $html = Tab::drawTabMain(text: 'Отзывы', attributes: ['role' => 'tab'], active: true);
         $this->assertStringContainsString('aria-selected="true"', $html);
         $this->assertSame(1, substr_count($html, 'type="button"'));
 
-        $disabled = Tab::drawTab(text: 'Нет', link: '/no/', disabled: true);
+        $disabled = Tab::drawTabMain(text: 'Нет', link: '/no/', disabled: true);
         $this->assertStringNotContainsString('href=', $disabled);
         $this->assertStringContainsString('aria-disabled="true"', $disabled);
     }
 
     public function testTabIconOnlyHasNoText(): void
     {
-        $html = Tab::drawTab(iconLeft: 'home', attributes: ['aria-label' => 'Главная']);
+        $html = Tab::drawTabMain(iconLeft: 'home', attributes: ['aria-label' => 'Главная']);
 
         $this->assertStringNotContainsString('tab__text', $html);
         $this->assertStringContainsString('tab__icon-left', $html);
@@ -214,10 +214,10 @@ class UiCoreTest extends Unit
 
     public function testTextInputBase(): void
     {
-        $html = TextInput::drawInput(
+        $html = TextInput::drawInputMain(
             placeholder: 'Имя',
             labelText: 'Ваше имя',
-            labelPos: TextInputLabelPos::Standard,
+            labelPos: InputMainLabelPos::Standard,
             id: 'name',
             attributes: ['name' => 'name', 'required' => ''],
         );
@@ -234,17 +234,17 @@ class UiCoreTest extends Unit
 
     public function testTextInputHiddenLabelAndAccessibleName(): void
     {
-        $html = TextInput::drawInput(placeholder: 'Поиск', labelText: 'Поиск по сайту', id: 's');
+        $html = TextInput::drawInputMain(placeholder: 'Поиск', labelText: 'Поиск по сайту', id: 's');
 
         $this->assertStringContainsString('text-input__label visually-hidden', $html);
 
-        $noLabel = TextInput::drawInput(placeholder: 'Поиск', id: 's');
+        $noLabel = TextInput::drawInputMain(placeholder: 'Поиск', id: 's');
         $this->assertStringContainsString('aria-label="Поиск"', $noLabel);
     }
 
     public function testTextInputPhone(): void
     {
-        $html = TextInput::drawInput(kind: TextInputKind::Phone, attributes: ['name' => 'phone'], id: 'ph');
+        $html = TextInput::drawInputMain(kind: InputMainKind::Phone, attributes: ['name' => 'phone'], id: 'ph');
 
         $this->assertStringContainsString('type="tel"', $html);
         $this->assertStringContainsString('inputmode="tel"', $html);
@@ -259,7 +259,7 @@ class UiCoreTest extends Unit
 
     public function testTextInputPhoneFilledCountsDigits(): void
     {
-        $html = TextInput::drawInput(kind: TextInputKind::Phone, value: '+7 (999) 123', id: 'ph');
+        $html = TextInput::drawInputMain(kind: InputMainKind::Phone, value: '+7 (999) 123', id: 'ph');
 
         $this->assertStringContainsString('>7/11<', $html);
         $this->assertStringContainsString('text-input_filled', $html);
@@ -268,7 +268,7 @@ class UiCoreTest extends Unit
 
     public function testTextInputEmail(): void
     {
-        $html = TextInput::drawInput(kind: TextInputKind::Email, id: 'em');
+        $html = TextInput::drawInputMain(kind: InputMainKind::Email, id: 'em');
 
         $this->assertStringContainsString('type="email"', $html);
         $this->assertStringContainsString('autocomplete="email"', $html);
@@ -280,7 +280,7 @@ class UiCoreTest extends Unit
 
     public function testTextInputErrorAndEscaping(): void
     {
-        $html = TextInput::drawInput(error: 'Заполните <поле>', value: 'a"b', id: 'x', counter: true, maxLength: 20);
+        $html = TextInput::drawInputMain(error: 'Заполните <поле>', value: 'a"b', id: 'x', counter: true, maxLength: 20);
 
         $this->assertStringContainsString('Заполните &lt;поле&gt;', $html);
         $this->assertStringContainsString('text-input_error', $html);
@@ -293,28 +293,28 @@ class UiCoreTest extends Unit
 
     public function testTextInputDisabledClass(): void
     {
-        $html = TextInput::drawInput(id: 'x', attributes: ['disabled' => '']);
+        $html = TextInput::drawInputMain(id: 'x', attributes: ['disabled' => '']);
 
         $this->assertStringContainsString('text-input_disabled', $html);
     }
 
     public function testCheckboxConsentPolicyLink(): void
     {
-        $html = Checkbox::drawCheckbox(policy: true, policyUrl: '/privacy/', attributes: ['name' => 'agree', 'required' => '']);
+        $html = Checkbox::drawSwitchCheckbox(policy: true, policyUrl: '/privacy/', attributes: ['name' => 'agree', 'required' => '']);
 
         $this->assertStringContainsString('type="checkbox"', $html);
         $this->assertSame(1, substr_count($html, 'type="checkbox"'));
         $this->assertStringContainsString('href="/privacy/"', $html);
         $this->assertStringContainsString('name="agree"', $html);
 
-        $this->assertStringContainsString('href="/policy"', Checkbox::drawCheckbox(policy: true));
+        $this->assertStringContainsString('href="/policy"', Checkbox::drawSwitchCheckbox(policy: true));
     }
 
     public function testCheckboxSizeStatesAndText(): void
     {
-        $html = Checkbox::drawCheckbox(
+        $html = Checkbox::drawSwitchCheckbox(
             text: 'Согласен с <a href="/p/">правилами</a>',
-            size: CheckboxSize::Large,
+            size: SwitchCheckboxSize::Large,
             error: true,
             attributes: ['disabled' => ''],
         );

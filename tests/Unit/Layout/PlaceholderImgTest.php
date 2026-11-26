@@ -3,7 +3,7 @@
 namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
-use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderImg\ImgMissing;
+use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderImg\PlaceholderImgMissing;
 use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderImg\Layout as PlaceholderImg;
 use Simflex\Core\System\Container;
 use Simflex\Core\System\Location;
@@ -87,7 +87,7 @@ class PlaceholderImgTest extends Unit
         $custom = PlaceholderImg::drawPlaceholderImg(src: '', placeholder: self::LOGO);
         $this->assertStringContainsString('src="' . self::LOGO . '"', $custom);
 
-        $this->assertSame('', PlaceholderImg::drawPlaceholderImg(src: '/uf/no-such-file.jpg', missing: ImgMissing::Hide));
+        $this->assertSame('', PlaceholderImg::drawPlaceholderImg(src: '/uf/no-such-file.jpg', missing: PlaceholderImgMissing::Hide));
         // в теме без заглушки тоже ничего
         Container::set('config', (object)['theme' => 'no-such-theme', 'devMode' => true]);
         $this->assertSame('', PlaceholderImg::drawPlaceholderImg(src: '/uf/no-such-file.jpg'));
