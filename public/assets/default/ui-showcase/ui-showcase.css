@@ -39,7 +39,7 @@
     --docs-chip: rgba(137, 122, 204, .16);
 }
 
-.docs a { color: inherit; }
+.docs a:not(.btn) { color: inherit; }
 
 /* ---------- боковое меню ---------- */
 .docs-side {
