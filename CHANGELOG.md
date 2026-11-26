@@ -7,6 +7,18 @@
 
 ## [4.0.0] — не выпущена
 
+- Спрайт иконок `public/assets/default/icons/icons.svg`: внутри разделов (`group-action`, `group-direction`…) иконки
+  разложены по подгруппам из Figma — вложенные `<g id="group-<раздел>-<подгруппа>" data-title="…">` (`rotate`, `save`,
+  `arrow`, `chevron`, `shield`…), иконки без рамки лежат в разделе; соцсети — `social` и `social-monochrome`. Набор
+  символов и их id не менялись (1686), `<use href="…#icon-имя">` работает как раньше. Страница UI «Иконки» показывает
+  разделы и подгруппы с переключателем «Обычные / Тонкие».
+- Витрина UI-компонентов: шаблон страницы `ui` («Витрина UI», `Extensions/Content/tpl/ui.tpl`, только при
+  `DEVELOPER=1`) — страница на компонент с примером, всеми вариантами в светлой и тёмной темах, списком файлов и
+  разделом «Переопределение»; логика страницы — Alpine.js (`public/assets/default/ui-showcase/`). Чтобы
+  открыть витрину, создайте в админке страницу с шаблоном «Витрина UI» (например, адрес `/ui`); компонент
+  выбирается параметром `?component=UI/Badge`. Страница выводится без шапки, подвала и окна заявки: шаблон `ui.tpl` ставит флаг `Container::set('themeBare', true)`, а `theme/default/index.tpl` по нему пропускает их (свою тему сайта — доработайте так же). Тест `tests/Unit/Layout/LayoutShowcaseTest.php`.
+- Спрайт иконок темы `default` (`public/assets/default/icons/icons.svg`) заменён набором из дизайн-системы:
+  обычные иконки, `-slim` и соцсети.
 - Сервис `cron` в `docker-compose.yml` выполняет `php sf cron/worker` вместо shell-цикла с `sleep`
   и останавливается SIGTERM (`stop_signal`: образ php:apache по умолчанию шлёт SIGWINCH для Apache).
   Сайтам: заменить `command` сервиса `cron` и добавить `stop_signal: SIGTERM`.

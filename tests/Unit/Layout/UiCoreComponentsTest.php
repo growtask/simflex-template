@@ -4,28 +4,28 @@ namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
 use Simflex\Core\System\Container;
-use Simflex\Core\Layout\Components\UI\Core\Contact\ContactSize;
-use Simflex\Core\Layout\Components\UI\Core\Contact\ContactStyle;
-use Simflex\Core\Layout\Components\UI\Core\Contact\ContactType;
-use Simflex\Core\Layout\Components\UI\Core\Contact\Layout as Contact;
-use Simflex\Core\Layout\Components\UI\Core\Link\Layout as Link;
-use Simflex\Core\Layout\Components\UI\Core\Link\LinkSize;
-use Simflex\Core\Layout\Components\UI\Core\Link\LinkStyle;
-use Simflex\Core\Layout\Components\UI\Core\Logo\Layout as Logo;
-use Simflex\Core\Layout\Components\UI\Core\Logo\LogoType;
-use Simflex\Core\Layout\Components\UI\Core\Social\Layout as Social;
-use Simflex\Core\Layout\Components\UI\Core\Social\SocialNetwork;
-use Simflex\Core\Layout\Components\UI\Core\Social\SocialStyle;
-use Simflex\Core\Layout\Components\UI\Core\StepIndicator\Layout as StepIndicator;
-use Simflex\Core\Layout\Components\UI\Core\StepIndicator\StepIndicatorSize;
-use Simflex\Core\Layout\Components\UI\Core\Textarea\Layout as Textarea;
-use Simflex\Core\Layout\Components\UI\Core\Textarea\TextareaLabelPos;
-use Simflex\Core\Layout\Components\UI\Core\Textarea\TextareaSize;
-use Simflex\Core\Layout\Components\UI\Core\Textarea\TextareaState;
-use Simflex\Core\Layout\Components\UI\Core\Textarea\TextareaStyle;
+use Simflex\Core\Layout\Components\UI\Link\LinkContact\ContactSize;
+use Simflex\Core\Layout\Components\UI\Link\LinkContact\ContactStyle;
+use Simflex\Core\Layout\Components\UI\Link\LinkContact\ContactType;
+use Simflex\Core\Layout\Components\UI\Link\LinkContact\Layout as Contact;
+use Simflex\Core\Layout\Components\UI\Link\LinkMain\Layout as Link;
+use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkSize;
+use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkStyle;
+use Simflex\Core\Layout\Components\UI\Other\Logo\Layout as Logo;
+use Simflex\Core\Layout\Components\UI\Other\Logo\LogoType;
+use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\Layout as Social;
+use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\SocialNetwork;
+use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\SocialStyle;
+use Simflex\Core\Layout\Components\UI\Other\StepIndicator\Layout as StepIndicator;
+use Simflex\Core\Layout\Components\UI\Other\StepIndicator\StepIndicatorSize;
+use Simflex\Core\Layout\Components\UI\Textarea\Layout as Textarea;
+use Simflex\Core\Layout\Components\UI\Textarea\TextareaLabelPos;
+use Simflex\Core\Layout\Components\UI\Textarea\TextareaSize;
+use Simflex\Core\Layout\Components\UI\Textarea\TextareaState;
+use Simflex\Core\Layout\Components\UI\Textarea\TextareaStyle;
 
 /**
- * Отрисовка новых компонентов UI/Core: классы, атрибуты, экранирование, enum
+ * Отрисовка новых компонентов UI: классы, атрибуты, экранирование, enum
  */
 class UiCoreComponentsTest extends Unit
 {
@@ -167,7 +167,7 @@ class UiCoreComponentsTest extends Unit
         $madeIn = Logo::drawLogo(name: 'Студия', type: LogoType::MadeIn);
         $this->assertStringContainsString('Создано', $madeIn);
         $this->assertStringContainsString('images/brand/made-in.svg', $madeIn);
-        $madeBy = Logo::drawLogo(name: 'Движок', type: LogoType::MadeBy, theme: \Simflex\Core\Layout\Components\UI\Core\Logo\LogoTheme::Dark);
+        $madeBy = Logo::drawLogo(name: 'Движок', type: LogoType::MadeBy, theme: \Simflex\Core\Layout\Components\UI\Other\Logo\LogoTheme::Dark);
         $this->assertStringContainsString('На базе', $madeBy);
         $this->assertStringContainsString('images/brand/made-by-dark.svg', $madeBy);
 

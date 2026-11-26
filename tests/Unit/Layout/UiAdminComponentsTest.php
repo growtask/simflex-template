@@ -8,36 +8,40 @@ use Simflex\Core\Layout\Components\Common\Pagination\Layout as Pagination;
 use Simflex\Core\Layout\Components\Common\Pagination\PaginationType;
 use Simflex\Core\Layout\Components\UI\Other\Placeholder\AvatarStyle;
 use Simflex\Core\Layout\Components\UI\Other\Placeholder\Layout as Placeholder;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\ButtonIcon\ButtonIconStyle;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\ButtonIcon\ButtonIconTheme;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\ButtonIcon\Layout as ButtonIcon;
-use Simflex\Core\Layout\Components\UI\Core\Dropdown\Layout as Dropdown;
+use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconStyle;
+use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconTheme;
+use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\Layout as ButtonIcon;
+use Simflex\Core\Layout\Components\UI\Dropdown\DropdownMain\Layout as Dropdown;
 use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
-use Simflex\Core\Layout\Components\UI\Core\Badge\BadgeStyle;
-use Simflex\Core\Layout\Components\UI\Core\Badge\Layout as Badge;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonStyle;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\Layout as Button;
-use Simflex\Core\Layout\Components\UI\Core\Notice\Layout as Notice;
-use Simflex\Core\Layout\Components\UI\Core\Tag\Layout as Tag;
-use Simflex\Core\Layout\Components\UI\Core\ToggleSwitch\Layout as Toggle;
-use Simflex\Core\Layout\Components\UI\Other\LoaderIcon\Layout as LoaderIcon;
-use Simflex\Core\Layout\Components\UI\Other\LoaderIcon\LoaderSize;
-use Simflex\Core\Layout\Components\UI\Core\SortButton\Layout as SortButton;
-use Simflex\Core\Layout\Components\UI\Core\SortButton\SortButtonStyle;
-use Simflex\Core\Layout\Components\UI\Core\SortButton\SortDirection;
-use Simflex\Core\Layout\Components\UI\Core\Stepper\Layout as Stepper;
-use Simflex\Core\Layout\Components\UI\Core\TextInput\Layout as TextInput;
-use Simflex\Core\Layout\Components\UI\Core\TextInput\TextInputKind;
-use Simflex\Core\Layout\Components\UI\Core\Notice\NoticeStyle;
-use Simflex\Core\Layout\Components\UI\Core\Notice\NoticeTheme;
-use Simflex\Core\Layout\Components\UI\Core\Toast\Layout as Toast;
-use Simflex\Core\Layout\Components\UI\Core\Toast\ToastStyle;
-use Simflex\Core\Layout\Components\UI\Core\Toast\ToastWidth;
-use Simflex\Core\Layout\Components\UI\Core\Tooltip\Layout as Tooltip;
-use Simflex\Core\Layout\Components\UI\Core\Tooltip\TooltipPosition;
-use Simflex\Core\Layout\Components\UI\Core\Tooltip\TooltipStyle;
-use Simflex\Core\Layout\Components\UI\Core\Tooltip\TooltipTheme;
+use Simflex\Core\Layout\Components\UI\Badge\BadgeStyle;
+use Simflex\Core\Layout\Components\UI\Badge\Layout as Badge;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonStyle;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\Layout as Button;
+use Simflex\Core\Layout\Components\UI\Button\ButtonStates\ButtonStatesState;
+use Simflex\Core\Layout\Components\UI\Button\ButtonStates\Layout as ButtonStates;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\Layout as Notice;
+use Simflex\Core\Layout\Components\UI\Tag\Layout as Tag;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchToggle\Layout as Toggle;
+use Simflex\Core\Layout\Components\UI\Loader\LoaderMain\Layout as LoaderIcon;
+use Simflex\Core\Layout\Components\UI\Loader\LoaderMain\LoaderSize;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchSortButton\Layout as SortButton;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchSortButton\SortButtonStyle;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchSort\SortDirection;
+use Simflex\Core\Layout\Components\UI\Stepper\StepperMain\Layout as Stepper;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\Layout as TextInput;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\TextInputKind;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\NoticeStyle;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackNotice\NoticeTheme;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\Layout as Toast;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\ToastStyle;
+use Simflex\Core\Layout\Components\UI\Feedback\FeedbackToast\ToastWidth;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\Layout as Tooltip;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipPosition;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipStyle;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipTheme;
 use Simflex\Core\System\Container;
+use Simflex\Core\Layout\Components\UI\Tooltip\TooltipInfo\Layout as TooltipInfo;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchSort\Layout as Sort;
 
 /**
  * Компоненты Layout, добавленные для админки нового дизайна: ButtonIcon, Tooltip, Notice, Toast, Breadcrumbs,
@@ -114,7 +118,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testTooltipInfoIsIconButton(): void
     {
-        $html = Tooltip::drawInfo('Пояснение');
+        $html = TooltipInfo::drawInfo('Пояснение');
 
         $this->assertStringContainsString('tooltip-info', $html);
         $this->assertStringContainsString('aria-label="Подсказка"', $html);
@@ -280,7 +284,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testSortShowsActiveDirection(): void
     {
-        $html = SortButton::drawSort('Название', '?sort=name', '?sort=-name', SortDirection::Descending);
+        $html = Sort::drawSort('Название', '?sort=name', '?sort=-name', SortDirection::Descending);
 
         $this->assertStringContainsString('>Название</span>', $html);
         $this->assertStringContainsString('href="?sort=name"', $html);
@@ -363,18 +367,15 @@ class UiAdminComponentsTest extends Unit
     {
         $this->assertStringContainsString('role="alertdialog"', Modal::drawModal('confirm', 'Удалить?', alert: true));
         $this->assertStringContainsString('role="dialog"', Modal::drawModal('info', 'Информация'));
-        $this->assertStringContainsString('btn-success', Button::drawButton(text: 'Готово', style: ButtonStyle::Success));
-        $this->assertStringContainsString('btn-error', Button::drawButton(text: 'Ошибка', style: ButtonStyle::Error));
+        $this->assertStringContainsString('btn-states_success', ButtonStates::drawButtonStates(text: 'Готово', state: ButtonStatesState::Success));
+        $this->assertStringContainsString('btn-states_error', ButtonStates::drawButtonStates(text: 'Ошибка', state: ButtonStatesState::Error));
     }
 
-    public function testLoaderAndProductBadges(): void
+    public function testLoader(): void
     {
         $html = LoaderIcon::drawLoader(LoaderSize::Large, label: 'Сохранение');
         $this->assertStringContainsString('class="loader loader_size_l loader_style_primary loader-theme_light"', $html);
         $this->assertStringContainsString('role="status" aria-label="Сохранение"', $html);
         $this->assertStringContainsString('<svg class="loader-icon', $html);
-
-        $this->assertStringContainsString('badge-hit', Badge::drawBadge(text: 'Хит', style: BadgeStyle::Hit));
-        $this->assertStringContainsString('badge-3d', Badge::drawBadge(text: '3D', style: BadgeStyle::ThreeD));
     }
 }

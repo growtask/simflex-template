@@ -4,8 +4,8 @@ namespace Tests\Unit\Admin;
 
 use Codeception\Test\Unit;
 use Simflex\Core\Admin\Page;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonTheme;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\Layout as Button;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonTheme;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\Layout as Button;
 use Simflex\Core\Http\Request;
 use Simflex\Core\Layout\LayoutManager;
 use Simflex\Core\System\Container;

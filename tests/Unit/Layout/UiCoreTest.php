@@ -4,32 +4,32 @@ namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
 use Simflex\Core\System\Container;
-use Simflex\Core\Layout\Components\UI\Core\Badge\BadgeSize;
-use Simflex\Core\Layout\Components\UI\Core\Badge\BadgeStyle;
-use Simflex\Core\Layout\Components\UI\Core\Badge\Layout as Badge;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonIconPos;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonSize;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\ButtonStyle;
-use Simflex\Core\Layout\Components\UI\Core\Buttons\Button\Layout as Button;
-use Simflex\Core\Layout\Components\UI\Core\Checkbox\CheckboxSize;
-use Simflex\Core\Layout\Components\UI\Core\Checkbox\Layout as Checkbox;
-use Simflex\Core\Layout\Components\UI\Core\DropdownTab\DropdownTabStyle;
-use Simflex\Core\Layout\Components\UI\Core\DropdownTab\Layout as DropdownTab;
-use Simflex\Core\Layout\Components\UI\Core\Marker\Layout as Marker;
-use Simflex\Core\Layout\Components\UI\Core\Marker\MarkerSize;
-use Simflex\Core\Layout\Components\UI\Core\Marker\MarkerStyle;
-use Simflex\Core\Layout\Components\UI\Core\Marker\MarkerTheme;
-use Simflex\Core\Layout\Components\UI\Core\Separator\Layout as Separator;
-use Simflex\Core\Layout\Components\UI\Core\Separator\SeparatorOrientation;
-use Simflex\Core\Layout\Components\UI\Core\Tab\Layout as Tab;
-use Simflex\Core\Layout\Components\UI\Core\Tab\TabSize;
-use Simflex\Core\Layout\Components\UI\Core\Tab\TabStyle;
-use Simflex\Core\Layout\Components\UI\Core\TextInput\Layout as TextInput;
-use Simflex\Core\Layout\Components\UI\Core\TextInput\TextInputKind;
-use Simflex\Core\Layout\Components\UI\Core\TextInput\TextInputLabelPos;
+use Simflex\Core\Layout\Components\UI\Badge\BadgeSize;
+use Simflex\Core\Layout\Components\UI\Badge\BadgeStyle;
+use Simflex\Core\Layout\Components\UI\Badge\Layout as Badge;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonIconPos;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonSize;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonStyle;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\Layout as Button;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchCheckbox\CheckboxSize;
+use Simflex\Core\Layout\Components\UI\Switch\SwitchCheckbox\Layout as Checkbox;
+use Simflex\Core\Layout\Components\UI\Dropdown\DropdownTab\DropdownTabStyle;
+use Simflex\Core\Layout\Components\UI\Dropdown\DropdownTab\Layout as DropdownTab;
+use Simflex\Core\Layout\Components\UI\Marker\Layout as Marker;
+use Simflex\Core\Layout\Components\UI\Marker\MarkerSize;
+use Simflex\Core\Layout\Components\UI\Marker\MarkerStyle;
+use Simflex\Core\Layout\Components\UI\Marker\MarkerTheme;
+use Simflex\Core\Layout\Components\UI\Other\Separator\Layout as Separator;
+use Simflex\Core\Layout\Components\UI\Other\Separator\SeparatorOrientation;
+use Simflex\Core\Layout\Components\UI\Tab\TabMain\Layout as Tab;
+use Simflex\Core\Layout\Components\UI\Tab\TabMain\TabSize;
+use Simflex\Core\Layout\Components\UI\Tab\TabMain\TabStyle;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\Layout as TextInput;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\TextInputKind;
+use Simflex\Core\Layout\Components\UI\Input\InputMain\TextInputLabelPos;
 
 /**
- * Базовые UI-элементы ядра (UI/Core): классы, атрибуты, aria, экранирование, варианты enum
+ * Базовые UI-элементы ядра (UI): классы, атрибуты, aria, экранирование, варианты enum
  */
 class UiCoreTest extends Unit
 {

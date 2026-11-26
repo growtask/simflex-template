@@ -15,6 +15,8 @@ use Simflex\Core\Extensions\Content\ContentTemplate;
 use Simflex\Core\Extensions\Content\ContentTemplateBlock;
 
 return [
+    // Витрина UI-компонентов (только в режиме разработки): страница на компонент, demo.tpl компонентов
+    'ui' => new ContentTemplate(name: 'Витрина UI', file: 'ui.tpl'),
     'index' => new ContentTemplate(
         name: 'Главная',
         file: 'index.tpl',

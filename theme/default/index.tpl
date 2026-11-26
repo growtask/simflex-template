@@ -7,31 +7,38 @@ use Simflex\Core\Layout\Components\Common\Header\Layout as Header;
 use Simflex\Core\Layout\Components\Common\HeaderBanner\Layout as HeaderBanner;
 use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
 use Simflex\Core\Layout\Components\Common\Modal\ModalSize;
+use Simflex\Core\System\Container;
 use Simflex\Core\System\Settings;
 
 $socials = ['telegram' => Settings::get('tg'), 'vkontakte' => Settings::get('vk'), 'whatsapp' => Settings::get('whats_app')];
 
+// Страница без шапки и подвала сайта (например, витрина UI) отмечает себя флагом themeBare
+$bare = Container::isSet('themeBare');
+$headerHtml = $footerHtml = $modalHtml = '';
+
 // Компоненты рисуются до вывода <head>: стили и скрипты компонентов собираются в $page->getMeta()
-$headerHtml = Header::drawHeader(
-    banner: HeaderBanner::drawHeaderBanner(
-        text: (string)Settings::get('header_banner_text'),
-        buttonText: (string)Settings::get('header_banner_button'),
-        buttonLink: (string)Settings::get('header_banner_link'),
-    ),
-    items: Header::getMenuItems(),
-    logoName: (string)Settings::get('site_name'),
-    phone: (string)Settings::get('phone'),
-    email: (string)Settings::get('email'),
-    socials: $socials,
-);
-$footerHtml = Footer::drawFooter();
-$modalHtml = Modal::drawModal(
-    id: 'callback',
-    title: 'Связаться с нами',
-    text: 'Оставьте заявку, и мы свяжемся с вами в ближайшее время.',
-    content: Callback::drawCallback(layout: CallbackLayout::Stack),
-    size: ModalSize::Small,
-);
+if (!$bare) {
+    $headerHtml = Header::drawHeader(
+        banner: HeaderBanner::drawHeaderBanner(
+            text: (string)Settings::get('header_banner_text'),
+            buttonText: (string)Settings::get('header_banner_button'),
+            buttonLink: (string)Settings::get('header_banner_link'),
+        ),
+        items: Header::getMenuItems(),
+        logoName: (string)Settings::get('site_name'),
+        phone: (string)Settings::get('phone'),
+        email: (string)Settings::get('email'),
+        socials: $socials,
+    );
+    $footerHtml = Footer::drawFooter();
+    $modalHtml = Modal::drawModal(
+        id: 'callback',
+        title: 'Связаться с нами',
+        text: 'Оставьте заявку, и мы свяжемся с вами в ближайшее время.',
+        content: Callback::drawCallback(layout: CallbackLayout::Stack),
+        size: ModalSize::Small,
+    );
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
