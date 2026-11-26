@@ -41,10 +41,10 @@ class PartsBrandTest extends Unit
         $this->assertStringContainsString('href="/"', $html);
         $this->assertStringContainsString('images/brand/logo.svg', $html);
         $this->assertStringContainsString('alt="Simflex"', $html);
-        $dark = BrandLogo::drawBrandLogo(theme: LogoTheme::Dark, href: '/about', src: '/x.svg');
+        $dark = BrandLogo::drawBrandLogo(theme: LogoTheme::Dark, href: '/about', src: '/assets/default/images/brand/made-in.svg');
         $this->assertStringContainsString('brand-logo-theme_dark', $dark);
         $this->assertStringContainsString('href="/about"', $dark);
-        $this->assertStringContainsString('src="/x.svg"', $dark);
+        $this->assertStringContainsString('src="/assets/default/images/brand/made-in.svg"', $dark);
     }
 
     public function testBrandLogoAnimHasHomeTextAndCaption(): void

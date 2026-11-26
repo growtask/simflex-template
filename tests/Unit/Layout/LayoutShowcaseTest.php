@@ -76,7 +76,9 @@ class LayoutShowcaseTest extends Unit
         $keys = array_keys($components);
         $figmaKeys = array_keys(LayoutShowcase::getAllFigmaDocs());
         $this->assertSame(array_values(array_intersect($figmaKeys, $keys)), array_slice($keys, 0, count($figmaKeys)));
-        $this->assertSame('UI/Other/BadgeStock', $keys[count($figmaKeys)]);
+        // без набора Figma: PlaceholderImg (не из Figma) и UI/Other
+        $this->assertSame('Parts/Placeholder/PlaceholderImg', $keys[count($figmaKeys)]);
+        $this->assertContains('UI/Other/BadgeStock', $keys);
         $this->assertSame('Other', $components['UI/Other/BadgeStock']['group']);
         // раздел фильтрует список
         $this->assertSame(
@@ -94,6 +96,7 @@ class LayoutShowcaseTest extends Unit
                 'Parts/States', 'Parts/System/SystemCookie', 'Parts/System/SystemConsent', 'Parts/System/SystemAgeGate',
                 'Parts/System/SystemBrowserSupport', 'Parts/System/SystemPreloader', 'Parts/System/SystemMaintenance',
                 'Parts/Brand/BrandLogoAnim', 'Parts/Brand/BrandLogo', 'Parts/Brand/BrandMadeIn', 'Parts/Brand/BrandMadeBy',
+                'Parts/Payment/PaymentLogo', 'Parts/Payment/PaymentList', 'Parts/Delivery/DeliveryLogo', 'Parts/Delivery/DeliveryList', 'Parts/Placeholder/PlaceholderImg',
             ],
             array_keys(LayoutShowcase::getComponents('Parts'))
         );

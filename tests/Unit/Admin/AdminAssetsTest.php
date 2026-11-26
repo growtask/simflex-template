@@ -125,16 +125,16 @@ class AdminAssetsTest extends Unit
             // лого сайта: светлое и тёмное из статики темы сайта
             Container::getConfig()->adminLogo = [
                 'name' => 'Growtask Hosting',
-                'src' => 'images/brand/admin-logo.svg',
-                'srcDark' => 'images/brand/admin-logo-dark.svg',
+                'src' => 'images/brand/logo.svg',
+                'srcDark' => 'images/brand/logo-dark.svg',
             ];
             $html = Page::get()->drawLogo('auth__logo', '/');
             $this->assertStringContainsString('aria-label="Growtask Hosting"', $html);
-            $this->assertStringContainsString('src="/assets/default/images/brand/admin-logo.svg', $html);
+            $this->assertStringContainsString('src="/assets/default/images/brand/logo.svg', $html);
 
             Container::set('request', Request::create('/admin', cookies: [Page::THEME_COOKIE => 'dark']));
             $html = Page::get()->drawLogo('auth__logo', '/');
-            $this->assertStringContainsString('src="/assets/default/images/brand/admin-logo-dark.svg', $html);
+            $this->assertStringContainsString('src="/assets/default/images/brand/logo-dark.svg', $html);
         } finally {
             Container::set('request', $requestBackup);
         }

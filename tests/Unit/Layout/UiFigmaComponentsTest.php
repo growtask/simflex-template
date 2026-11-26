@@ -297,7 +297,7 @@ class UiFigmaComponentsTest extends Unit
         $html = TabImage::drawTabImage(
             text: 'Диваны',
             description: '124 товара',
-            image: '/uf/sofa.jpg',
+            image: '/assets/default/images/brand/logo.svg',
             imageAlt: 'Диван',
             size: TabImageSize::ExtraLarge,
             style: TabImageStyle::Secondary,
@@ -305,7 +305,11 @@ class UiFigmaComponentsTest extends Unit
 
         $this->assertStringContainsString('tab-image-size_xl', $html);
         $this->assertStringContainsString('tab-image-style_secondary', $html);
-        $this->assertStringContainsString('<img src="/uf/sofa.jpg" alt="Диван"', $html);
+        $this->assertStringContainsString('src="/assets/default/images/brand/logo.svg"', $html);
+        $this->assertStringContainsString('alt="Диван"', $html);
+        // нет файла - заглушка темы
+        $missing = TabImage::drawTabImage(text: 'Диваны', image: '/uf/no-such-file.jpg', imageAlt: 'Диван');
+        $this->assertStringContainsString('placeholder-img_missing', $missing);
 
         $stub = TabImage::drawTabImage(text: 'Иконка', icon: 'home');
         $this->assertStringContainsString('tab-image__img_empty', $stub);
