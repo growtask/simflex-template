@@ -50,8 +50,8 @@ class FooterTest extends Unit
         $this->assertStringContainsString('© ООО Ромашка 2026', $html);
         $this->assertStringContainsString('data-modal="callback"', $html);
         $this->assertStringContainsString('Связаться с нами', $html);
-        $this->assertStringContainsString('logo-type_made-in', $html);
-        $this->assertStringContainsString('logo-type_made-by', $html);
+        $this->assertStringContainsString('brand-made-in', $html);
+        $this->assertStringContainsString('brand-made-by', $html);
         // Без колонок нет ни меню, ни вертикальной линии, без контактов нет блока контактов
         $this->assertStringNotContainsString('footer__menu', $html);
         $this->assertStringNotContainsString('separator-orientation_vertical', $html);

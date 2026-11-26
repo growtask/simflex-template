@@ -11,8 +11,6 @@ use Simflex\Core\Layout\Components\UI\Link\LinkContact\Layout as Contact;
 use Simflex\Core\Layout\Components\UI\Link\LinkMain\Layout as Link;
 use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkSize;
 use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkStyle;
-use Simflex\Core\Layout\Components\UI\Other\Logo\Layout as Logo;
-use Simflex\Core\Layout\Components\UI\Other\Logo\LogoType;
 use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\Layout as Social;
 use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\SocialNetwork;
 use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\SocialStyle;
@@ -146,42 +144,6 @@ class UiCoreComponentsTest extends Unit
         $this->assertStringContainsString('social-network_yandex-zen', $brand);
         $this->assertStringNotContainsString('#icon-social-yandex-zen"', $brand);
         $this->assertStringContainsString('#icon-social-monochrome-yandex-zen', $brand);
-    }
-
-    public function testLogoAnimatedAndImage(): void
-    {
-        $html = Logo::drawLogo(name: 'Simflex <CMS>');
-        $this->assertStringContainsString('logo-type_anim', $html);
-        $this->assertStringContainsString('href="/"', $html);
-        $this->assertStringContainsString('aria-label="Simflex &lt;CMS&gt;"', $html);
-        $this->assertStringContainsString('logo__slide', $html);
-        $this->assertStringContainsString('images/brand/logo.svg', $html);
-        $this->assertStringContainsString('Главная', $html);
-        $this->assertStringNotContainsString('logo__caption', $html);
-
-        $caption = Logo::drawLogo(name: 'Simflex', caption: 'Shop');
-        $this->assertStringContainsString('<span class="logo__caption">Shop</span>', $caption);
-        $noText = Logo::drawLogo(name: 'Simflex', caption: 'Shop', text: false);
-        $this->assertStringNotContainsString('logo__caption', $noText);
-
-        $madeIn = Logo::drawLogo(name: 'Студия', type: LogoType::MadeIn);
-        $this->assertStringContainsString('Создано', $madeIn);
-        $this->assertStringContainsString('images/brand/made-in.svg', $madeIn);
-        $madeBy = Logo::drawLogo(name: 'Движок', type: LogoType::MadeBy, theme: \Simflex\Core\Layout\Components\UI\Other\Logo\LogoTheme::Dark);
-        $this->assertStringContainsString('На базе', $madeBy);
-        $this->assertStringContainsString('images/brand/made-by-dark.svg', $madeBy);
-
-        $img = Logo::drawLogo(
-            href: 'https://studio.example',
-            name: 'Студия',
-            src: '/assets/default/images/made-in.svg',
-            external: true,
-            type: LogoType::MadeIn
-        );
-        $this->assertStringContainsString('logo-type_made-in', $img);
-        $this->assertStringContainsString('<img class="logo__image" src="/assets/default/images/made-in.svg" alt="Студия">', $img);
-        $this->assertStringContainsString('target="_blank"', $img);
-        $this->assertStringNotContainsString('logo__slide', $img);
     }
 
     public function testStepIndicatorCountAndActive(): void

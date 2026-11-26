@@ -77,7 +77,7 @@ class LayoutShowcaseTest extends Unit
         $figmaKeys = array_keys(LayoutShowcase::getAllFigmaDocs());
         $this->assertSame(array_values(array_intersect($figmaKeys, $keys)), array_slice($keys, 0, count($figmaKeys)));
         $this->assertSame('UI/Other/BadgeStock', $keys[count($figmaKeys)]);
-        $this->assertSame('Other', $components['UI/Other/Logo']['group']);
+        $this->assertSame('Other', $components['UI/Other/BadgeStock']['group']);
         // раздел фильтрует список
         $this->assertSame(
             array_filter($components, static fn(array $component): bool => $component['section'] === 'UI'),
@@ -93,6 +93,7 @@ class LayoutShowcaseTest extends Unit
             [
                 'Parts/States', 'Parts/System/SystemCookie', 'Parts/System/SystemConsent', 'Parts/System/SystemAgeGate',
                 'Parts/System/SystemBrowserSupport', 'Parts/System/SystemPreloader', 'Parts/System/SystemMaintenance',
+                'Parts/Brand/BrandLogoAnim', 'Parts/Brand/BrandLogo', 'Parts/Brand/BrandMadeIn', 'Parts/Brand/BrandMadeBy',
             ],
             array_keys(LayoutShowcase::getComponents('Parts'))
         );
@@ -369,7 +370,7 @@ class LayoutShowcaseTest extends Unit
         $hard = [];
         foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root)) as $file) {
             // исключения: радиусы, нарисованные в иконке Figma или вне шкалы (логотип, чекбокс размера m)
-            $exception = str_contains($file->getPathname(), 'Other' . DIRECTORY_SEPARATOR . 'Logo')
+            $exception = str_contains($file->getPathname(), 'Parts' . DIRECTORY_SEPARATOR . 'Brand')
                 || str_contains($file->getPathname(), 'Switch' . DIRECTORY_SEPARATOR . 'SwitchCheckbox');
             if ($file->getExtension() !== 'scss' || $exception) {
                 continue;

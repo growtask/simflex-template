@@ -68,8 +68,7 @@ use Simflex\Core\Layout\Components\UI\Tooltip\TooltipMain\TooltipTheme;
 use Simflex\Core\System\Container;
 use Simflex\Core\System\Location;
 use Simflex\Core\Layout\Components\UI\Tooltip\TooltipRich\Layout as TooltipRich;
-use Simflex\Core\Layout\Components\UI\Button\ButtonStates\ButtonStatesState;
-use Simflex\Core\Layout\Components\UI\Button\ButtonStates\Layout as ButtonStates;
+use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonState;
 use Simflex\Core\Layout\Components\UI\Tab\TabDisabled\Layout as TabDisabled;
 use Simflex\Core\Layout\Components\UI\Stepper\StepperQuantity\Layout as StepperQuantity;
 use Simflex\Core\Layout\Components\UI\Dropdown\DropdownInput\Layout as DropdownInput;
@@ -534,11 +533,11 @@ class UiFigmaComponentsTest extends Unit
 
     public function testSplitSetsAreSeparateComponents(): void
     {
-        $this->assertStringContainsString('btn-states_success', ButtonStates::drawButtonStates('Готово', ButtonStatesState::Success));
-        $disabled = ButtonStates::drawButtonStates('Нельзя', ButtonStatesState::Disabled);
-        $this->assertStringContainsString('btn-states_disabled', $disabled);
+        $this->assertStringContainsString('btn-state_success', Button::drawButton(text: 'Готово', state: ButtonState::Success));
+        $disabled = Button::drawButton(text: 'Нельзя', disabled: true);
         $this->assertStringContainsString(' disabled', $disabled);
-        $this->assertStringNotContainsString('btn-states_', Button::drawButton(text: 'Основная'));
+        $this->assertStringNotContainsString('btn-state_', $disabled);
+        $this->assertStringNotContainsString('btn-state_', Button::drawButton(text: 'Основная'));
 
         $this->assertStringContainsString(' disabled', TabDisabled::drawTabDisabled('Раздел'));
         $this->assertStringContainsString('value="1"', StepperQuantity::drawStepperQuantity(value: 0, stock: 3));
