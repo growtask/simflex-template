@@ -3,9 +3,9 @@
 namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
-use Simflex\Core\Layout\Components\Common\Breadcrumbs\Layout as Breadcrumbs;
-use Simflex\Core\Layout\Components\Common\Pagination\Layout as Pagination;
-use Simflex\Core\Layout\Components\Common\Pagination\PaginationType;
+use Simflex\Core\Layout\Components\Base\Nav\NavBreadcrumbs\Layout as Breadcrumbs;
+use Simflex\Core\Layout\Components\Base\Nav\NavPagination\Layout as Pagination;
+use Simflex\Core\Layout\Components\Base\Nav\NavPagination\NavPaginationType;
 use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderAvatar\PlaceholderAvatarStyle;
 use Simflex\Core\Layout\Components\Parts\Placeholder\PlaceholderAvatar\Layout as Placeholder;
 use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconSmallStyle;
@@ -170,7 +170,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testBreadcrumbsCurrentPageIsNotLink(): void
     {
-        $html = Breadcrumbs::drawBreadcrumbs([
+        $html = Breadcrumbs::drawNavBreadcrumbs([
             ['name' => 'Каталог', 'link' => '/admin/catalog'],
             ['name' => 'Товары', 'link' => '/admin/catalog/product'],
             ['name' => 'Категория', 'link' => '/admin/catalog/category'],
@@ -191,7 +191,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testBreadcrumbsShortPathHasNoMore(): void
     {
-        $html = Breadcrumbs::drawBreadcrumbs([['name' => 'Раздел', 'link' => '/a'], ['name' => 'Запись']], homeLink: '');
+        $html = Breadcrumbs::drawNavBreadcrumbs([['name' => 'Раздел', 'link' => '/a'], ['name' => 'Запись']], homeLink: '');
 
         $this->assertStringNotContainsString('breadcrumbs__home', $html);
         $this->assertStringNotContainsString('data-sf-breadcrumbs-more', $html);
@@ -209,7 +209,7 @@ class UiAdminComponentsTest extends Unit
 
     public function testPaginationMarkup(): void
     {
-        $html = Pagination::drawPagination(1, 20, '/admin/user?page={page}');
+        $html = Pagination::drawNavPagination(1, 20, '/admin/user?page={page}');
 
         $this->assertStringContainsString('aria-label="Страницы"', $html);
         $this->assertMatchesRegularExpression('#href="/admin/user\?page=1"[^>]*aria-current="page"#', $html);
@@ -218,7 +218,7 @@ class UiAdminComponentsTest extends Unit
         $this->assertStringContainsString('aria-label="Предыдущая страница" aria-disabled="true"', $html);
         $this->assertStringContainsString('data-url-pattern="/admin/user?page={page}"', $html);
 
-        $compact = Pagination::drawPagination(50, 20, '?p={page}', type: PaginationType::Compact, search: false);
+        $compact = Pagination::drawNavPagination(50, 20, '?p={page}', type: NavPaginationType::Compact, search: false);
         $this->assertStringContainsString('20 / 20', $compact);
         $this->assertStringNotContainsString('data-sf-pagination-search', $compact);
     }

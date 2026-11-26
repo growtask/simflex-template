@@ -100,6 +100,14 @@ class LayoutShowcaseTest extends Unit
             ],
             array_keys(LayoutShowcase::getComponents('Parts'))
         );
+        // раздел Base (страница Base в Figma): Seo без группы, Nav в группе
+        $this->assertSame('Base', $components['Base/Seo']['section']);
+        $this->assertSame('', $components['Base/Seo']['group']);
+        $this->assertSame('Nav', $components['Base/Nav/NavMenu']['group']);
+        $this->assertSame(
+            ['Base/Seo', 'Base/Nav/NavBreadcrumbs', 'Base/Nav/NavPagination', 'Base/Nav/NavMenu', 'Base/Nav/NavMenuList'],
+            array_keys(LayoutShowcase::getComponents('Base'))
+        );
         $this->assertSame([], LayoutShowcase::getComponents('Nope'));
     }
 
