@@ -7,6 +7,38 @@
 
 ## [4.0.0] — не выпущена
 
+- `Admin/FileManagerCest::tryToRejectForgedAndUnsafeRequests`: символическая ссылка из `uf` на соседнюю папку —
+  список, удаление и переименование через неё отвечают 400, ссылка и папка остаются.
+- Acceptance-тест `Admin/FileManagerCest::tryToMoveFilesAndFolders`: «Переместить» нескольких отмеченных через
+  окно выбора папки, ошибки API `move` (в саму себя, имя занято, корень, без токена); `tryToCheckSeveral`
+  проверяет, что галочка выбранного кликом файла не ставится сама.
+- В образе PHP (`docker/php/Dockerfile`) — ffmpeg: файловый менеджер сжимает видео при загрузке (по согласию
+  пользователя). Сайтам: добавить `RUN apt-get install -y ffmpeg --no-install-recommends` в свой Dockerfile,
+  без него видео загружается как есть.
+- Acceptance-тесты `Admin/FileManagerCest`: режим отметки (`tryToCheckSeveral`), вопрос о сжатии при загрузке
+  через окно, загрузка через API с `compress=1` и без него.
+- Acceptance-тесты открывают сайт по `http://simflex-site/` — псевдониму сервиса `app` в `docker-compose.yml`.
+  Свежий Chrome (образ `selenium/standalone-chrome:latest`) открывает хост `app` только по https: `.app` —
+  домен из списка HSTS preload, и `http://app/` давал `ERR_CONNECTION_REFUSED`. Сайтам: добавить сервису `app`
+  `networks: default: aliases: [simflex-site]` и сменить `url` в `tests/Acceptance.suite.yml`.
+- `public/uf/.htaccess`: в каталоге загруженных файлов не выполняются скрипты (`php_flag engine off`, запрет
+  `.php`, `.phtml`, `.cgi` и т. п.), `nosniff`, CSP `sandbox` — HTML или SVG, открытые напрямую, не выполняют
+  скрипты. Сайтам: скопировать файл в `public/uf/` и добавить `!/public/uf/.htaccess` в `.gitignore`.
+- Acceptance-тест `Admin/FileManagerCest::tryToWarnAboutUsage`: ссылка на файл в записи — API `usage` находит таблицу,
+  подтверждение удаления предупреждает. Тесты менеджера — под его свой интерфейс (`fm-*`, окна `<dialog>`).
+- Acceptance-тесты `Admin/FileManagerCest`: изменяющие действия API — только POST с CSRF-токеном (GET
+  и картинка в тексте ничего не меняют), корень и соседние с `uf` папки недоступны, загрузка не перезаписывает
+  файл и сжимает картинку в WebP.
+- Acceptance-тесты `Admin/FileManagerCest`: отмена выбора (Esc, крестик, подложка, повторный `open()`,
+  `close()`), фильтр `accept` (неподходящий файл не выбирается и не загружается), подтверждение поверх окна
+  менеджера и Esc только для верхнего окна.
+- Тесты визуального редактора texted (ядро, `simflex/texted`) — `Acceptance/Admin/TextEditorCest`: редактор
+  поля открывается без ошибок в консоли, текст сохраняется в базу (Ctrl+S редактора — как «Применить»),
+  HTML в обход редактора очищается сервером, картинка выбирается в файловом менеджере и сохраняется,
+  закрытое без выбора окно менеджера не блокирует редактор, картинка загружается с компьютера
+  (`/admin/text-editor-upload`, WebP в папке записи), без CSRF-токена загрузка не принимается.
+  `ExtensionsCest` проверяет редактор texted в параметрах модуля; тест кнопки «Файлы» TinyMCE из `FileManagerCest` заменён тестом выбора картинки в texted.
+
 - Сервис `cron` в `docker-compose.yml` выполняет `php sf cron/worker` вместо shell-цикла с `sleep`
   и останавливается SIGTERM (`stop_signal`: образ php:apache по умолчанию шлёт SIGWINCH для Apache).
   Сайтам: заменить `command` сервиса `cron` и добавить `stop_signal: SIGTERM`.

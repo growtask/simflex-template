@@ -13,6 +13,10 @@ services:
       - ./:/var/www/html
     ports:
       - "${APP_PORT:-480}:80"
+    networks:
+      default:
+        # имя для браузера автотестов: хост «app» Chrome открывает только по https (.app в списке HSTS preload)
+        aliases: [simflex-site]
 
   # Планировщик: ./sf cron/worker запускает ./sf cron/run в начале каждой минуты, вместо системного crontab.
   # Включается профилем cron: COMPOSE_PROFILES=cron (или dev,cron) в .env

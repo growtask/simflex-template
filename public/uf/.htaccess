@@ -1,0 +1,17 @@
+# Каталог загруженных файлов: только данные, ничего исполняемого (как uf.htaccess редактора texted).
+# Корневой public/.htaccess уже не выполняет скрипты кроме index.php; здесь - вторая линия защиты.
+
+Options -ExecCGI -Indexes
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<FilesMatch "(?i)\.(php\d?|phtml|phar|pl|py|cgi|sh|asp|aspx|jsp)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    # браузер не угадывает тип по содержимому
+    Header always set X-Content-Type-Options "nosniff"
+    # HTML или SVG, открытые напрямую, не выполняют скрипты (в <img> SVG скриптов и так не выполняет)
+    Header always set Content-Security-Policy "default-src 'none'; img-src 'self' data:; media-src 'self'; style-src 'unsafe-inline'; sandbox"
+</IfModule>

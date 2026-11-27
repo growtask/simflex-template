@@ -7,7 +7,7 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://app/
+            url: http://simflex-site/
             browser: chrome
             host: selenium
             port: 4444
