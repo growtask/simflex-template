@@ -9,7 +9,7 @@ use Simflex\Core\Http\Controller\Action;
 use Simflex\Core\Http\Request;
 
 /**
- * Приём формы «Связаться с нами» (Common/Form/Callback ядра): POST /form/callback, ответ - конверт JSON API.
+ * Приём формы «Связаться с нами» (Base/Form/FormCallback ядра): POST /form/callback, ответ - конверт JSON API.
  * Форма отправляется телом JSON (ApiController не принимает изменяющий запрос формой без CSRF-токена).
  * Заявка принята - пустой конверт, ошибки полей - 422 с error.errors. Проверка и отправка - CallbackHandler
  */

@@ -1,12 +1,12 @@
 <?php
 
 use Simflex\Core\Layout\Components\Common\Footer\Layout as Footer;
-use Simflex\Core\Layout\Components\Common\Form\Callback\CallbackLayout;
-use Simflex\Core\Layout\Components\Common\Form\Callback\Layout as Callback;
+use Simflex\Core\Layout\Components\Base\Form\FormCallback\FormCallbackLayout;
+use Simflex\Core\Layout\Components\Base\Form\FormCallback\Layout as Callback;
 use Simflex\Core\Layout\Components\Common\Header\Layout as Header;
 use Simflex\Core\Layout\Components\Common\HeaderBanner\Layout as HeaderBanner;
-use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
-use Simflex\Core\Layout\Components\Common\Modal\ModalSize;
+use Simflex\Core\Layout\Components\Base\Modal\ModalMain\Layout as Modal;
+use Simflex\Core\Layout\Components\Base\Modal\ModalMain\ModalMainSize;
 use Simflex\Core\System\Container;
 use Simflex\Core\System\Settings;
 
@@ -31,12 +31,12 @@ if (!$bare) {
         socials: $socials,
     );
     $footerHtml = Footer::drawFooter();
-    $modalHtml = Modal::drawModal(
+    $modalHtml = Modal::drawModalMain(
         id: 'callback',
         title: 'Связаться с нами',
         text: 'Оставьте заявку, и мы свяжемся с вами в ближайшее время.',
-        content: Callback::drawCallback(layout: CallbackLayout::Stack),
-        size: ModalSize::Small,
+        content: Callback::drawFormCallback(layout: FormCallbackLayout::Stack),
+        size: ModalMainSize::Small,
     );
 }
 ?>

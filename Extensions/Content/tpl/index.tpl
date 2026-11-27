@@ -3,7 +3,7 @@
 use Simflex\Core\Layout\Components\Common\Banner\Layout as Banner;
 use Simflex\Core\Layout\Components\Common\Benefit\Layout as Benefit;
 use Simflex\Core\Layout\Components\Common\Benefit\BenefitSize;
-use Simflex\Core\Layout\Components\Common\Form\Callback\Layout as Callback;
+use Simflex\Core\Layout\Components\Base\Form\FormCallback\Layout as Callback;
 
 /** @var \Simflex\Core\Extensions\Content\Models\Content $content */
 $h = static fn($v) => htmlspecialchars((string)$v);
@@ -33,7 +33,7 @@ $params = $content['params'];
                 <h3 class="r-form__title_h3"><?= $h($params['rform_title'] ?? '') ?></h3>
                 <p class="r-form__desc"><?= $h($params['rform_desc'] ?? '') ?></p>
             </div>
-            <?= Callback::drawCallback() ?>
+            <?= Callback::drawFormCallback() ?>
         </div>
         <?php if (!empty($params['rform_image'])) { ?>
             <div class="r-form__img">

@@ -4,18 +4,18 @@ namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
 use Simflex\Core\Http\Request;
-use Simflex\Core\Layout\Components\Common\Form\Callback\CallbackLayout;
-use Simflex\Core\Layout\Components\Common\Form\Callback\CallbackState;
-use Simflex\Core\Layout\Components\Common\Form\Callback\Layout as Callback;
-use Simflex\Core\Layout\Components\Common\Form\Result\Layout as Result;
-use Simflex\Core\Layout\Components\Common\Form\Result\ResultStyle;
-use Simflex\Core\Layout\Components\Common\Form\Result\ResultType;
-use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
-use Simflex\Core\Layout\Components\Common\Modal\ModalSize;
+use Simflex\Core\Layout\Components\Base\Form\FormCallback\FormCallbackLayout;
+use Simflex\Core\Layout\Components\Base\Form\FormCallback\FormCallbackState;
+use Simflex\Core\Layout\Components\Base\Form\FormCallback\Layout as Callback;
+use Simflex\Core\Layout\Components\Base\Form\FormResult\Layout as Result;
+use Simflex\Core\Layout\Components\Base\Form\FormResult\FormResultStyle;
+use Simflex\Core\Layout\Components\Base\Form\FormResult\FormResultType;
+use Simflex\Core\Layout\Components\Base\Modal\ModalMain\Layout as Modal;
+use Simflex\Core\Layout\Components\Base\Modal\ModalMain\ModalMainSize;
 use Simflex\Core\System\Container;
 
 /**
- * Отрисовка Common/Modal, Common/Form/Callback, Common/Form/Result
+ * Отрисовка Base/Modal/ModalMain, Base/Form/FormCallback, Base/Form/FormResult
  */
 class FormComponentsTest extends Unit
 {
@@ -38,7 +38,7 @@ class FormComponentsTest extends Unit
 
     public function testModalDialogAttributes(): void
     {
-        $html = Modal::drawModal(id: 'callback', title: 'Заголовок <b>', text: 'Текст', content: '<p>тело</p>', size: ModalSize::Small);
+        $html = Modal::drawModalMain(id: 'callback', title: 'Заголовок <b>', text: 'Текст', content: '<p>тело</p>', size: ModalMainSize::Small);
 
         $this->assertStringContainsString('id="callback"', $html);
         $this->assertStringContainsString('modal-size_s', $html);
@@ -54,8 +54,8 @@ class FormComponentsTest extends Unit
 
     public function testResultRolesAndTypes(): void
     {
-        $ok = Result::drawResult(title: 'Готово', style: ResultStyle::Success);
-        $fail = Result::drawResult(title: 'Ошибка', style: ResultStyle::Error, type: ResultType::Vertical, buttonText: '');
+        $ok = Result::drawFormResult(title: 'Готово', style: FormResultStyle::Success);
+        $fail = Result::drawFormResult(title: 'Ошибка', style: FormResultStyle::Error, type: FormResultType::Vertical, buttonText: '');
 
         $this->assertStringContainsString('role="status"', $ok);
         $this->assertStringContainsString('result-type_horizontal', $ok);
@@ -67,7 +67,7 @@ class FormComponentsTest extends Unit
 
     public function testCallbackFieldsConsentGuardAndTemplates(): void
     {
-        $html = Callback::drawCallback(id: 'cb', layout: CallbackLayout::Stack, values: ['name' => 'А"Б']);
+        $html = Callback::drawFormCallback(id: 'cb', layout: FormCallbackLayout::Stack, values: ['name' => 'А"Б']);
 
         $this->assertStringContainsString('callback-layout_stack', $html);
         $this->assertStringContainsString('novalidate', $html);
@@ -88,13 +88,13 @@ class FormComponentsTest extends Unit
 
     public function testCallbackCanDisableFieldsAndShowsErrors(): void
     {
-        $html = Callback::drawCallback(
+        $html = Callback::drawFormCallback(
             id: 'cb',
             email: false,
             comment: false,
             consent: false,
             guard: false,
-            state: CallbackState::Error,
+            state: FormCallbackState::Error,
             errors: ['name' => 'Заполните поле'],
         );
 
@@ -109,7 +109,7 @@ class FormComponentsTest extends Unit
 
     public function testCallbackSendingState(): void
     {
-        $html = Callback::drawCallback(id: 'cb', state: CallbackState::Sending);
+        $html = Callback::drawFormCallback(id: 'cb', state: FormCallbackState::Sending);
 
         $this->assertStringContainsString('callback-state_sending', $html);
         $this->assertStringContainsString('aria-busy="true"', $html);

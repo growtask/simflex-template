@@ -105,7 +105,10 @@ class LayoutShowcaseTest extends Unit
         $this->assertSame('', $components['Base/Seo']['group']);
         $this->assertSame('Nav', $components['Base/Nav/NavMenu']['group']);
         $this->assertSame(
-            ['Base/Seo', 'Base/Nav/NavBreadcrumbs', 'Base/Nav/NavPagination', 'Base/Nav/NavMenu', 'Base/Nav/NavMenuList'],
+            [
+                'Base/Seo', 'Base/Nav/NavBreadcrumbs', 'Base/Nav/NavPagination', 'Base/Nav/NavMenu', 'Base/Nav/NavMenuList',
+                'Base/Form/FormCallback', 'Base/Form/FormMailing', 'Base/Form/FormResult', 'Base/Modal/ModalMain',
+            ],
             array_keys(LayoutShowcase::getComponents('Base'))
         );
         $this->assertSame([], LayoutShowcase::getComponents('Nope'));

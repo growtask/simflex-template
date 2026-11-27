@@ -11,7 +11,7 @@ use Simflex\Core\Http\Request;
 use Simflex\Core\Logger\Log;
 
 /**
- * Обработчик формы «Связаться с нами» (компонент Common/Form/Callback ядра): проверка запроса на сервере,
+ * Обработчик формы «Связаться с нами» (компонент Base/Form/FormCallback ядра): проверка запроса на сервере,
  * защита от ботов (FormGuard) и отправка заявки по настроенным каналам (почта form_email, Telegram
  * form_tg_token + form_tg_chat_id). Каналы - Notifier, в тестах подменяются.
  *

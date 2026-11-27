@@ -12,7 +12,7 @@ use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconSmallStyl
 use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\ButtonIconSmallTheme;
 use Simflex\Core\Layout\Components\UI\Button\ButtonIconSmall\Layout as ButtonIcon;
 use Simflex\Core\Layout\Components\UI\Dropdown\DropdownMain\Layout as Dropdown;
-use Simflex\Core\Layout\Components\Common\Modal\Layout as Modal;
+use Simflex\Core\Layout\Components\Base\Modal\ModalMain\Layout as Modal;
 use Simflex\Core\Layout\Components\UI\Badge\BadgeStyle;
 use Simflex\Core\Layout\Components\UI\Badge\Layout as Badge;
 use Simflex\Core\Layout\Components\UI\Button\ButtonMain\ButtonMainStyle;
@@ -364,8 +364,8 @@ class UiAdminComponentsTest extends Unit
 
     public function testModalAlertDialogAndButtonStates(): void
     {
-        $this->assertStringContainsString('role="alertdialog"', Modal::drawModal('confirm', 'Удалить?', alert: true));
-        $this->assertStringContainsString('role="dialog"', Modal::drawModal('info', 'Информация'));
+        $this->assertStringContainsString('role="alertdialog"', Modal::drawModalMain('confirm', 'Удалить?', alert: true));
+        $this->assertStringContainsString('role="dialog"', Modal::drawModalMain('info', 'Информация'));
         $this->assertStringContainsString('btn-state_success', Button::drawButtonMain(text: 'Готово', state: ButtonMainState::Success));
         $this->assertStringContainsString('btn-state_error', Button::drawButtonMain(text: 'Ошибка', state: ButtonMainState::Error));
     }
