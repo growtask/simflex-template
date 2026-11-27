@@ -70,6 +70,7 @@ class FileManagerCest
             $I->waitForElementVisible('#sf-file-manager-rename [data-fm-name]', 5);
             $I->seeInField('#sf-file-manager-rename [data-fm-name]', 'upload.webp');
             $I->fillField('#sf-file-manager-rename [data-fm-name]', 'renamed.webp');
+            $I->waitForElement('#sf-file-manager-rename [data-fm-action="rename-save"]:not([disabled])', 10);
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
             $renamed = self::WINDOW . ' .fm-card[data-fm-path="' . self::FOLDER . '/renamed.webp"]';
             $I->waitForElementVisible($renamed, 5);
@@ -80,6 +81,7 @@ class FileManagerCest
             $I->click(self::WINDOW . ' [data-fm-menu="file"] [data-fm-action="rename"]');
             $I->waitForElementVisible('#sf-file-manager-rename [data-fm-name]', 5);
             $I->fillField('#sf-file-manager-rename [data-fm-name]', 'evil.php');
+            $I->waitForElement('#sf-file-manager-rename [data-fm-action="rename-save"]:not([disabled])', 10);
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
             $I->waitForText('Недопустимое имя', 5);
             $I->click('#sf-file-manager-rename [data-fm-close]');
@@ -89,6 +91,8 @@ class FileManagerCest
             $I->click(self::WINDOW . ' .fm-tools [data-fm-action="delete-folder"]');
             $I->waitForElementVisible('#sf-file-manager-confirm [data-fm-action="confirm-yes"]', 5);
             $I->see('Удалить папку?', '#sf-file-manager-confirm');
+            $I->see('Папка «codecept-fm»', '#sf-file-manager-confirm');
+            $I->waitForElement('#sf-file-manager-confirm [data-fm-action="confirm-yes"]:not([disabled])', 10);
             $I->click('#sf-file-manager-confirm [data-fm-action="confirm-yes"]');
             // крошки и список перерисовываются: ждём скриптом, без ссылок на элементы
             $I->waitForJS(
@@ -234,12 +238,18 @@ class FileManagerCest
     public function tryToConfirmAboveWindow(AcceptanceTester $I): void
     {
         // окна менеджера — свои (<dialog>): подтверждение поверх окна менеджера, Esc закрывает только верхнее
+        $dir = codecept_root_dir('public/uf/images/codecept-fm-confirm');
+        mkdir($dir, 0777, true);
+        chmod($dir, 0777);
         $I->amOnPage('/admin');
         $I->waitForJS('return typeof window.fileManager === "object"', 10);
         $I->executeJS('window.fileManager.open()');
         $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
         $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
-        $I->waitForElement(self::WINDOW . ' .fm-crumbs__item[aria-current="page"]', 5);
+        $folder = self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-fm-confirm"]';
+        $I->waitForElementVisible($folder, 10);
+        $I->click($folder);
+        $I->waitForElement(self::WINDOW . ' .fm-tools [data-fm-action="delete-folder"]:not([disabled])', 10);
         $I->click(self::WINDOW . ' .fm-tools [data-fm-action="delete-folder"]');
         $confirm = '#sf-file-manager-confirm';
         $I->waitForElementVisible($confirm . ' [data-fm-action="confirm-yes"]', 5);
@@ -249,12 +259,85 @@ class FileManagerCest
             const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
             return top.closest("#sf-file-manager-confirm") !== null;'
         ));
-        $I->pressKey($confirm . ' [data-fm-action="confirm-yes"]', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+        // «Удалить» недоступна, пока ищутся ссылки: Esc — на «Отмена»
+        $I->pressKey($confirm . ' .fm-modal__footer [data-fm-close]', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
         $I->waitForElementNotVisible($confirm, 5);
         $I->seeElement(self::WINDOW . '.is-open');
-        $I->assertDirectoryExists(codecept_root_dir('public/uf/images'));
+        $I->assertDirectoryExists($dir);
         $I->pressKey(self::WINDOW . ' [data-fm-search]', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
         $I->waitForElementNotVisible(self::WINDOW, 5);
+        rmdir($dir);
+    }
+
+    public function tryToDeleteOnlyWhatIsShown(AcceptanceTester $I): void
+    {
+        // лишнее не удаляется: системные папки (images, files, video, audio) не удаляются, не переименовываются
+        // и не перемещаются; Delete на карточке без отметки удаляет её, а не выбранную раньше; подтверждение
+        // называет, что удалится, и «Удалить» доступна только после проверки ссылок
+        $dir = codecept_root_dir('public/uf/images/codecept-fm-delete');
+        mkdir($dir, 0777, true);
+        chmod($dir, 0777);
+        foreach (['a', 'b'] as $name) {
+            copy(codecept_data_dir('upload.png'), $dir . '/' . $name . '.png');
+        }
+        $confirm = '#sf-file-manager-confirm';
+        try {
+            $I->amOnPage('/admin');
+            $I->waitForJS('return typeof window.fileManager === "object"', 10);
+
+            // API: системные папки — 403, папки на месте
+            $token = $I->executeJS('return document.querySelector(\'meta[name="csrf-token"]\').content');
+            $status = fn(string $query, array $items = []) => $I->executeAsyncJS(
+                'const done = arguments[arguments.length - 1]; const body = new FormData();
+                arguments[1].forEach((item) => body.append("items[]", item));
+                const headers = {"X-CSRF-Token": arguments[2]};
+                fetch("/admin/fm?method=" + arguments[0], {method: "POST", body, headers})
+                    .then((r) => done(r.status));',
+                [$query, $items, $token]
+            );
+            $I->assertSame(403, $status('delete&path=/images'));
+            $I->assertSame(403, $status('rename&path=/files&name=files-x'));
+            $I->assertSame(403, $status('move&path=/files', ['/images']));
+            $I->assertDirectoryExists(codecept_root_dir('public/uf/images'));
+            $I->assertDirectoryExists(codecept_root_dir('public/uf/files'));
+
+            // окно: у системной папки в меню нет «Удалить», «Удалить папку» внизу недоступна
+            $I->executeJS('window.fileManager.open()');
+            $I->waitForElementVisible(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]', 10);
+            $I->clickWithRightButton(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $I->waitForElementVisible(self::WINDOW . ' [data-fm-menu="folder"] [data-fm-action="upload-to"]', 5);
+            $I->dontSeeElement(self::WINDOW . ' [data-fm-menu="folder"] [data-fm-action="delete"]');
+            $I->dontSeeElement(self::WINDOW . ' [data-fm-menu="folder"] [data-fm-action="rename"]');
+            $I->pressKey(self::WINDOW . ' [data-fm-search]', \Facebook\WebDriver\WebDriverKeys::ESCAPE);
+            $I->click(self::WINDOW . ' .fm-tree-row[data-fm-path="/images"]');
+            $I->waitForElement(self::WINDOW . ' .fm-tools [data-fm-action="delete-folder"][disabled]', 10);
+
+            // a.png выбран, Delete нажат на b.png — удаляется только b.png, после подтверждения
+            $folder = self::WINDOW . ' .fm-card[data-fm-path="/images/codecept-fm-delete"]';
+            $I->waitForElementVisible($folder, 10);
+            $I->click($folder);
+            $card = fn(string $name) => self::WINDOW
+                . ' .fm-card[data-fm-path="/images/codecept-fm-delete/' . $name . '"]';
+            $I->waitForElementVisible($card('b.png'), 10);
+            $I->click($card('a.png'));
+            $I->executeJS('document.querySelector(arguments[0]).focus()', [$card('b.png')]);
+            $I->pressKey($card('b.png'), \Facebook\WebDriver\WebDriverKeys::DELETE);
+            $I->waitForElementVisible($confirm, 5);
+            $I->see('Файл «b.png» будет удалён сразу.', $confirm);
+            $I->waitForElement($confirm . ' [data-fm-action="confirm-yes"]:not([disabled])', 10);
+            $I->click($confirm . ' [data-fm-action="confirm-yes"]');
+            $I->waitForElementNotVisible($card('b.png'), 10);
+            $I->assertFileDoesNotExist($dir . '/b.png');
+            $I->assertFileExists($dir . '/a.png');
+            $I->executeJS('window.fileManager.close()');
+        } finally {
+            foreach (glob($dir . '/*') ?: [] as $path) {
+                unlink($path);
+            }
+            if (is_dir($dir)) {
+                rmdir($dir);
+            }
+        }
     }
 
     public function tryToGetApiEnvelope(AcceptanceTester $I): void
@@ -480,6 +563,7 @@ class FileManagerCest
             $I->waitForElementVisible($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest"]', 10);
             $I->click($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest"]');
             $I->waitForElementVisible($moveDialog . ' .fm-move__row[data-fm-move-to="' . $base . '/dest/deeper"]', 10);
+            $I->waitForElement($moveDialog . ' [data-fm-action="move-here"]:not([disabled])', 10);
             $I->click($moveDialog . ' [data-fm-action="move-here"]');
             $I->waitForElementNotVisible($moveDialog, 10);
             $I->waitForElementNotVisible($card('a.png'), 10);
