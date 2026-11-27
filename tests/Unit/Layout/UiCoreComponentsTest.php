@@ -14,8 +14,8 @@ use Simflex\Core\Layout\Components\UI\Link\LinkMain\LinkMainStyle;
 use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\Layout as Social;
 use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\ButtonSocialSmallNetwork;
 use Simflex\Core\Layout\Components\UI\Button\ButtonSocialSmall\ButtonSocialSmallStyle;
-use Simflex\Core\Layout\Components\UI\Other\StepIndicator\Layout as StepIndicator;
-use Simflex\Core\Layout\Components\UI\Other\StepIndicator\StepIndicatorSize;
+use Simflex\Core\Layout\Components\Base\Slider\SliderStep\Layout as StepIndicator;
+use Simflex\Core\Layout\Components\Base\Slider\SliderStep\SliderStepSize;
 use Simflex\Core\Layout\Components\UI\Textarea\Layout as Textarea;
 use Simflex\Core\Layout\Components\UI\Textarea\TextareaLabelPos;
 use Simflex\Core\Layout\Components\UI\Textarea\TextareaSize;
@@ -148,7 +148,7 @@ class UiCoreComponentsTest extends Unit
 
     public function testStepIndicatorCountAndActive(): void
     {
-        $html = StepIndicator::drawStepIndicator(count: 5, active: 2, label: 'Слайды', size: StepIndicatorSize::Small);
+        $html = StepIndicator::drawSliderStep(count: 5, active: 2, label: 'Слайды', size: SliderStepSize::Small);
 
         $this->assertSame(5, substr_count($html, 'class="step-indicator__item'));
         $this->assertSame(1, substr_count($html, 'step-indicator__item_active'));
@@ -157,7 +157,7 @@ class UiCoreComponentsTest extends Unit
         $this->assertStringContainsString('3 / 5', $html);
 
         // Активная полоса не выходит за пределы
-        $clamped = StepIndicator::drawStepIndicator(count: 3, active: 99);
+        $clamped = StepIndicator::drawSliderStep(count: 3, active: 99);
         $this->assertStringContainsString('data-active="2"', $clamped);
     }
 }

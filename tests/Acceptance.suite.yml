@@ -7,7 +7,9 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://app/
+            # не http://app/: имя app совпадает с доменом .app из списка HSTS preload, и Chrome открывает https://app/;
+            # site.test браузер отправляет на сервис app (--host-resolver-rules ниже)
+            url: http://site.test/
             browser: chrome
             host: selenium
             port: 4444
@@ -16,7 +18,7 @@ modules:
             window_size: 1920x1080
             capabilities:
                 goog:chromeOptions:
-                    args: ["--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage", "--disable-features=PasswordLeakDetection,PasswordManagerOnboarding"]
+                    args: ["--headless", "--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage", "--host-resolver-rules=MAP site.test app", "--disable-features=PasswordLeakDetection,PasswordManagerOnboarding"]
                     # the test accounts' password is a leaked one: Chrome's native "change your password" dialog
                     # would swallow the clicks after the login
                     prefs:

@@ -5,15 +5,15 @@ namespace Tests\Unit\Layout;
 use Codeception\Test\Unit;
 use Simflex\Core\Layout\Components\Common\Banner\BannerTheme;
 use Simflex\Core\Layout\Components\Common\Banner\Layout as Banner;
-use Simflex\Core\Layout\Components\Common\Benefit\BenefitAlign;
-use Simflex\Core\Layout\Components\Common\Benefit\BenefitLayout;
-use Simflex\Core\Layout\Components\Common\Benefit\BenefitSize;
-use Simflex\Core\Layout\Components\Common\Benefit\BenefitType;
-use Simflex\Core\Layout\Components\Common\Benefit\Layout as Benefit;
+use Simflex\Core\Layout\Components\Base\Item\ItemBenefit\ItemBenefitAlign;
+use Simflex\Core\Layout\Components\Base\Item\ItemBenefit\ItemBenefitLayout;
+use Simflex\Core\Layout\Components\Base\Item\ItemBenefit\ItemBenefitSize;
+use Simflex\Core\Layout\Components\Base\Item\ItemBenefit\ItemBenefitType;
+use Simflex\Core\Layout\Components\Base\Item\ItemBenefit\Layout as Benefit;
 use Simflex\Core\System\Container;
 
 /**
- * Отрисовка Common/Banner и Common/Benefit: слайды, доступность, размеры, enum
+ * Отрисовка Common/Banner и Base/Item/ItemBenefit: слайды, доступность, размеры, enum
  */
 class BannerBenefitTest extends Unit
 {
@@ -112,13 +112,13 @@ class BannerBenefitTest extends Unit
 
     public function testBenefitClassesAndMarker(): void
     {
-        $html = Benefit::drawBenefit(
+        $html = Benefit::drawItemBenefit(
             title: 'Доставка <i>',
             text: 'Быстро',
             icon: 'clock',
-            size: BenefitSize::Large,
-            layout: BenefitLayout::Horizontal,
-            align: BenefitAlign::Center,
+            size: ItemBenefitSize::Large,
+            layout: ItemBenefitLayout::Horizontal,
+            align: ItemBenefitAlign::Center,
             card: true,
             className: 'extra'
         );
@@ -139,12 +139,12 @@ class BannerBenefitTest extends Unit
 
     public function testBenefitNumberLinkAndBadge(): void
     {
-        $html = Benefit::drawBenefit(
+        $html = Benefit::drawItemBenefit(
             title: 'Шаг',
             text: 'Текст',
             number: '01',
-            type: BenefitType::Number,
-            size: BenefitSize::Small,
+            type: ItemBenefitType::Number,
+            size: ItemBenefitSize::Small,
             link: ['text' => 'Подробнее', 'href' => '/about'],
             badge: '24/7',
             headingLevel: 4
@@ -157,19 +157,21 @@ class BannerBenefitTest extends Unit
         $this->assertStringContainsString('aria-label="Подробнее: Шаг"', $html);
         $this->assertStringContainsString('link-size_s', $html);
         $this->assertStringContainsString('24/7', $html);
-        $this->assertStringContainsString('badge-size_xs', $html);
+        // бейдж benefit (Figma): secondary m со значком часов
+        $this->assertStringContainsString('badge badge-secondary badge-size_m benefit__badge', $html);
+        $this->assertStringContainsString('#icon-clock', $html);
     }
 
     public function testBenefitIgnoresLinkWithoutHref(): void
     {
-        $html = Benefit::drawBenefit(title: 'A', link: ['text' => 'Подробнее', 'href' => '']);
+        $html = Benefit::drawItemBenefit(title: 'A', link: ['text' => 'Подробнее', 'href' => '']);
 
         $this->assertStringNotContainsString('benefit__link', $html);
     }
 
     public function testBenefitList(): void
     {
-        $html = Benefit::drawBenefitList(
+        $html = Benefit::drawItemBenefitList(
             items: [
                 ['title' => 'Один', 'icon' => 'clock'],
                 ['icon' => 'file'],
@@ -182,6 +184,6 @@ class BannerBenefitTest extends Unit
         $this->assertStringStartsWith('<ul class="benefit-list list-extra"', $html);
         $this->assertSame(2, substr_count($html, '<li'));
         $this->assertSame(2, substr_count($html, 'item-extra'));
-        $this->assertSame('', Benefit::drawBenefitList(items: []));
+        $this->assertSame('', Benefit::drawItemBenefitList(items: []));
     }
 }

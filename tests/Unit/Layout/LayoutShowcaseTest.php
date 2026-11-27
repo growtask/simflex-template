@@ -107,7 +107,9 @@ class LayoutShowcaseTest extends Unit
         $this->assertSame(
             [
                 'Base/Seo', 'Base/Nav/NavBreadcrumbs', 'Base/Nav/NavPagination', 'Base/Nav/NavMenu', 'Base/Nav/NavMenuList',
+                'Base/Item/ItemBenefit', 'Base/Slider/SliderMain', 'Base/Slider/SliderStep', 'Base/Slider/SliderStepItem',
                 'Base/Form/FormCallback', 'Base/Form/FormMailing', 'Base/Form/FormResult', 'Base/Modal/ModalMain',
+                'Base/Geo/GeoModal', 'Base/Geo/GeoMain', 'Base/Geo/GeoList', 'Base/Player/PlayerAudio', 'Base/Player/PlayerWave',
             ],
             array_keys(LayoutShowcase::getComponents('Base'))
         );

@@ -7,6 +7,16 @@
 
 ## [4.0.0] — не выпущена
 
+- Тесты Layout: `LayoutStylesTest` (правила стилей компонентов: переходы на токенах движения, `prefers-reduced-motion`,
+  цвета токенами, фокус), `UiMotionA11yTest` (разметка и aria компонентов UI), acceptance `UiBehaviorCest` (поведение
+  компонентов на витрине `/ui`).
+- Исправлено: acceptance-тесты падали с `ERR_CONNECTION_REFUSED` — Chrome 155 открывал `https://app/` (имя `app`
+  совпадает с доменом `.app` из списка HSTS preload). Адрес сайта в `tests/Acceptance.suite.yml` — `http://site.test/`,
+  браузер отправляет его на сервис `app` (`--host-resolver-rules`).
+- Тесты: `AcceptanceTester::dontSeeLogProblems()` принимает ожидаемые записи лога (`FormCallbackCest` — заявка без токена
+  отклонена защитой от ботов); список закрывается с анимацией — `PrivilegeAssignCest` ждёт скрытия; `FileManagerCest`
+  ждёт ответа сервера до 10 с. Главная (`Extensions/Content/tpl/index.tpl`) — на `Base/Item/ItemBenefit`.
+
 - Спрайт иконок `public/assets/default/icons/icons.svg`: внутри разделов (`group-action`, `group-direction`…) иконки
   разложены по подгруппам из Figma — вложенные `<g id="group-<раздел>-<подгруппа>" data-title="…">` (`rotate`, `save`,
   `arrow`, `chevron`, `shield`…), иконки без рамки лежат в разделе; соцсети — `social` и `social-monochrome`. Набор

@@ -127,7 +127,8 @@ class FormCallbackCest
         );
         $I->assertSame(404, $get['status']);
         $I->assertSame(404, $get['body']['error']['code']);
-        $I->dontSeeLogProblems();
+        // заявка без токена ожидаемо отклонена защитой от ботов и записана в лог
+        $I->dontSeeLogProblems(['Заявка отклонена защитой от ботов']);
     }
 
     /**

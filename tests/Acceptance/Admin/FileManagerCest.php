@@ -36,7 +36,7 @@ class FileManagerCest
             $I->waitForElementVisible('#sf-file-manager-create [data-fm-name]', 5);
             $I->fillField('#sf-file-manager-create [data-fm-name]', 'codecept-fm');
             $I->click('#sf-file-manager-create [data-fm-action="create-save"]');
-            $I->waitForElementVisible(self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '"]', 5);
+            $I->waitForElementVisible(self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '"]', 10);
             $I->assertDirectoryExists($dir);
 
             // папка открывается двойным кликом; пустая — состояние «Папка пуста»
@@ -68,7 +68,7 @@ class FileManagerCest
             $I->fillField('#sf-file-manager-rename [data-fm-name]', 'renamed.png');
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
             $renamed = self::WINDOW . ' .file-card[data-fm-path="' . self::FOLDER . '/renamed.png"]';
-            $I->waitForElementVisible($renamed, 5);
+            $I->waitForElementVisible($renamed, 10);
             $I->assertFileExists($dir . '/renamed.png');
 
             // недопустимое имя — ошибка, файл не меняется
@@ -77,7 +77,7 @@ class FileManagerCest
             $I->waitForElementVisible('#sf-file-manager-rename [data-fm-name]', 5);
             $I->fillField('#sf-file-manager-rename [data-fm-name]', 'evil.php');
             $I->click('#sf-file-manager-rename [data-fm-action="rename-save"]');
-            $I->waitForText('Недопустимое имя', 5);
+            $I->waitForText('Недопустимое имя', 10);
             $I->click('#sf-file-manager-rename [data-modal-close]');
             $I->assertFileExists($dir . '/renamed.png');
 

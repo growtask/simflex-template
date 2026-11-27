@@ -55,12 +55,20 @@ class AcceptanceTester extends \Codeception\Actor
 
     /**
      * Проверяет, что за тест в лог не попало ничего уровня warning и выше (лог очищается перед каждым тестом)
+     *
+     * @param string[] $expected Ожидаемые тестом записи (подстроки): такие строки лога не считаются проблемой
      */
-    public function dontSeeLogProblems(): void
+    public function dontSeeLogProblems(array $expected = []): void
     {
         clearstatcache();
         $file = $this->logFile();
         $log = is_file($file) ? (string)file_get_contents($file) : '';
+        if ($expected) {
+            $log = implode("\n", array_filter(explode("\n", $log), static fn(string $line): bool => !array_filter(
+                $expected,
+                static fn(string $text): bool => str_contains($line, $text)
+            )));
+        }
 
         foreach (['[error]', '[critical]', '[emergency]', '[warning]'] as $level) {
             $this->assertStringNotContainsString($level, $log, "Found $level in $file");

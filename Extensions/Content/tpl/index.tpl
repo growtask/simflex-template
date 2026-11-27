@@ -1,8 +1,8 @@
 <?php
 
 use Simflex\Core\Layout\Components\Common\Banner\Layout as Banner;
-use Simflex\Core\Layout\Components\Common\Benefit\Layout as Benefit;
-use Simflex\Core\Layout\Components\Common\Benefit\BenefitSize;
+use Simflex\Core\Layout\Components\Base\Item\ItemBenefit\Layout as Benefit;
+use Simflex\Core\Layout\Components\Base\Item\ItemBenefit\ItemBenefitSize;
 use Simflex\Core\Layout\Components\Base\Form\FormCallback\Layout as Callback;
 
 /** @var \Simflex\Core\Extensions\Content\Models\Content $content */
@@ -23,7 +23,7 @@ $params = $content['params'];
 
 <section class="features">
     <h2 class="features__title_h2"><?= $h($params['features_title'] ?? '') ?></h2>
-    <?= Benefit::drawBenefitList($benefits, className: 'features__items_list', size: BenefitSize::Medium) ?>
+    <?= Benefit::drawItemBenefitList($benefits, className: 'features__items_list', size: ItemBenefitSize::Medium) ?>
 </section>
 
 <section class="r-form">

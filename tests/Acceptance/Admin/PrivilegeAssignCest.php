@@ -105,7 +105,8 @@ class PrivilegeAssignCest
         $I->fillField($I->dropdown('user_id') . '//input[@data-sf-dropdown-search]', 'a');
         $I->wait(1);
         $I->click('.page-head__title');
-        $I->dontSeeElement($I->dropdown('user_id') . '//input[@data-sf-dropdown-search]');
+        // список закрывается с анимацией ухода
+        $I->waitForElementNotVisible($I->dropdown('user_id') . '//input[@data-sf-dropdown-search]', 3);
         $I->seeInField('input[name="user_id"]', '');
 
         // не сохранено: форма показана снова с ошибкой, а не пустая страница
