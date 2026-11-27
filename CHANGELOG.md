@@ -15,7 +15,8 @@
   браузер отправляет его на сервис `app` (`--host-resolver-rules`).
 - Тесты: `AcceptanceTester::dontSeeLogProblems()` принимает ожидаемые записи лога (`FormCallbackCest` — заявка без токена
   отклонена защитой от ботов); список закрывается с анимацией — `PrivilegeAssignCest` ждёт скрытия; `FileManagerCest`
-  ждёт ответа сервера до 10 с. Главная (`Extensions/Content/tpl/index.tpl`) — на `Base/Item/ItemBenefit`.
+  ждёт ответа сервера до 10 с; `FormFieldsCest` ждёт ухода удалённого тега (анимация); `PublicRootCest` создаёт
+  `public/uf/files`, если его нет. Главная (`Extensions/Content/tpl/index.tpl`) — на `Base/Item/ItemBenefit`.
 
 - Спрайт иконок `public/assets/default/icons/icons.svg`: внутри разделов (`group-action`, `group-direction`…) иконки
   разложены по подгруппам из Figma — вложенные `<g id="group-<раздел>-<подгруппа>" data-title="…">` (`rotate`, `save`,

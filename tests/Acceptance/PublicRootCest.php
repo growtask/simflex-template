@@ -37,6 +37,9 @@ class PublicRootCest
     public function tryToRunScriptsOtherThanIndex(AcceptanceTester $I): void
     {
         $file = 'public/uf/files/codecept_probe.php';
+        // каталога загрузок может не быть (свежий сайт): создаём и убираем за собой
+        $dir = codecept_root_dir('public/uf/files');
+        $created = !is_dir($dir) && mkdir($dir, 0777, true);
         $I->writeToFile($file, '<?php echo "PROBE_" . "EXECUTED";');
         try {
             $I->amOnPage('/');
@@ -45,6 +48,9 @@ class PublicRootCest
             $I->assertStringNotContainsString('<?php', $res['body']);
         } finally {
             $I->deleteFile($file);
+            if ($created) {
+                rmdir($dir);
+            }
         }
     }
 

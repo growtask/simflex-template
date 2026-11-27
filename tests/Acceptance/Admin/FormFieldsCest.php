@@ -81,7 +81,8 @@ class FormFieldsCest
         $I->seeInField($field . ' [data-sf-tags-value]', 'хит');
         $I->pressKey($text, \Facebook\WebDriver\WebDriverKeys::BACKSPACE);
         $I->seeInField($field . ' [data-sf-tags-value]', '');
-        $I->dontSeeElement($field . ' .tags-input__tag');
+        // удалённый тег гаснет (анимация ухода) и пропадает из разметки
+        $I->waitForElementNotVisible($field . ' .tags-input__tag', 3);
     }
 
     public function tryToPickImageFromLibrary(AcceptanceTester $I): void
