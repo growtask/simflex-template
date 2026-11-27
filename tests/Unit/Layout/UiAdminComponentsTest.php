@@ -375,6 +375,7 @@ class UiAdminComponentsTest extends Unit
         $html = LoaderIcon::drawLoaderMain(LoaderMainSize::Large, label: 'Сохранение');
         $this->assertStringContainsString('class="loader loader_size_l loader_style_primary loader-theme_light"', $html);
         $this->assertStringContainsString('role="status" aria-label="Сохранение"', $html);
-        $this->assertStringContainsString('<svg class="loader-icon', $html);
+        $this->assertStringContainsString('<span class="loader__ring" aria-hidden="true"></span>', $html);
+        $this->assertStringContainsString('loader_static', LoaderIcon::drawLoaderMain(animation: false));
     }
 }

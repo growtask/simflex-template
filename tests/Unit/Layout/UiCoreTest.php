@@ -175,7 +175,9 @@ class UiCoreTest extends Unit
     {
         $default = Marker::drawMarker();
         $this->assertStringContainsString('marker marker-main marker-size_m marker-theme_light', $default);
-        $this->assertStringContainsString('#icon-check', $default);
+        // main и success: галочка рисуется линией (svg.marker__check), у остальных — иконка стиля
+        $this->assertStringContainsString('marker__check', $default);
+        $this->assertStringContainsString('#icon-check', Marker::drawMarker(style: MarkerStyle::Gray));
         $this->assertStringNotContainsString('role="status"', $default);
 
         $error = Marker::drawMarker(size: MarkerSize::Large, style: MarkerStyle::Error, theme: MarkerTheme::Dark, label: 'Ошибка "отправки"');
