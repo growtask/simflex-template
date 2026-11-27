@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Витрина UI-компонентов: страница на компонент (демо из demo.tpl в папках компонентов ядра
+ * Витрина UI-компонентов: страница на компонент (демо из demo.tpl в папках компонентов ядра, расширений
  * и сайта, см. Simflex\Core\Layout\LayoutShowcase). Только в режиме разработки.
  * Страница создаётся в админке с шаблоном «Витрина UI»; компонент выбирается параметром ?component=UI/Badge.
  */
@@ -27,17 +27,18 @@ PageAssets::js(asset('ui-showcase/alpine.min.js'), 91);
 $h = static fn(string $text): string => htmlspecialchars($text);
 $ucfirst = static fn(string $text): string => mb_strtoupper(mb_substr($text, 0, 1)) . mb_substr($text, 1);
 $components = LayoutShowcase::getComponents();
+$sections = LayoutShowcase::getSections();
 // страницы вне компонентов: «Начало» (intro, coverage) и «Основы» (LayoutFoundations::PAGES)
 $startPages = ['intro' => 'Введение', 'coverage' => 'Полнота по Figma'];
 $pages = $startPages + LayoutFoundations::PAGES;
 $page = (string)Container::getRequest()?->get('page', '');
 $key = (string)Container::getRequest()?->get('component', '');
-// блок компонентов (папка UI/Button): страница со списком его компонентов и наборов Figma
+// блок компонентов (папка UI/Button, Services/Card): страница со списком его компонентов и наборов Figma
 $blockKey = (string)Container::getRequest()?->get('block', '');
 $blocks = [];
 foreach ($components as $item) {
     if ($item['group'] !== '') {
-        $blocks[$item['group']][$item['key']] = $item;
+        $blocks[$item['section'] . '/' . $item['group']][$item['key']] = $item;
     }
 }
 if (!isset($pages[$page]) && isset($blocks[$blockKey])) {
@@ -56,7 +57,14 @@ $baseUrl = Container::getRequest()?->getPath() ?? '/';
 $link = static fn(string $componentKey): string => $baseUrl . '?component=' . urlencode($componentKey);
 $pageLink = static fn(string $pageKey): string => $baseUrl . '?page=' . urlencode($pageKey);
 $blockLink = static fn(string $block): string => $baseUrl . '?block=' . urlencode($block);
-$blockTitle = static fn(string $group): string => LayoutShowcase::GROUP_TITLES[$group] ?? $group;
+// название блока: по группе (Button) или по ключу блока (UI/Button)
+$blockTitle = static function (string $group): string {
+    $group = str_contains($group, '/') ? substr($group, strpos($group, '/') + 1) : $group;
+
+    return LayoutShowcase::GROUP_TITLES[$group] ?? $group;
+};
+// пакет компонента: ядро или расширение
+$packageTitle = static fn(string $package): string => $package === LayoutShowcase::PACKAGE_CORE ? 'ядро' : 'расширение ' . $package;
 $figmaDocs = $component ? LayoutShowcase::getFigmaDocs($component['key']) : [];
 
 // меню: раздел => группа => компоненты
@@ -91,7 +99,11 @@ $modeTabs = static function () use ($h): string {
 
     return $html . '</div>';
 };
-$statusTitles = ['core' => 'ядро', 'site' => 'сайт', 'replaced' => 'сайт заменяет ядро'];
+$statusTitles = $component ? [
+    'core' => $packageTitle($component['package']),
+    'site' => 'сайт',
+    'replaced' => 'сайт заменяет ' . ($component['package'] === LayoutShowcase::PACKAGE_CORE ? 'ядро' : 'расширение'),
+] : [];
 
 $toc = [];
 if ($component) {
@@ -143,9 +155,9 @@ $figmaTotal = array_sum(array_map('count', $figmaAll));
                     <div class="docs-nav__group" x-show='anyMatch(<?= $h(json_encode(array_values($texts), JSON_UNESCAPED_UNICODE)) ?>)'>
                         <div class="docs-nav__title">
                             <?php if ($group !== ''): ?>
-                                <a class="docs-nav__title-link" href="<?= $h($blockLink($group)) ?>"><?= $h(LayoutShowcase::SECTIONS[$section] . ' · ' . $blockTitle($group)) ?></a>
+                                <a class="docs-nav__title-link" href="<?= $h($blockLink($section . '/' . $group)) ?>"><?= $h($sections[$section] . ' · ' . $blockTitle($group)) ?></a>
                             <?php else: ?>
-                                <?= $h(LayoutShowcase::SECTIONS[$section]) ?>
+                                <?= $h($sections[$section]) ?>
                             <?php endif; ?>
                         </div>
                         <ul class="docs-nav__list">
@@ -175,8 +187,8 @@ $figmaTotal = array_sum(array_map('count', $figmaAll));
         <main class="docs-main">
             <?php if ($page !== ''): ?>
                 <article>
-                    <p class="docs-eyebrow"><?= $page === 'block' ? 'UI-компоненты' : (isset($startPages[$page]) ? 'Начало' : 'Основы') ?></p>
-                    <h1 class="docs-h1"><?= $h($page === 'block' ? $blockTitle($blockKey) : $pages[$page]) ?><?php if ($page === 'block'): ?> <code class="docs-h1__code">UI/<?= $h($blockKey) ?></code><?php endif; ?></h1>
+                    <p class="docs-eyebrow"><?= $h($page === 'block' ? $sections[strstr($blockKey, '/', true)] : (isset($startPages[$page]) ? 'Начало' : 'Основы')) ?></p>
+                    <h1 class="docs-h1"><?= $h($page === 'block' ? $blockTitle($blockKey) : $pages[$page]) ?><?php if ($page === 'block'): ?> <code class="docs-h1__code"><?= $h($blockKey) ?></code><?php endif; ?></h1>
 
                     <?php if ($page === 'block'): ?>
                         <p class="docs-p">Компоненты блока (<?= count($blocks[$blockKey]) ?>) и наборы Figma, которые они реализуют.</p>
@@ -211,7 +223,11 @@ $figmaTotal = array_sum(array_map('count', $figmaAll));
                         <h2 class="docs-h2">Как добавить компонент</h2>
                         <p class="docs-p">Положите в папку компонента файл <code class="docs-inline">demo.tpl</code> со всеми
                             вариантами (стили, размеры, состояния) и, если у компонента есть набор в Figma, добавьте его описание
-                            в <code class="docs-inline">Layout/figma-docs.php</code> ядра. Страница появится в меню сама.</p>
+                            в <code class="docs-inline">Layout/figma-docs.php</code> ядра (у расширения — в
+                            <code class="docs-inline">src/Layout/figma-docs.php</code> пакета). Страница появится в меню сама.</p>
+                        <p class="docs-p">Расширение выводит свои компоненты разделом витрины: папка раздела лежит в
+                            <code class="docs-inline">src/Layout/Components</code> пакета и объявлена в
+                            <code class="docs-inline">$layoutSections</code> его настроек (<code class="docs-inline">provider/extensions</code>).</p>
                         <p class="docs-muted">Витрина работает только в режиме разработки.</p>
 
                     <?php elseif ($page === 'coverage'): ?>
@@ -403,7 +419,7 @@ $figmaTotal = array_sum(array_map('count', $figmaAll));
             <?php else: ?>
                 <article>
                     <p class="docs-eyebrow">
-                        <?= $h(LayoutShowcase::SECTIONS[$component['section']]) ?>
+                        <?= $h($sections[$component['section']]) ?>
                         <?= $component['group'] !== '' ? ' · ' . $h(LayoutShowcase::GROUP_TITLES[$component['group']] ?? $component['group']) : '' ?>
                     </p>
                     <h1 class="docs-h1">
@@ -414,11 +430,14 @@ $figmaTotal = array_sum(array_map('count', $figmaAll));
                         <?php if ($component['inSite']): ?>
                             <span class="docs-chip docs-chip_site">App</span>
                         <?php endif; ?>
+                        <?php if ($component['package'] !== LayoutShowcase::PACKAGE_CORE): ?>
+                            <span class="docs-chip"><?= $h($packageTitle($component['package'])) ?></span>
+                        <?php endif; ?>
                         <?php if ($component['overrides']): ?>
-                            <span class="docs-chip">переопределяет ядро</span>
+                            <span class="docs-chip">переопределяет <?= $component['package'] === LayoutShowcase::PACKAGE_CORE ? 'ядро' : 'расширение' ?></span>
                         <?php endif; ?>
                         <?php if (!$component['inCore']): ?>
-                            <span class="docs-chip">нет в ядре</span>
+                            <span class="docs-chip">нет в <?= $component['package'] === LayoutShowcase::PACKAGE_CORE ? 'ядре' : 'расширении' ?></span>
                         <?php endif; ?>
                     </div>
 
@@ -439,7 +458,7 @@ $figmaTotal = array_sum(array_map('count', $figmaAll));
 
                     <h2 id="variants" class="docs-h2" data-docs-section><a href="#variants">Все варианты</a></h2>
                     <p class="docs-p">demo.tpl: стили, размеры, состояния в светлой и тёмной темах
-                        (<?= $component['demoSource'] === LayoutShowcase::SOURCE_SITE ? 'демо сайта' : 'демо ядра' ?>).</p>
+                        (<?= $component['demoSource'] === LayoutShowcase::SOURCE_SITE ? 'демо сайта' : 'демо: ' . $h($packageTitle($component['package'])) ?>).</p>
                     <div class="docs-preview">
                         <?= $modeTabs() ?>
                         <div class="docs-panes"><?= $panes() ?></div>

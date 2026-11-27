@@ -4,10 +4,11 @@ namespace Tests\Unit\Layout;
 
 use Codeception\Test\Unit;
 use Simflex\Core\Layout\LayoutFoundations;
+use Simflex\Core\System\ExtensionConfig;
 
 /**
  * Правила стилей компонентов Layout (план дизайн-системы, этап 2): движение на токенах, prefers-reduced-motion,
- * цвета токенами, кольцо фокуса. Проверяются style.scss всех компонентов ядра без комментариев
+ * цвета токенами, кольцо фокуса. Проверяются style.scss всех компонентов ядра и расширений (разделы витрины) без комментариев
  */
 class LayoutStylesTest extends Unit
 {
@@ -27,20 +28,27 @@ class LayoutStylesTest extends Unit
     ];
 
     /**
-     * @return array<string,string> компонент (путь под Components) => стили без комментариев
+     * @return array<string,string> компонент (путь под Components ядра или расширения) => стили без комментариев
      */
     private function styles(): array
     {
-        $root = dirname((string)(new \ReflectionClass(LayoutFoundations::class))->getFileName()) . '/Components';
-        $styles = [];
-        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root)) as $file) {
-            if ($file->getFilename() !== 'style.scss') {
-                continue;
+        $roots = [dirname((string)(new \ReflectionClass(LayoutFoundations::class))->getFileName()) . '/Components'];
+        foreach (ExtensionConfig::getAll() as $extension) {
+            if ($extension->getLayoutSections() !== [] && $extension->getLayoutRoot() !== null) {
+                $roots[] = $extension->getLayoutRoot();
             }
-            $css = (string)file_get_contents($file->getPathname());
-            $css = (string)preg_replace(['~/\*.*?\*/~s', '~(?<!:)//[^\n]*~'], '', $css);
-            $key = str_replace('\\', '/', substr($file->getPath(), strlen($root) + 1));
-            $styles[$key] = $css;
+        }
+        $styles = [];
+        foreach ($roots as $root) {
+            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root)) as $file) {
+                if ($file->getFilename() !== 'style.scss') {
+                    continue;
+                }
+                $css = (string)file_get_contents($file->getPathname());
+                $css = (string)preg_replace(['~/\*.*?\*/~s', '~(?<!:)//[^\n]*~'], '', $css);
+                $key = str_replace('\\', '/', substr($file->getPath(), strlen($root) + 1));
+                $styles[$key] = $css;
+            }
         }
         ksort($styles);
         $this->assertNotEmpty($styles);

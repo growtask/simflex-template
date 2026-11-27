@@ -7,10 +7,11 @@ use Simflex\Core\Layout\LayoutFoundations;
 use Simflex\Core\Layout\LayoutManager;
 use Simflex\Core\Layout\LayoutShowcase;
 use Simflex\Core\System\Container;
+use Simflex\Core\System\ExtensionConfig;
 use Simflex\Core\System\Location;
 
 /**
- * Витрина компонентов Layout: поиск компонентов с demo.tpl в ядре и сайте, вывод в темах,
+ * Витрина компонентов Layout: поиск компонентов с demo.tpl в ядре, расширениях и сайте, вывод в темах,
  * переопределение компонентов сайтом
  */
 class LayoutShowcaseTest extends Unit
@@ -34,6 +35,18 @@ class LayoutShowcaseTest extends Unit
         }
         $this->created = [];
         Container::set('config', $this->configBackup);
+        ExtensionConfig::reset();
+    }
+
+    /**
+     * Класс Layout компонента: namespace из его Layout.php (ядро, расширение или сайт)
+     */
+    private function layoutClass(array $component): string
+    {
+        $source = (string)file_get_contents($component['root'] . '/' . $component['key'] . '/Layout.php');
+        preg_match('/^namespace ([\w\\\\]+);/m', $source, $match);
+
+        return $match[1] . '\\Layout';
     }
 
     /**
@@ -78,8 +91,8 @@ class LayoutShowcaseTest extends Unit
         $this->assertSame(array_values(array_intersect($figmaKeys, $keys)), array_slice($keys, 0, count($figmaKeys)));
         // без набора Figma: Placeholder* (не из Figma) и UI/Other
         $this->assertSame('Parts/Placeholder/PlaceholderAvatar', $keys[count($figmaKeys)]);
-        $this->assertContains('UI/Other/BadgeStock', $keys);
-        $this->assertSame('Other', $components['UI/Other/BadgeStock']['group']);
+        $this->assertContains('UI/Other/Separator', $keys);
+        $this->assertSame('Other', $components['UI/Other/Separator']['group']);
         // раздел фильтрует список
         $this->assertSame(
             array_filter($components, static fn(array $component): bool => $component['section'] === 'UI'),
@@ -134,10 +147,9 @@ class LayoutShowcaseTest extends Unit
 
     public function testDemoCoversEveryEnumOfComponent(): void
     {
-        $root = dirname((string)(new \ReflectionClass(LayoutShowcase::class))->getFileName()) . '/Components/';
         foreach (LayoutShowcase::getComponents() as $key => $component) {
             $demo = (string)file_get_contents($component['demo']);
-            foreach (glob($root . $key . '/*.php') ?: [] as $file) {
+            foreach (glob($component['root'] . '/' . $key . '/*.php') ?: [] as $file) {
                 $name = basename($file, '.php');
                 $source = (string)file_get_contents($file);
                 // темы задаёт тема витрины; остальные enum демо перебирает или называет все значения
@@ -183,17 +195,17 @@ class LayoutShowcaseTest extends Unit
      */
     public function testEveryComponentDemoRegistersItsAssets(): void
     {
-        $root = dirname((string)(new \ReflectionClass(LayoutShowcase::class))->getFileName()) . '/Components/';
         $checked = 0;
         $backup = $this->resetLayoutManager();
         try {
-            foreach (array_keys(LayoutShowcase::getComponents()) as $key) {
+            foreach (LayoutShowcase::getComponents() as $key => $component) {
+                $root = $component['root'] . '/';
                 if (!is_file($root . $key . '/style.scss') || !is_file($root . $key . '/Layout.php')) {
                     continue;
                 }
                 $this->resetLayoutManager();
                 LayoutShowcase::renderDemo($key, 'light');
-                $class = 'Simflex\\Core\\Layout\\Components\\' . str_replace('/', '\\', $key) . '\\Layout';
+                $class = $this->layoutClass($component);
                 $this->assertContains($class, $this->usedLayouts(), "$key: демо не подключило ассеты (draw*() не вызывает draw())");
                 $checked++;
             }
@@ -211,11 +223,11 @@ class LayoutShowcaseTest extends Unit
     {
         // без devMode: профайлеру не нужна панель отладки, CSS пишется в файл по хэшу стилей (тест его удаляет)
         Container::set('config', (object)['theme' => 'default', 'devMode' => false]);
-        $root = dirname((string)(new \ReflectionClass(LayoutShowcase::class))->getFileName()) . '/Components/';
         $checked = 0;
         $backup = $this->resetLayoutManager();
         try {
-            foreach (array_keys(LayoutShowcase::getComponents()) as $key) {
+            foreach (LayoutShowcase::getComponents() as $key => $component) {
+                $root = $component['root'] . '/';
                 if (!is_file($root . $key . '/style.scss')) {
                     continue;
                 }
@@ -307,6 +319,76 @@ class LayoutShowcaseTest extends Unit
         $this->assertStringContainsString('нет параметра', $html);
         $this->assertStringContainsString('demo.tpl', $html);
         $this->assertSame($level, ob_get_level());
+    }
+
+    /**
+     * Расширение со своим разделом: компоненты из src/Layout/Components пакета, описания Figma пакета,
+     * переопределение сайтом; раздел ядра расширение не перекрывает
+     */
+    public function testExtensionSectionComponents(): void
+    {
+        $root = sys_get_temp_dir() . '/sf-showcase-ext-' . getmypid();
+        $files = [
+            $root . '/src/Layout/Components/Shop/Card/CardShop/demo.tpl' => '<p>карточка магазина <?= $theme ?></p>',
+            $root . '/src/Layout/Components/Shop/Card/CardShop/Layout.php' => '<?php',
+            $root . '/src/Layout/Components/UI/Badge/demo.tpl' => '<p>чужой бейдж</p>',
+            $root . '/src/Layout/figma-docs.php' => "<?php return ['Shop/Card/CardShop' => [['Cards/shop', 'карточка', 'зачем', 'как', '—']]];",
+        ];
+        foreach ($files as $file => $content) {
+            if (!is_dir(dirname($file))) {
+                mkdir(dirname($file), 0777, true);
+            }
+            file_put_contents($file, $content);
+        }
+        $extension = new class ($root . '/src/Layout/Components') extends ExtensionConfig {
+            public string $name = 'shop';
+            public int $loadOrder = 10;
+            protected array $layoutSections = ['Shop' => 'Магазин', 'UI' => 'Чужой UI'];
+
+            public function __construct(private readonly string $root)
+            {
+            }
+
+            public function getLayoutRoot(): ?string
+            {
+                return $this->root;
+            }
+        };
+        ExtensionConfig::reset([$extension]);
+        try {
+            $this->assertSame('Магазин', LayoutShowcase::getSections()['Shop']);
+            $this->assertSame('UI-компоненты', LayoutShowcase::getSections()['UI']);
+            $this->assertSame('Shop', array_key_last(LayoutShowcase::getSections()), 'разделы расширений — после ядра');
+
+            $card = LayoutShowcase::getComponent('Shop/Card/CardShop');
+            $this->assertNotNull($card);
+            $this->assertSame('shop', $card['package']);
+            $this->assertSame('Card', $card['group']);
+            $this->assertTrue($card['inCore']);
+            $this->assertSame(LayoutShowcase::SOURCE_CORE, $card['demoSource']);
+            $this->assertStringContainsString('карточка магазина dark', LayoutShowcase::renderDemo('Shop/Card/CardShop', 'dark'));
+            $this->assertSame('Cards/shop', LayoutShowcase::getFigmaDocs('Shop/Card/CardShop')[0]['set']);
+            $this->assertSame('core', LayoutShowcase::getFiles('Shop/Card/CardShop')['Layout.php']['status']);
+            // раздел UI остаётся у ядра
+            $this->assertSame(LayoutShowcase::PACKAGE_CORE, LayoutShowcase::getComponent('UI/Badge')['package']);
+            $this->assertStringNotContainsString('чужой бейдж', LayoutShowcase::renderDemo('UI/Badge', 'light'));
+
+            // сайт переопределяет компонент расширения
+            $this->createSiteFile('Shop/Card/CardShop/demo.tpl', '<p>карточка сайта</p>');
+            $card = LayoutShowcase::getComponent('Shop/Card/CardShop');
+            $this->assertTrue($card['overrides']);
+            $this->assertStringContainsString('карточка сайта', LayoutShowcase::renderDemo('Shop/Card/CardShop', 'light'));
+            $this->assertSame('replaced', LayoutShowcase::getFiles('Shop/Card/CardShop')['demo.tpl']['status']);
+        } finally {
+            ExtensionConfig::reset();
+            foreach (array_keys($files) as $file) {
+                @unlink($file);
+            }
+            foreach (['/src/Layout/Components/Shop/Card/CardShop', '/src/Layout/Components/Shop/Card', '/src/Layout/Components/Shop',
+                         '/src/Layout/Components/UI/Badge', '/src/Layout/Components/UI', '/src/Layout/Components', '/src/Layout', '/src', ''] as $dir) {
+                @rmdir($root . $dir);
+            }
+        }
     }
 
     public function testComponentWithoutDemoIsNotListed(): void

@@ -13,7 +13,6 @@ use Simflex\Core\Layout\Components\UI\Loader\LoaderMain\Layout as Loader;
 use Simflex\Core\Layout\Components\UI\Loader\LoaderOverlay\Layout as LoaderOverlay;
 use Simflex\Core\Layout\Components\UI\Marker\Layout as Marker;
 use Simflex\Core\Layout\Components\UI\Marker\MarkerStyle;
-use Simflex\Core\Layout\Components\UI\Other\BadgeStock\Layout as BadgeStock;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchSort\Layout as Sort;
 use Simflex\Core\Layout\Components\UI\Switch\SwitchSort\SwitchSortDirection;
 use Simflex\Core\Layout\Components\UI\Tab\TabMain\Layout as Tab;
@@ -142,12 +141,11 @@ class UiMotionA11yTest extends Unit
         $this->assertStringNotContainsString('aria-busy', LoaderOverlay::drawLoaderOverlay('<p>Блок</p>', active: false));
     }
 
-    public function testBadgeCountersAndStockText(): void
+    public function testBadgeCountersAndDot(): void
     {
         $this->assertStringContainsString('>0</span>', Badge::drawBadge(text: '0'));
         $this->assertStringContainsString('99+', Badge::drawBadge(text: '150'));
         $this->assertStringContainsString('badge__dot', Badge::drawBadge(dot: true));
-        $this->assertStringContainsString('badge-stock__text', BadgeStock::drawBadgeStock(text: 'В наличии'));
     }
 
     public function testSortGlideFollowsDirection(): void

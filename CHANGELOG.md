@@ -7,6 +7,10 @@
 
 ## [4.0.0] — не выпущена
 
+- Тесты компонентов каталога (часть 5a): `CatalogComponentsTest`, `CatalogBehaviorCest` (окно поиска, «Показать все»
+  в карточке категории, мега-меню, уровни меню телефона); `LayoutStylesTest` проверяет и стили компонентов расширений.
+- Витрина UI: разделы компонентов расширений, блоки по ключу «раздел/группа» (`/ui?block=Services/Card`), метка
+  пакета компонента; тест `LayoutShowcaseTest::testExtensionSectionComponents`.
 - Тесты компонентов Services: `ServicesComponentsTest` (разметка и доступность), `ServicesBehaviorCest` (фокус карточки,
   период тарифов, тариф в таблице на телефоне, галерея, слайдер шагов).
 - Тесты Layout: `LayoutStylesTest` (правила стилей компонентов: переходы на токенах движения, `prefers-reduced-motion`,
