@@ -7,6 +7,8 @@
 
 ## [4.0.0] — не выпущена
 
+- Тесты компонентов Services: `ServicesComponentsTest` (разметка и доступность), `ServicesBehaviorCest` (фокус карточки,
+  период тарифов, тариф в таблице на телефоне, галерея, слайдер шагов).
 - Тесты Layout: `LayoutStylesTest` (правила стилей компонентов: переходы на токенах движения, `prefers-reduced-motion`,
   цвета токенами, фокус), `UiMotionA11yTest` (разметка и aria компонентов UI), acceptance `UiBehaviorCest` (поведение
   компонентов на витрине `/ui`).
